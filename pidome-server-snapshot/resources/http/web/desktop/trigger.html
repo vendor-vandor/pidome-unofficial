@@ -1,0 +1,93 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<div id="triggerdisplay">
+    <div id="editormenu" class="defaultcontent" style="padding:0px;">
+        <fieldset id="triggermenubasicinfo">
+            <legend>Basic information</legend>
+            <div class="nvp" style="padding: 5px; float:left;">
+                <div class="n"><label for="trigger_name">Name</label></div>
+                <div class="v"><input type="text" name="trigger_name" id="trigger_name" value="" /></div>
+            </div>
+            <div class="nvp" style="padding: 5px; float:left;">
+                <div class="n"><label for="trigger_description">Description</label></div>
+                <div class="v"><input type="text" name="trigger_description" id="trigger_description" value="" /></div>
+            </div>
+            <div class="nvp" style="padding: 5px; float:left;">
+                <div class="n"><label for="trigger_reccurrence">Recurrence</label></div>
+                <div class="v"><div id="trigger_reccurrence"></div></div>
+            </div>
+            <div class="nvp" style="padding: 5px; float:left;">
+                <div class="n"><button id="save_trigger">Save trigger</button></div>
+                <div class="v"><button id="reset_trigger">Reset trigger</button></div>
+            </div>
+            <input type="hidden" name="trigger_id" id="trigger_id" value="${triggerId}" />
+        </fieldset>
+    </div>
+    <div id="editor" class="editor">
+        <div id="staticWhen" class="editoritem baseWhen">When <div id="primaryrule"></div><button id="addRule" name="addRule" value="addRule">Add</button></div>
+    </div>
+    <div id="editoractionlist" class="defaultcontent" style="padding:0px;">
+        <fieldset id="triggermenuexeclist">
+            <legend>Execution list <img src="/shared/images/simplearrowup.png" alt="go up" /></legend>
+            <div class="nvp" style="width:100%">
+                <div class="n" style="width:125px;"><button id="add_exec" style="margin:3px;">Add item</button><br/><button id="clear_exec" style="margin:3px;">Clear list</button></div>
+                <div class="v" id="trigger_exec_list" style="width: 860px;">
+
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<input type="hidden" name="currentItemAddUUID" id="currentItemAddUUID" value="" />
+<div id="innerscrollmargin"></div>
+<link rel="stylesheet" href="/shared/css/triggereditor.css" />
+<script>
+    function clearHandlers(){
+        clearInternalWidgetHandlers("#editormenu");
+        clearInternalWidgetHandlers("#editor");
+        clearInternalWidgetHandlers("#editoractionlist");
+    }        
+    $(document).ready(function() {
+        setPageBreadcrumbs(3, "page_triggers", "Triggers", "/desktop/triggers.html", "Add/Edit trigger");
+        $.when(
+            $.getScript( "/shared/js/libs/plumb/jquery-ui-1.10.4.custom.min.js" ),
+            $.getScript( "/shared/js/libs/plumb/jquery.jsPlumb-1.5.5-min.js" ),
+            $.Deferred(function( deferred ){
+                $( deferred.resolve );
+            })
+        ).done(function(){
+            $.when(
+                $.getScript( "/shared/js/sitelibs/triggereditor.js" ),
+                $.Deferred(function( deferred ){
+                    $( deferred.resolve );
+                })
+            ).done(function(){
+                var triggerexecmenuopened = false;
+                var rotate_factor = 1;
+                $("#triggermenuexeclist legend").on("click",function(){
+                    if(triggerexecmenuopened===false){
+                        $("#editoractionlist").css("top","101px");
+                        $("#triggermenuexeclist legend img").css({
+                            "-webkit-transform": "rotate(180deg)",
+                            "-moz-transform": "rotate(180deg)",
+                            "transform": "rotate(180deg)" /* For modern browsers(CSS3)  */
+                        });
+                        triggerexecmenuopened = true;
+                    } else {
+                        $("#editoractionlist").css("top","674px");
+                        $("#triggermenuexeclist legend img").css({
+                            "-webkit-transform": "rotate(0deg)",
+                            "-moz-transform": "rotate(0deg)",
+                            "transform": "rotate(0deg)" /* For modern browsers(CSS3)  */
+                        });
+                        triggerexecmenuopened = false;
+                    }
+                });
+            });
+        });
+    });
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

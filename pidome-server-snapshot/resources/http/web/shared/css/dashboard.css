@@ -1,0 +1,107 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jul 30, 2015, 3:15:01 PM
+    Author     : John
+*/
+
+/*
+Gridster
+*/
+.dashboard-tile {
+    background-color: rgba(37, 37, 37, 1);
+}
+
+.gridster * {
+    margin:0;
+    padding:0;
+}
+
+ul {
+    list-style-type: none;
+}
+
+.gridster ul {
+    background-color: transparent;
+}
+
+.gridster li {
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    line-height: 100%;
+}
+
+.gridster {
+    opacity: .8;
+    -webkit-transition: opacity .6s;
+    -moz-transition: opacity .6s;
+    -o-transition: opacity .6s;
+    -ms-transition: opacity .6s;
+    transition: opacity .6s;
+}
+
+.gridster .gs-w {
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.gridster .gs-w.dragging {
+    background-color: transparent!important;
+}
+
+.gridster .player {
+    background: #BBB;
+}
+
+.gridster .preview-holder {
+    border: none!important;
+    background: red!important;
+}
+
+.textstroke {
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+.dashboardboxed {
+    background-repeat: no-repeat;
+    background-position: center;
+    position:relative;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    color:#fff;
+    font-size:16px;
+    font-weight:normal;
+    padding: 2px;
+    overflow:hidden;
+    line-height: 105%;
+}
+.pressablebuttoncontainer {
+    //background-color: #b94272;
+}
+.pressablebuttoncontainer.on {
+    background-color: #426fb9;
+}
+.switchabledashcontainer.off {
+    background-color: #dc5945;
+}
+.switchabledashcontainer.on {
+    background-color: #42c873;
+}
+.switchabledashcontainer.macro.off {
+    background-color: #652d90;
+}
+.switchabledashcontainer.macro.on {
+    background-color: #426fb9;
+}
+.dashtimecontainer {
+    background-color: #0a73e9;
+    vertical-align: top;
+}
+.dashweathercontainer {
+    background-color: #cd4900;
+}

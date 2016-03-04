@@ -1,0 +1,97 @@
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(4, "page_com_publishdevices", "Publish community devices", "/communitydevicespublish.html");
+    });
+</script>
+<p class="defaultcontent">
+    On this page you will be able to publish your device to the community for others to use.
+</p>
+<div id="communitydevicepublishspanel">
+    <div class="splitter-panel">
+        <table id="communitydevicepublishtable">
+            <thead>
+                <tr>
+                    <th align="left">Id</th>
+                    <th align="left">Name</th>
+                    <th align="left">Device id</th>
+                    <th align="left">Version</th>
+                    <th align="left">Updated</th>
+                    <th align="left">Relies on package</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="splitter-panel">
+        <div id="communitydevicepublishcontent" style="padding-left:5px;"></div>
+  
+    </div>
+</div>
+<script>
+    
+    var communityDevicesPersonalSource = {
+        datatype: "json",
+        datafields: [
+            { name: 'id', type: 'int'},
+            { name: 'friendlyname', type: 'string'},
+            { name: 'name', type: 'string'},
+            { name: 'defsequence', type: 'int'},
+            { name: 'modified', type: 'string'},
+            { name: 'packageversion', type: 'string'},
+            { name: 'packagesequence', type: 'int'},
+            { name: 'packagename', type: 'string'}
+        ],
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PlatformService.getPersonalCustomDevices", "id":"PlatformService.getPersonalCustomDevices"}',
+        root: "result>data"
+    };
+    
+    $(document).ready(function () {
+        
+        var communityDevicesPersonalData = new $.jqx.dataAdapter(communityDevicesPersonalSource);
+        
+        $("#communitydevicepublishcontent").jqxPanel({ width: 640, height: 658, autoUpdate: true, sizeMode: "fixed", theme: siteSettings.getTheme()}); 
+        $('#communitydevicepublishspanel').jqxSplitter({ width: 1000, height: 660,  panels: [{ size: 375, collapsible: false }, { size: 625, collapsed: true }], theme: siteSettings.getTheme() });
+        $("#communitydevicepublishtable").jqxDataTable({ source: communityDevicesPersonalData, filterable: true, filtermode: 'simple', selectionMode: "singleRow", height: 660, width: 995, sortable: true, pageable: true, pageSize: 15, pagerButtonsCount: 5, theme: siteSettings.getTheme(),
+            groupsRenderer: function(value, rowData, level){
+                return "Location: " + value;
+            },
+            columns: [
+                {text: 'Id', dataField: 'id', hidden: true},
+                {text: 'Name', dataField: 'friendlyname'},
+                {text: 'Device id', dataField: 'name', width:250},
+                {text: 'Version', dataField: 'defsequence', width: 50},
+                {text: 'Updated', dataField: 'modified', width:120},
+                {text: 'Driverid', dataField: 'driverid', hidden: true},
+                {text: 'Relies on package', dataField: 'packagename', width:200}
+            ]
+        });
+        $("#communitydevicepublishtable").on('rowClick', function (event) {
+            var args = event.args;
+            var row = args.row;
+            openComunityPublishDevice(row);
+        });
+    });
+    
+    function openComunityPublishDevice(set){
+        $('#communitydevicepublishspanel').jqxSplitter('expand');
+        clearInternalWidgetHandlers("#communitydevicepublishcontent");
+        $("#communitydevicepublishcontent").empty();
+        var url = '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getCleanCustomDevice", "params": {"id":"' + set.name + '"} "id":"DeviceService.getCleanCustomDevice"}';
+        $.get(url).done(function(data) {
+            try {
+                var deviceData = data.result.data;
+                $("#communitydevicepublishcontent").append('<h2 class="whiteheader" style="border-bottom: 1px solid #007acc;">'+deviceData.friendlyname+'</h2>\n\
+                   <p>Not available yet, This functionality is an ongoing progress.</p>');
+            } catch (err){
+                alert(err);
+            }
+        });
+                
+    }
+    
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

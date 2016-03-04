@@ -1,0 +1,180 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Feb 5, 2014, 3:58:59 PM
+    Author     : John
+*/
+/*
+Main body styles 
+*/
+body {
+   margin: 0px;
+   padding: 0px;
+}
+#content {
+    padding: 5px 20px 0px 20px;
+}
+/*
+Top menu and header
+*/
+#topheader {
+    width: 100%;
+    height: 32px;
+}
+
+#topheaderleft {
+    float: left;
+}
+#topheader .menulogo {
+    width : 24px; 
+    float:left;
+    margin-top: 3px;
+    margin-left: 12px;
+}
+#topheader .menulogoappname {
+    float:left; 
+    margin-top: 5px;
+    margin-left: 5px;
+    font-size: 16px;
+}
+#topheaderright {
+    float: right;
+    padding-top: 7px;
+    padding-right: 7px;
+    line-height: 1.3 !important;
+}
+#topheaderright img {
+    float:left; 
+    height: 16px;
+    margin-top: 0px;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+#topheaderright span {
+    float:left; 
+    margin-top: 1px;
+    margin-left: 1px;
+    margin-right: 7px;
+}
+
+#topmenu {
+    height: 32px;
+}
+
+/* 
+index page styles
+*/
+#favoriteblock .favoritecontainer,
+#favoritechoices {
+    overflow:hidden;
+}
+
+/*
+Server status
+*/
+.systemitemdock {
+    float:left;
+    width: 300px;
+}
+
+/*
+devices page setup
+*/
+#devicecontent {
+    margin: 5px;
+}
+.devicecontroltable {
+    width: 100%;
+}
+.devicecontroltable .name {
+    width: 200px;
+}
+.devicecontroltable .name,
+.devicecontroltable .value {
+    height: 24px;
+}
+.devicehasdatagraph {
+    float:right;
+    margin-right: 10px;
+}
+.devicehasdatagraph {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+#loadermessage {
+    display:none;
+    border-radius:12px;
+    width: 90px;
+    height: 90px;
+    text-align: center;
+    position:absolute;
+    margin: auto;
+    top: 50%;
+    left: 50%;
+    margin-left: -45px;
+    margin-top: -45px;
+    z-index: 1000000;
+}
+#loadermessage img {
+    margin-top: 8px;
+}
+#loadermessage div {
+    margin-top: 6px;
+}
+
+/*
+Media controls page setup
+*/
+#mediacontent {
+    width: 100%;
+    padding: 0px;
+}
+#mediacontent h3 {
+    padding: 0px 0px 3px 3px;
+    margin:0px;
+}
+#mediaplayercontrolframe {
+    width:100%;
+}
+#mediaplayercontrolframemaincontrols {
+    width:8%;
+}
+#mediaplayercontrolframebrowsecontrols {
+    width:20%;
+    height:100%;
+}
+#mediaplayercontrolframemediacontrols {
+    width:64%;
+    vertical-align: top; 
+    text-align:left;
+}
+#mediaplayercontrolframevolumecontrols {
+    width:8%;
+}
+#mediaplaylistplaylist {
+    width: 100%;
+}
+#mediaplaylistplaylist .jqx-button-android {
+    padding: 0px;
+    max-width: 46px;
+    max-height: 40px;
+}
+#mediaplaylistplaylist h3 {
+    margin-top: 3px;
+}
+.mediacontrol img {
+    width: 100%;
+}
+.mediacontrol {
+    padding: 0px;
+    max-width: 46px;
+    max-height: 40px;
+}
+.mediacontrol.disabled img {
+    opacity:0.8;
+    filter:alpha(opacity=80);
+}

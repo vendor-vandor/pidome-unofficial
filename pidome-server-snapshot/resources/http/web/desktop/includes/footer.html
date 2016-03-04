@@ -1,0 +1,123 @@
+                </div>
+            </div>
+            <div style="clear:both;"></div>
+            <div id="bottombar">
+                <div id="bottombarcontent">
+                    <ul class="breadcrumbs" id="breadcrumbpath"></ul>
+                    <#if _SERVER.userpasschange==true>
+                        <div id="passchangeobligated" style="height: 34px; line-height: 34px; vertical-align:middle;">
+                            <img src="/shared/images/icons/warning.png" alt="Change your pass!" height="22" style="vertical-align:middle;"/> 
+                            <span>You must change your password. <a href="/desktop/me.html" style="color:#fff;">Click here to do so.</a></span> 
+                            <img src="/shared/images/icons/warning.png" alt="Change your pass!" height="22" style="vertical-align:middle;"/>
+                        </div>
+                    </#if>
+                    <div id="systemicons">
+                        <a href="/desktop/notifications.html" id="message_notifications" onclick="return refreshPageContent('/desktop/notifications.html');"><div id="unread_notifications">0</div></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="messageNotification" class="popupwindowshadow" style="display:none;">
+            <div></div>
+            <div></div>
+        </div>
+        <!-- Modal for page errors -->
+        <div class="modal fade" id="dialog-pageerror" tabindex="-1" role="dialog" aria-hidden="true" style="z-index:20000;">
+            <div class="modal-dialog" id="dialog-pageerror-size">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="dialog-pageerror-title">Modal title</h4>
+                    </div>
+                    <div class="modal-body" id="pageerrorcontent">
+                        <div class="alert alert-danger" role="alert" id="pageerrorcontentmessageholder">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span>
+                            <span id="pageerrorcontentmessage"></span>
+                        </div>
+                        <div class="alert alert-warning" role="alert" id="pageerrorreasonmessageholder">
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Reason:</span>
+                            <span id="pageerrorreasonmessage"></span>
+                        </div>
+                        <div class="panel panel-default" id="pageerrorrequestmessage" style="display: none;">
+                            <div class="panel-heading panel-collapseable"  data-toggle="collapse" data-target="#errorrequestbody">
+                                <h3 class="panel-title">Failed request</h3>
+                            </div>
+                            <div class="panel-body collapse" id="errorrequestbody"></div>
+                        </div>
+                        <div class="panel panel-default" id="pageerrortracemessage" style="display: none;">
+                            <div class="panel-heading panel-collapseable" data-toggle="collapse" data-target="#errortracebody">
+                                <h3 class="panel-title">Error trace</h3>
+                            </div>
+                            <div class="panel-body collapse" id="errortracebody">
+                                <pre id="tracePreData" style="background-color: transparent; color: white; border: 0px solid #000;"></pre>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Modal for page info -->
+        <div class="modal fade" id="dialog-pageinfo" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="dialog-pageinfo-title">Modal title</h4>
+                    </div>
+                    <div class="modal-body" id="pageinfocontent">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            function updateUnreadNotifications(){
+                $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "SystemService.getUnreadNotifications", "id":"SystemService.getUnreadNotifications"}').done(function(data) {
+                    try {
+                        var messages = data.result.data.notifications;
+                        if(messages>0){
+                            $("#unread_notifications").html(messages);
+                            $("#unread_notifications").show();
+                        } else {
+                            $("#unread_notifications").hide();
+                            $("#unread_notifications").html("0");
+                        }
+                    } catch(err){}
+                });
+            }
+            $(document).ready(function() {
+                pidomeRPCSocket.addDefaultCallback(function(thingy) {
+                    $("#servertime").html(thingy.params.time);
+                    $("#serverdate").html(thingy.params.date);
+                }, "SystemService.time");
+                pidomeRPCSocket.addDefaultCallback(function(thingy) {
+                    $("#daypartname").html(thingy.params.name);
+                }, "DayPartService.setDayPart");
+                pidomeRPCSocket.addDefaultCallback(function(thingy) {
+                    $("#presencename").html(thingy.params.name);
+                }, "PresenceService.activateGlobalPresence");
+                pidomeRPCSocket.addDefaultCallback(function(thingy) {
+                    $("#userstatusname").html(thingy.params.name);
+                }, "UserStatusService.setUserStatus");                
+                pidomeRPCSocket.addDefaultCallback(function(thingy) {
+                    updateDeviceByJSONRPC(thingy.params);
+                }, "DeviceService.sendDevice");
+                pidomeRPCSocket.addDefaultCallback(function(thingy) {
+                    $.notify({title: thingy.params.subject.charAt(0).toUpperCase() + thingy.params.subject.slice(1).toLowerCase(),
+                               text: thingy.params.message
+                             }, {
+                                 className: ((thingy.params.type==="OK")?"success":((thingy.params.type==="INFO")?"info":(thingy.params.type==="WARNING")?"warn":"error"))
+                             });
+                    updateUnreadNotifications();
+                }, "NotificationService.sendNotification");
+                updateUnreadNotifications();
+            });
+        </script>
+    </body>
+</html>

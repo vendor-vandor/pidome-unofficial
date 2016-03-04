@@ -1,0 +1,90 @@
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_editdrivers", "Edit drivers", "/driversedit.html");
+    });
+</script>
+<div id="drivereditpanel">
+    <div class="splitter-panel">
+        <table id="driveredittable" class="edittable">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Port</th>
+                    <th>Name</th>
+                    <th>Driver base</th>
+                    <th>Devices</th>
+                </tr>
+            </thead>
+            <tbody>
+                <#list drivercollection?keys as key>
+                <#assign driver = drivercollection[key]>
+                    <tr>
+                        <td>${key}</td>
+                        <td>${(driver.getHardwareDriver().getPort())!""}</td>
+                        <td>${driver.getFriendlyName()}</td>
+                        <td>${driver.getPackageName()}</td>
+                        <td>${driver.getRunningDevicesCount()}</td>
+                    </tr>
+                </#list>
+            </tbody>
+        </table>
+    </div>
+    <div class="splitter-panel" style="overflow-y:scroll;">
+        <div id="drivereditcontent" class="itemeditor" style="width: 610px;"><span class="initialmessage">Click on a driver to set the driver's options.</span></div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function() {
+        
+        $('#drivereditpanel').jqxSplitter({orientation: 'vertical',width: 1000, height: 770, panels: [{size: 340, collapsible: false, collapsed: false}, {size: 660, collapsible: true, collapsed: true }], theme: siteSettings.getTheme()});
+        $("#driveredittable").jqxDataTable({filterable: true, filtermode: 'simple', selectionMode: "singleRow", height: '100%', width: '100%', sortable: true, pageable: true, pageSize: 20, pagerButtonsCount: 5, theme: siteSettings.getTheme(),
+            columns: [
+                {text: 'Id', dataField: 'Id', hidden: true },
+                {text: 'Name', dataField: 'Name', width: 400 },
+                {text: 'Driver base', dataField: 'Driver base'},
+                {text: 'Port', dataField: 'Port', width: 200 },
+                {text: 'Devices', dataField: 'Devices', width: 50}
+            ]
+        });
+        $("#driveredittable").on('rowClick', function(event) {
+            // event args.
+            var args = event.args;
+            // row data.
+            var row = args.row;
+            $('#drivereditpanel').jqxSplitter('expand');
+            clearInternalWidgetHandlers("#drivereditcontent");
+            $('#drivereditcontent').empty();
+            
+            var presentation = new WebPresentation();
+            var getUrl = '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "HardwareService.getSoftwareDriverPresentation", "params": {"port":"'+row.Port+'"} "id":"HardwareService.getSoftwareDriverPresentation"}';
+            var devicesUrl = '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getPeripheralDeclaredDevices", "params": {"peripheralport":"'+row.Port+'"} "id":"DeviceService.getPeripheralDeclaredDevices"}';
+            
+            var callBackCustomFunction = function(funcData){
+                $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.peripheralDeviceFunction", "params": {"peripheralport":"'+row.Port+'","params":'+JSON.stringify(funcData)+'} "id":"DeviceService.peripheralDeviceFunction"}').done(function(resultData) {
+                    showInfoMessage("Function", "Done");
+                    $('#drivereditpanel').jqxSplitter('collapse');
+                    clearInternalWidgetHandlers("#drivereditcontent");
+                    $('#drivereditcontent').empty();
+                    refreshPageContent("/driversedit.html");
+                });
+            };
+            
+            var callBackDeviceFunction = function(funcData){
+                $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.peripheralDeviceFunction", "params": {"peripheralport":"'+row.Port+'","params":'+JSON.stringify(funcData)+'} "id":"DeviceService.peripheralDeviceFunction"}').done(function(resultData) {
+                    showInfoMessage("Device add", "Device added");
+                    $('#drivereditpanel').jqxSplitter('collapse');
+                    clearInternalWidgetHandlers("#drivereditcontent");
+                    $('#drivereditcontent').empty();
+                    refreshPageContent("/driversedit.html");
+                });
+            };
+            presentation.createDataSet(row.Name,getUrl,devicesUrl,'drivereditcontent',callBackCustomFunction,callBackDeviceFunction);
+        });
+
+    });
+    function clearHandlers(){
+        clearInternalWidgetHandlers("#drivereditcontent");
+        $("#drivereditcontent").empty();
+    }
+</script>

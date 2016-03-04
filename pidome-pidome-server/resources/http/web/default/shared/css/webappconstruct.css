@@ -1,0 +1,392 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jan 29, 2014, 8:30:24 PM
+    Author     : John
+*/
+
+#innerscrollmargin { height: 50px; float:left; clear:left; }
+
+#bottombar {
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    z-index: 1050;
+    height: 34px;
+    position: fixed;
+}
+
+#bottombarcontent {
+    z-index: 1050;
+    height: 34px;
+    line-height: 34px;
+    position: relative;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/*
+Body
+*/
+#dashboardmain {
+    float:left;
+    clear:left;
+}
+
+/*
+All the graphs setup
+*/
+.devicechart {}
+
+/* Name - Value pairs */
+.nvp { width: 100%; }
+.nvp .n { width: 49%; float:left; clear:left; }
+.nvp .v { width: 50%; float:left; }
+
+/*
+Item editor in an editor panel for example in plugins or devices etc.
+*/
+.itemeditor .nvp {
+    width: 100%;
+    height: 27px;
+    margin: 0px 0px 7px 0px;
+    //float:left; 
+    ////clear: left;
+}
+.itemeditor .nvp .n {
+    width: 200px;
+    height: 27px;
+}
+.itemeditor .nvp .v {
+    height: 27px;
+}
+.itemeditor .nvp .n span,
+.itemeditor .nvp .n label,
+.itemeditor .nvp .v span {
+    vertical-align: middle;
+}
+.itemeditor .initialmessage {
+    width: 100%;
+    float:left; 
+    margin-top: 100px;
+    text-align: center;
+}
+
+/*
+Page main content 
+*/
+
+.defaultcontent {
+    padding: 10px 12px 10px 12px;
+}
+.defaultcontent h1,.defaultcontent h2,.defaultcontent h3,.defaultcontent h4 {
+    padding-bottom: 1px;
+}
+fieldset {
+    margin: 0px;
+    padding:3px;
+}
+fieldset legend {
+    font-size: 15px;
+}
+
+/*
+Index page markup
+*/
+.systemitemdock {
+    width: 160px;
+    height: 160px;
+}
+.deviceitemdock {
+    width: 200px;
+}
+#favoriteblock {
+    margin-left: 5px;
+}
+#favoriteblock .favoritecontainer {
+    overflow:hidden;
+}
+#newsblock {
+    margin-top: 5px;
+    margin-left: 5px;
+}
+#newsblock .newsblockcontainer{
+    overflow:hidden;
+}
+#knownissuesblock {
+    margin-top: 5px;
+    margin-left: 5px;
+}
+#knownissuesblock .knownissuescontainer {
+    overflow:hidden;
+}
+/*
+devices page setup
+*/
+#devicecontent {
+    margin: 5px;
+}
+.devicecontroltable {
+    width: 100%;
+}
+.devicecontroltable .name {
+    width: 200px;
+}
+.devicecontroltable .name,
+.devicecontroltable .value {
+    height: 32px;
+    line-height: 32px;
+    vertical-align: middle;
+}
+.devicehasdatagraph {
+    float:right;
+    margin-right: 10px;
+}
+.devicehasdatagraph {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+/*
+Media controls page setup
+*/
+#mediacontent {
+    width: 100%;
+    padding: 0px;
+}
+#mediacontent h3 {
+    padding: 0px 0px 3px 3px;
+    margin:0px;
+}
+#mediaplayercontrolframe {
+    float:left; 
+    width:490px;
+}
+#mediaplayercontrolframemaincontrols {
+    width:38px;
+}
+#mediaplayercontrolframebrowsecontrols {
+    width:100px;
+}
+#mediaplayercontrolframemediacontrols {
+    width:300px;
+    height:100%;
+    vertical-align: top; 
+    text-align:left;
+}
+#mediaplayercontrolframevolumecontrols {}
+#mediaplaylistplaylist h3 {
+    margin-top: 3px;
+}
+.mediacontrol img {
+    width: 100%;
+}
+.mediacontrol {
+    padding: 0px;
+}
+.mediacontrol.disabled img {
+    opacity:0.8;
+    filter:alpha(opacity=80);
+}
+#playliststableholder {
+    width: 500px;
+    height: 136px;
+    clear: left;
+}
+/*
+Location and category settings
+*/
+#settingslocationeditor .nvp .n,
+#settingslocationeditor .nvp .v,
+#categorylocationeditor .nvp .n,
+#categorylocationeditor .nvp .v {
+     float:left;
+     height: 27px;
+}
+#settingslocationeditor .nvp .n,
+#categorylocationeditor .nvp .n {
+    width: 100px;
+}
+#settingslocationeditor .nvp .v,
+#categorylocationeditor .nvp .v {
+    width: 260px;
+}
+
+/*
+Macro editor
+*/
+#macrodisplay {
+    height: 779px;
+    overflow: hidden;
+    width: 1000px;
+    position: relative;
+    background-color: #252526;
+}
+
+#macroeditormenu {
+    width: 100%;
+    border-bottom: 1px solid #007acc;
+    height: 104px;
+}
+#macromenubasicinfo,
+#macromenuexeclist {
+    width: 993px;
+    display: inline-block;
+    border: 0;
+    margin-top: 3px;
+    height: 95px;
+}
+
+#macroeditoractionlist {
+    top: 101px;
+    height: 665px;
+    background-color: #252526;
+    background: rgba(37, 37, 38, 0.9);
+    z-index: 10000;
+}
+
+#editoractionlist {
+    position: absolute;
+    top: 101px;
+    height: 665px;
+    background-color: #252526;
+    background: rgba(37, 37, 38, 0.9);
+    z-index: 10000;
+}
+
+#macromenubasicinfo .nvp {
+    width: 45%;
+    clear: none;
+}
+#macromenuexeclist .nvp {
+    width:50%;
+}
+#macromenubasicinfo legend,
+#macromenuexeclist legend {
+    font-weight: bold;
+    border-bottom: 1px solid #007acc;
+    width:100%;
+    cursor: pointer;
+}
+#macromenuexeclist legend {
+    border-top: 1px solid #007acc;
+}
+
+.favoritecontainer {
+    background-color: transparent; 
+    color: #015469;
+}
+.favoritecontainer .favoritehpitem {
+    float:left; margin:10px; width:20%; height:100px;
+}
+.favoritecontainer .favoritehpitem .imgBlock {
+    width: 50px; display: block; margin-left: auto; margin-right: auto;
+}
+.favoritecontainer .favoritehpitem .textBlock {
+    text-align:center;
+}
+
+/* Simple Device WYSIWYG */
+#deviceActionsMenu ul { list-style-type: none; margin: 0; padding: 0; margin-bottom: 10px; }
+#deviceActionsMenu li { margin: 5px; padding: 5px; width: 150px; cursor: move; }
+#deviceActionsMenu { clear: left; float:left; }
+#simpleDeviceEditForm .vis-group { position: relative; margin-bottom: 15px;  }
+#simpleDeviceEditForm .deviceActionsContent {padding: 5px; }
+#simpleDeviceEditForm .vis-button-editor { padding: 5px; margin-bottom: 10px; width: 99%; }
+#simpleDeviceEditForm .vis-button-editor .vis-colorpicker-button-row { float: left; clear:left; border-top: 1px solid #000000; }
+
+
+#deviceXmlEditor { overflow: hidden; width: 100%; }
+
+#deviceDesc { width: 100%; clear:both; }
+#simpleDeviceEditForm { color: #ffffff; }
+#simpleDeviceEditForm p { color: #ffffff; }
+#simpleDeviceEditForm .n { width: 100px; margin-bottom: 3px; }
+#simpleDeviceEditForm .n, #simpleDeviceEditForm .v { padding:2px; margin-bottom: 3px; }
+#deviceActionsComposer { margin-right: 11px; }
+#deviceActionsComposer .deviceActionsField { padding-right: 7px; width:100%; height: 350px; overflow-y: scroll; }
+
+.cpickereditbutton { background-color: #2f2f30; padding: 3px; margin-top: 8px; margin-left: 8px;}
+
+#deviceActionsComposer .groupheader .n,
+#deviceActionsComposer .groupheader .v { height: 25px; line-height: 25px; vertical-align: middle; }
+#simpleDeviceEditForm .vis-button-desc { margin-left: 10px; float: left; clear: left; width: 762px; }
+#simpleDeviceEditForm .vis-button-editor .header { font-size: 1.2em; font-weight: bold; width: 100%; border-bottom: 2px solid #000000; margin-bottom: 3px; height: 28px; line-height: 28px; vertical-align: middle; }
+#simpleDeviceEditForm .vis-button-editor .header button { margin-bottom: 4px; }
+#simpleDeviceEditForm .miniheader { font-size: 1.1em; font-weight: bold; border-bottom: 2px solid #000000; height: 25px; line-height: 25px; vertical-align: middle; }
+
+#simpleDeviceEditForm .colorpickerbuttonset .colorpickerbutton { width: 752px; }
+#simpleDeviceEditForm .colorpickerbutton button { margin-bottom: 4px; }
+
+/*The components in the WYSIWYG*/
+#deviceActionsMenu.fixed{
+    position:fixed;
+    top:140px;
+}
+
+.driversnvp .nvp { width: 100%; clear:left; line-height: normal; height: auto; }
+.driversnvp .nvp .n { width: 30%; line-height: normal; }
+.driversnvp .nvp .v { width: 65%; line-height: normal; }
+
+/** Weather plugin **/
+.weatherpluginicon {
+    height: 148px;
+    position: absolute;
+    top: 0px; left: 0px; right: 0px; bottom: 0px;
+}
+
+/* navbar */
+.navbar-nav > li > a {  padding-top: 0px; padding-bottom: 0px; line-height: 31px; }
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+    border-left-color: #fff;
+}
+
+.dropdown-submenu.pull-left {
+    float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}
+.no-borders>* {
+    border: 0px solid #000;
+}

@@ -1,0 +1,121 @@
+                </div>
+            <div data-role="panel" id="mainmenupanel" data-position="left" data-display="overlay">
+                <ul data-role="listview" id="menuset">
+                    <li><a href="#mainmenupanel" id="menucloser" class="ui-btn-icon-right" data-corners="false" data-icon="carat-l" data-role="button" data-inline="true" data-shadow="false">Close</a></li>
+                    <li id="page_dashboard"><div><img src="/shared/images/mobile/mainmenu/dashboard.png" alt="Dashboard" /></div><span class="active">Dashboard</span></li>
+                    <li id="page_devices"><div><img src="/shared/images/mobile/mainmenu/devices.png" alt="Devices" /></div><span>Devices</span></li>
+                    <li id="page_weather"><div><img src="/shared/images/mobile/mainmenu/weather.png" alt="Weather" /></div><span>Weather</span></li>
+                    <li id="page_media"><div><img src="/shared/images/mobile/mainmenu/media.png" alt="Media" /></div><span>Media</span></li>
+                </ul>
+            </div>
+            <div id="quickrunbox" data-status="closed">
+            </div>
+            <div data-role="popup" id="simplenotification" class="ui-content external-popup">
+                <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+                <div id="simplenotification-message"></div>
+            </div>
+        </div>
+        <script src="/shared/js/libs/mobile/vendor/zepto.min.js"></script>
+        <script src="/shared/js/libs/mobile/helper.js"></script>
+        <script>
+            $(function(){
+                // Define a click binding for all anchors in the page
+                $( "#maincontentpanel a" ).on( "click", function( event ) {
+                        event.preventDefault();
+                });
+                $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MacroService.getFavoriteMacros","id":"MacroService.getFavoriteMacros"}').done(function(data) {
+                    try {
+                        if(data.result.data.length>0){
+                            $("#quickrunbox").empty();
+                        }
+                        for(var i=0;i<data.result.data.length;i++){
+                            var macro = data.result.data[i];
+                            $("#quickrunbox").append('<div class="quickrun-button quickrun-macro" id="runMacro_'+macro.id+'"><img src="/shared/images/mobile/structs/macros/macro-run.png" alt="Run macro"><span class="text">'+macro.name+'</span></div>');
+                        }
+                        $(".quickrun-macro").click(function(){
+                            var buttonPressed = $(this);
+                            buttonPressed.addClass("quickrun-button-highlight");
+                            setTimeout(function(){ 
+                                buttonPressed.removeClass("quickrun-button-highlight"); 
+                                $('#quickrunbox').animate({'top':$("#headercontent").height()-$("#quickrunbox").height()},100);
+                                $('#quickrunbox').attr("data-status", "closed");
+                            }, 200);
+                            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MacroService.runMacro","params": {"id":'+$(this).attr("id").split("_")[1]+'}, "id":"MacroService.runMacro"}').done(function(data) {
+                                showPopUp("Running macro");
+                                setTimeout(function(){ 
+                                    closePupUp();
+                                }, 1500);
+                            });
+                        });
+                    } catch (err){}
+                });
+                $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "ScenesService.getScenes","id":"ScenesService.getScenes"}').done(function(data) {
+                    try {
+                        for(var i=0;i<data.result.data.length;i++){
+                            var scene = data.result.data[i];
+                            $("#quickrunbox").append('<div class="quickrun-button quickrun-scene '+((scene.active===true)?'quickrun-button-highlight':'')+'" id="runScene_'+scene.id+'"><img src="/shared/images/mobile/structs/macros/macro-run.png" alt="Run macro"><span class="text">'+scene.name+'</span></div>');
+                        }
+                        $(".quickrun-scene").click(function(){
+                            var buttonPressed = $(this);
+                            setTimeout(function(){ 
+                                buttonPressed.removeClass("quickrun-button-highlight"); 
+                                $('#quickrunbox').animate({'top':$("#headercontent").height()-$("#quickrunbox").height()},100);
+                                $('#quickrunbox').attr("data-status", "closed");
+                            }, 200);
+                            $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"ScenesService."+(($(this).hasClass("quickrun-button-highlight"))?'deActivateScene':'activateScene')+"\", \"params\":{\"id\":"+$(this).attr("id").split("_")[1]+"},\"id\":\"ScenesService.ScenesService."+(($(this).hasClass("quickrun-button-highlight"))?'deActivateScene':'activateScene')+"\"}").done(function(data) {
+                                showPopUp("Setting/Unsetting scene");
+                                setTimeout(function(){ 
+                                    closePupUp();
+                                }, 1500);
+                            });
+                        });
+                    } catch (err){}
+                });
+                $("#presenceopener").on("click", function(){
+                    if($('#quickrunbox').attr("data-status")==="open"){
+                        $('#quickrunbox').animate({'top':$("#headercontent").height()-$("#quickrunbox").height()},200);
+                        $('#quickrunbox').attr("data-status", "closed");
+                    } else {
+                        $('#quickrunbox').animate({'top':$("#headercontent").height()},200);
+                        $('#quickrunbox').attr("data-status", "open");
+                    }
+                });
+                $("#main-content-body").on("click", function(){
+                    if($('#quickrunbox').attr("data-status")==="open"){
+                        $('#quickrunbox').animate({'top':$("#headercontent").height()-$("#quickrunbox").height()},200);
+                        $('#quickrunbox').attr("data-status", "closed");
+                    }
+                });
+                pidomeRPCSocket.addDefaultCallback(function(thingy) {
+                    $("#servertime").html(thingy.params.time);
+                    $("#serverdate").html(thingy.params.date);
+                }, "SystemService.time");
+                pidomeRPCSocket.addDefaultCallback(function(thingy) {
+                    $("#presencename").html(thingy.params.name);
+                }, "PresenceService.activateGlobalPresence");
+                pidomeRPCSocket.addDefaultCallback(function(thingy) {
+                    $.notify({title: thingy.params.subject.charAt(0).toUpperCase() + thingy.params.subject.slice(1).toLowerCase(),
+                               text: thingy.params.message
+                             }, {
+                                 className: ((thingy.params.type==="OK")?"success":((thingy.params.type==="INFO")?"info":(thingy.params.type==="WARNING")?"warn":"error"))
+                             });
+                }, "NotificationService.sendNotification");
+                pidomeRPCSocket.addDefaultCallback(function(thingy) {
+                    updateDeviceByJSONRPC(thingy.params);
+                }, "DeviceService.sendDevice");
+                pidomeRPCSocket.addCallback(function(thingy) {
+                    try {
+                        if(!$('#runScene_'+thingy.params.id).hasClass("quickrun-button-highlight")){
+                            $('#runScene_'+thingy.params.id).addClass("quickrun-button-highlight");
+                        }
+                    } catch (err) {}
+                }, "ScenesService.activateScene");
+                pidomeRPCSocket.addCallback(function(thingy) {
+                    try {
+                        $('#runScene_'+thingy.params.id).removeClass("quickrun-button-highlight");
+                    } catch (err) {}
+                }, "ScenesService.deActivateScene");
+            });
+        </script>
+    </body>
+</html>

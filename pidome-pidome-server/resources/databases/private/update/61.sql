@@ -1,0 +1,2 @@
+INSERT INTO installed_peripherals ('name','friendlyname','driver','vid','pid','version','type','interface_type','selectable','package') VALUES ('PiDomeCustomSerial','PiDome User custom serial device','org.pidome.driver.peripherals.pidomeNativeSerial','PiDome','UserDefinedSerial','0.0.1','TYPE_SERIAL_CUSTOM','SERIAL',0,1);
+PRAGMA user_version=61;

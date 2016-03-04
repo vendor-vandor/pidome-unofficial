@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" 
+          package="org.pidome.client" 
+          android:versionCode="1"
+          android:versionName="0.1a">
+    <supports-screens android:xlargeScreens="true"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="21"/>
+    <application android:enabled="true" 
+                 android:icon="@drawable/appicon" 
+                 android:allowBackup="false" 
+                 android:label="PiDome" 
+                 android:name="android.support.multidex.MultiDexApplication">
+        <!-- android:name="javafxports.android.FXActivity" /// Original launcher-->
+        <activity 
+            android:name="org.pidome.client.fxactivity.BadBoy"
+            android:label="PiDome" 
+            android:configChanges="orientation|screenSize">
+            <meta-data android:name="main.class" android:value="org.pidome.client.PiDomeClient"/>
+            <meta-data android:name="debug.port" android:value="0"/>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+        <service android:enabled="true" 
+                 android:icon="@drawable/appicon" 
+                 android:stopWithTask="false" 
+                 android:label="PiDome client system service" 
+                 android:name="org.pidome.client.services.aidl.service.SystemServiceAidl" 
+                 android:exported="false"
+                 android:process=":PiDomeClientDetached" />
+        <receiver android:name="org.pidome.client.services.AndroidBootBroadcastReceiver" android:process=":PiDomeClientDetached">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />  
+            </intent-filter>
+        </receiver>
+        <receiver android:name="org.pidome.client.network.connectivity.ConnectionWatchdog" android:label="ConnectionChangeReceiver" android:process=":PiDomeClientDetached">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.wifi.SCAN_RESULTS" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

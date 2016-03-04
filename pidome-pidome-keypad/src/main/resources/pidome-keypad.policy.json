@@ -1,0 +1,4 @@
+{"permissions": [
+        {"type":"org.pidome.server.connector.permissions.UserPresenceControlPermission", "name":"PresenceControl", "action":"control", "reason":"Read users, set presence, store and delete tokens"}
+    ]
+}

@@ -1,0 +1,198 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(3, "page_triggers", "Triggers", "/desktop/triggers.html");
+    });
+</script>
+<p class="defaultcontent">Triggers are going to be fased out. Please move your triggers to the Automation rules where possible, If you find any issues with moving your triggers to the autommation rules please use the triggers section in the forum at: </p>
+<button class="addNewTrigger" name="addTrigger" style="margin-top: 7px;">Add new Trigger</button><p></p>
+<table id="triggeredittable" class="edittable">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Rules</th>
+            <th>Subjects</th>
+            <th>Run actions</th>
+            <th>Occurrence</th>
+            <th>Last run</th>
+            <th>Edit/Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+<button class="addNewTrigger" name="addTrigger" style="margin-top: 10px;">Add new Trigger</button><p></p>
+<div id="innerscrollmargin"></div>
+<div id="dialog-confirm-delete" title="Confirm" style="display:none;">
+    <div>Confirm trigger delete</div>
+    <div></div>
+</div>
+<script>
+    
+    var allTriggerData;
+    
+    $(document).ready(function() {
+        
+        $("#dialog-confirm-delete").jqxWindow({
+            width: 400,
+            height: 150,
+            theme: siteSettings.getTheme(),
+            autoOpen: false,
+            isModal: true
+        });
+        
+        var allTriggersSource = {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int'},
+                { name: 'name', type: 'string'},
+                { name: 'description', type: 'string'},
+                { name: 'occurrence', type: 'string'},
+                { name: 'rules', type: 'int'},
+                { name: 'subjects', type: 'int'},
+                { name: 'lastoccurrence', type: 'string'},
+                { name: 'type', type: 'string'}
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "TriggerService.getTriggers","id":"TriggerService.getTriggers"}',
+            root: "result>data"
+        };
+        var allTriggerData = new $.jqx.dataAdapter(allTriggersSource);
+        
+        $(".addNewTrigger").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+        $(".addNewTrigger").on('click', function () {
+            refreshPageContent('/desktop/trigger.html');
+        });
+        
+        
+        $("#triggeredittable").jqxDataTable({ source: allTriggerData, filterable: true, filtermode: 'simple', selectionMode: "none", height: 620, width: 998, sortable: true, pageable: true, pageSize: 12, pagerButtonsCount: 10, theme: siteSettings.getTheme(),
+            groupsRenderer: function(value, rowData, level){
+                return "Type: " + value;
+            },
+            columns: [
+                {text: 'Id', dataField: 'id', hidden: true},
+                {text: '', width: 60, 
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return '<div><button class="runTriggerButton" name="runTriggerButton" id="triggerrun-'+rowData.id+'-'+row+'">Run</button></div>';
+                    }
+                },
+                {text: 'Name', dataField: 'name', width: 150},
+                {text: 'Description', dataField: 'description'},
+                {text: 'Reccurrence', dataField: 'occurrence', width: 150, 
+                    cellsRenderer: function (row, column, value, rowData) {
+                        switch(value){
+                            case "CONTINUOUS":
+                                return "Always";
+                            break;
+                            case "ONCE":
+                                return "Once since start";
+                            break;
+                            default:
+                                return "Once when true or false";
+                            break;
+                        }
+                    }
+                },
+                {text: 'Rules', dataField: 'rules', width: 50},
+                {text: 'Subjects', dataField: 'subjects', width: 60},
+                {text: 'Last run', dataField: 'lastoccurrence', width: 120},
+                {text: 'Action', width: 130, 
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return '<div><button class="editTriggerButton" name="editTriggerButton" id="triggeredit-'+rowData.id+'">Edit</button>' +
+                                    '<button class="deleteTriggerButton" name="deleteTriggerButton" id="triggerdelete-'+rowData.id+'-'+row+'">Delete</button></div>';
+                    }
+                }
+            ],
+            rendering: function(){
+                    // destroys all buttons.
+                    if ($(".editTriggerButton").length > 0) {
+                        $(".editTriggerButton").jqxButton('destroy');
+                    }
+                    if ($(".deleteTriggerButton").length > 0) {
+                        $(".deleteTriggerButton").jqxButton('destroy');
+                    }
+                    if ($(".runTriggerButton").length > 0) {
+                        $(".runTriggerButton").jqxButton('destroy');
+                    }
+            },
+            rendered: function () {
+                //// Use this to initialize the trigger buttons.
+                try {
+                    $(".editTriggerButton").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".editTriggerButton").on('click', function () {
+                        var trigger = $(this).attr('id').split("-")[1];
+                        refreshPageContent('/desktop/trigger.html?id=' + trigger);
+                    });
+                } catch(error){
+                    /// Nothing to edit.
+                }
+                try {
+                    $(".deleteTriggerButton").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".deleteTriggerButton").on('click', function () {
+                        
+                        var trigger = $(this).attr('id').split("-")[1];
+                        var row = $(this).attr('id').split("-")[2];
+                        var triggerName = $("#triggeredittable").jqxDataTable('getCellValue', row, 'name');
+                        
+                        $("#dialog-confirm-delete").jqxWindow('setTitle','Delete: ' + triggerName);
+                        $("#dialog-confirm-delete").jqxWindow('setContent','<p style="text-align:center;">Are you sure you want to delete trigger "'+triggerName+'"</p>' + 
+                                                                           '<div style="text-align:center;">'+
+                                                                           '    <input type="button" id="dialog-do-delete" value="Yes delete" />'+
+                                                                           '    <input type="button" id="dialog-do-cancel" value="No cancel" />'+
+                                                                           '</div>');
+                        $("#dialog-do-delete").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                        $("#dialog-do-delete").on('click', function () {                
+                            $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"TriggerService.deleteTrigger\", \"params\":{\"id\":"+trigger+"},\"id\":\"TriggerService.deleteTrigger\"}")
+                                .done(function(data) {
+                                    try {
+                                        if(data.result.success !== true){
+                                            showErrorMessage("Triggers", data.result.message);
+                                        } else {
+                                            showInfoMessage("Triggers", "Trigger has been deleted");
+                                            allTriggerData.dataBind();
+                                        }
+                                    } catch(err){
+                                        var message = "<strong>Message</strong>:<br/>";
+                                        if(data.error.data.trace!==undefined){
+                                            message += data.error.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                                        } else {
+                                            message += data.error.data.message;
+                                        }
+                                        showErrorMessage("Server error: " + data.error.message, message);
+                                    }
+                                }, "json");
+                                $("#dialog-confirm-delete").jqxWindow('close');
+                            });
+                            $("#dialog-do-cancel").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                            $("#dialog-do-cancel").on('click', function () {
+                                $("#dialog-confirm-delete").jqxWindow('close');
+                            });
+                            $("#dialog-confirm-delete").jqxWindow('open');
+                        });
+                } catch(error){
+                    
+                }
+                try {
+                    $(".runTriggerButton").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".runTriggerButton").on('click', function () {
+                        var trigger = $(this).attr('id').split("-")[1];
+                        $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"TriggerService.runTrigger\", \"params\":{\"id\":"+trigger+"},\"id\":\"TriggerService.runTrigger\"}")
+                    });
+                } catch(error){
+                    /// Nothing to edit.
+                }
+            }
+        });
+        
+    });
+    function clearHandlers(){
+        clearInternalWidgetHandlers("#triggeredittable");
+    }
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

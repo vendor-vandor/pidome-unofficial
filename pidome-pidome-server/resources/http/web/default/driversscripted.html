@@ -1,0 +1,111 @@
+<div id="pageinfotext" class="popup medium roundedcorners">
+    <p>On this page you will find your own custom written drivers. There is one driver which acts as an example and hence can also not be deleted</p>
+    <p>These drivers are written in ECMAScript also known as javascript. These drivers are handled in a special way but also limited in resources.</p>
+    <p>As this functionality is growing you will at first only have access to data being delivered from hardware which is text based and deliver this data to devices you define with the
+        custom device editor. These kind of drivers for now only are supported by the PiDome Simple Serial driver which only handles text based data.</p>
+    <p>Take a look at the example to get a head start</p>
+    <p>Some small details:</p>
+    <ul>
+        <li>It does not support the DOM model, so you can not call any browser related functions</li>
+        <li>Support is based on ECMAScript version 5.1</li>
+    </ul>
+    <p>Possible driver statuses:</p>
+    <ul><li><span class="label label-warning">Unknown</span>: Always unknown as we are in test fase</li></ul>
+</div>
+<div id="scripteddrivers-toolbar" style="width:100%;">
+    <h2 style="margin-top:0px; margin-bottom: 0px; float:left;">Custom drivers</h2>
+    <!-- <button type="button" class="btn btn-info" style="float:left; margin-left: 25px;" id="mutationAddNewDevice">Create new Custom Driver</button> -->
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <table id="scripteddrivers" class="table table-striped table-hover"
+                       data-toolbar="#scripteddrivers-toolbar"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-search="true"                       
+                       data-sort-name="name"
+                       data-sort-order="asc"
+                       data-pagination="true">
+                    <thead>
+                        <tr>
+                            <th data-field="active" data-width="100" data-formatter="statusFormatter">Status</th>
+                            <th data-field="id" data-width="75">ID</th>
+                            <th data-field="name" data-width="150" data-sortable="true">Name</th>
+                            <th data-field="description">Description</th>
+                            <th data-field="driver">Based on</th>
+                            <th data-field="action" data-width="245" data-formatter="actionFormatter">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    
+    function statusFormatter(value, row){
+        return '<span class="label label-warning">Unknown</span>';
+    }
+    
+    function actionFormatter(value, row, index){
+        var container = "";
+        if(row.fixed===false){
+            container += '<button class="btn btn-danger delete-driver" id="deleteCustomDriver-'+row.id+'-'+index+'" style="float:right;">Delete</button>';
+        } else {
+            container += '<button class="btn btn-danger" style="float:right;" disabled="disabled">Delete</button>';
+        }
+        //if(row.editable===true){
+            container += '<button class="btn btn-info edit-driver" style="float:right; margin-right: 5px;" id="editCustomDriver-'+row.id+'" value="'+row.id+'">Edit</button>';
+        //} else {
+        //    container += '<button class="btn btn-info" style="float:right; margin-right: 5px;" disabled="disabled">Edit</button>';
+        //}
+        return container;
+    }
+    
+    function setButtonHandlers(){
+        $(".delete-driver").off('click').on("click", function(){
+            var driverId = $(this).attr('id').split("-")[1];
+            var driverData = getTableRowData("#scripteddrivers", $(this).attr('id').split("-")[2]);
+            yesnoConfirmation('Remove custom driver', '<p>Are you sure you want to delete <strong>'+driverData.name+'</strong>?</p>', 
+                function(){
+                    getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"HardwareService.getScriptedDrivers\", \"params\": ["+driverId+"], \"id\": \"DeviceService.deleteDevice\"}",function(data) {
+                        quickMessage("success", '<strong>' + driverData.name + '</strong> has been deleted');
+                        $('#scripteddrivers').bootstrapTable("refresh",{ silent: true });
+                    });
+                },
+            "Remove", "Cancel");
+        });
+        $(".edit-driver").off('click').on('click', function () {
+            var driver = $(this).attr('id').split("-")[1];
+            window.location.href = ("/driverscriptededitor.html?id=" + driver);
+        });
+    }
+    
+    $('#scripteddrivers').bootstrapTable({
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "HardwareService.getScriptedSoftwareDrivers","id":"HardwareService.getScriptedSoftwareDrivers"}',
+        cache: false,
+        height: 707,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        },
+        onLoadSuccess: function (data) {
+            setButtonHandlers();
+        },
+        onPostBody : function(){
+            setButtonHandlers();
+        }
+    });
+    
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_editscripteddrivers", "Driver scripts", "/driversscripted.html");
+        setPageTitleDescription("Create your own drivers using ECMAScript (Javascript)");
+        preparePageInfo();
+    });
+</script>

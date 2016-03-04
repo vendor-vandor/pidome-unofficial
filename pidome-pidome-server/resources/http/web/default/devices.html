@@ -1,0 +1,180 @@
+<div id="pageinfotext">
+    All your devices<br/>
+    <br/>
+    On this page you will find all your devices. You can search for devices if you have a large list.<br/>
+    On the right side you will see the controls which you have configured as shortcut controls. You can use these to control your devices without opening them. To view more controls if available
+    click on Open.<br/>
+    <br/>
+    A good example is the "The PiDome Server self" device. It shows two shortcut controls. By opening this device you get access to all the controls and the available graphs.
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="devicestable-toolbar" style="align:right;">
+                    <h2 style="margin:0px;">Devices</h2>
+                </div>
+                <table id="devicestable" class="table table-striped table-hover"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-search="true"
+                       data-toolbar="#devicestable-toolbar"
+                       data-sort-name="locationname"
+                       data-sort-order="asc"
+                       data-pagination="true">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-width="80">ID</th>
+                            <th data-field="action" data-width="80" data-formatter="deviceOpener"></th>
+                            <th data-field="status" data-formatter="statusVisualizer" data-width="80">Status</th>
+                            <th data-field="locationname" data-width="250" data-sortable="true">Location</th>
+                            <th data-field="name" data-sortable="true">Name</th>
+                            <th data-field="shortcuts" data-formatter="shortcutters" data-width="330">Quick controls</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+
+        <div id="devicegraphwindowpopup">
+            <div>
+                <span style="float:left;"><img width="16" height="16" src="/shared/images/icons/graphicon.png" alt="Graph" /></span>
+                &nbsp;Device graph
+            </div>
+            <div>
+                <div>
+                    <div id="graphWindow"></div>
+                </div>
+                <div>
+                    <div style="width:100%;">
+                        <input type="button" id="closegraphwindow-ok" value="Close window" style="margin-left: auto; margin-right:auto;margin-top:5px;" />
+                    </div>
+                </div>
+            </div>
+        </div>  
+
+<script>
+    
+    var globalDeviceData = [];
+    
+    function statusVisualizer(value){
+        if(value==="warning") {
+            return '<span class="label label-warning">Warning</span>';
+        } else if (value==="error"){
+            return '<span class="label label-danger">Error</span>';
+        } else if (value==="dead"){
+            return '<span class="label label-danger">Dead</span>';
+        } else if (value==="control_timeout"){
+            return '<span class="label label-warning">Timeout</span>';
+        } else {
+            return '<span class="label label-success">Ok</span>';
+        }
+    }
+    
+    function shortcutters(value, row){
+        return '<div id="shortcutsdevice-'+row.id+'" class="shortcutsdevicefromlisting" style="width:330px;"></div>';
+        updateDeviceVisuals(row.id);
+    }
+    
+    function deviceOpener(value, row){
+        return '<button class="btn btn-info opendevicefromlisting" id="opendevice-'+row.id+'">Open</button>';
+    }
+    
+    $('#devicestable').bootstrapTable({
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getActiveDevices", "id":"DeviceService.getActiveDevices"}',
+        cache: false,
+        height: 720,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        },
+        onLoadSuccess: function (data) {
+            globalDeviceData = data;
+            updateDeviceVisuals();
+        },
+        onPostBody : function(){
+            updateDeviceVisuals();
+        }
+    });
+    
+    function updateDeviceVisuals(){
+        $(".opendevicefromlisting").off("click").on("click", function(){
+            openDevice($(this).attr("id").split("-")[1]);
+        });
+        for(var i=0;i<globalDeviceData.length;i++){
+            var deviceData = globalDeviceData[i];
+            composeDeviceVisuals('shortcutsdevice-'+deviceData.id, deviceData, false, true);
+        }
+    }
+    
+    $('#devicegraphwindowpopup').jqxWindow({
+        theme: siteSettings.getTheme(), height: 400, width: 650,position: 'center',
+        resizable: true, isModal: true, modalOpacity: 0.3,autoOpen: false,
+        okButton: $('#closegraphwindow-ok'),
+        initContent: function () {
+            $('#closegraphwindow-ok').jqxButton({ width: '130px',theme: siteSettings.getTheme() });
+        }
+    });
+    
+    function openDevice(id){
+        getHttpJsonRPC('{"jsonrpc": "2.0", "method": "DeviceService.getDevice", "params": {"id":' + id + '} "id":"DeviceService.getDevice"}', function(deviceData) {
+        simpleDialog(deviceData.name, '<div class="devicedescriptionbox" style="clear:left;">\n\
+<h3 class="whiteheader devicegroup">Details</h3>\n\
+<table class="devicecontroltable">\n\
+<tbody>\n\
+    <tr>\n\
+        <td class="name">Location</td><td>: '+deviceData.locationname+'</td>\n\
+    </tr>\n\
+    <tr>\n\
+        <td class="name">Category</td><td>: '+deviceData.categoryname+'</td>\n\
+    </tr>\n\
+    <tr>\n\
+        <td class="name">Favorite</td><td>: '+((deviceData.favorite===true)?"Yes":"No")+'</td>\n\
+    </tr>\n\
+    <tr>\n\
+        <td class="name">Last data received</td><td>: '+deviceData.lastreceive+'</td>\n\
+    </tr>\n\
+    <tr>\n\
+        <td class="name">Last data send</td><td>: '+deviceData.lastsend+'</td>\n\
+    </tr>\n\
+    <tr>\n\
+        <td class="name">Status</td><td>: '+statusVisualizer(deviceData.status)+' ' + ((deviceData.status)!=="ok"?' ' + deviceData.statustext :'') + '</td>\n\
+    </tr>\n\
+</tbody>\n\
+</table>\n\
+</div>\n\
+<form id="deviceActionForm">\n\
+<table class="devicecontroltable" id="devicecontroltable" style="width:100%;">\n\
+\n\
+</table>\n\
+<input type="hidden" name="deviceActionDeviceId" id="deviceActionDeviceId" value="'+deviceData.id+'"/></form>', function(){ return true; });    
+        composeDeviceVisuals('devicecontroltable', deviceData, true, false);
+        });
+    }
+    
+    
+    
+    $(document).ready(function () {
+        setPageBreadcrumbs(1, "page_devicecontrol", "Devices", "/devices.html");
+        setPageTitleDescription("Overview of your device and control them.");
+        preparePageInfo();
+        if($.urlParam('deviceLink')!==null){
+            openDevice($.urlParam('deviceLink'));
+        }
+    });
+    
+    pidomeRPCSocket.addCallback(function(thingy) {
+        $('#devicestable').bootstrapTable("refresh",{ silent: true });
+    }, "DeviceService.addDevice");
+
+    pidomeRPCSocket.addCallback(function(thingy) {
+        $('#devicestable').bootstrapTable("refresh",{ silent: true });
+    }, "DeviceService.deleteDevice");
+    
+</script>

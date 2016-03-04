@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin type="media">
+    <commandset>
+        <group id="controls" label="Control your xbmc">
+            <button id="ServerCommand.UP" shortcut="false" value="ServerCommand.UP" label="Up" />
+            <button id="ServerCommand.DOWN" shortcut="false" value="ServerCommand.DOWN" label="Down" />
+            <button id="ServerCommand.LEFT" shortcut="false" value="ServerCommand.LEFT" label="Left" />
+            <button id="ServerCommand.RIGHT" shortcut="false" value="ServerCommand.RIGHT" label="Right" />
+            <button id="ServerCommand.CONFIRM" shortcut="false" value="ServerCommand.CONFIRM" label="Select" />
+            <button id="ServerCommand.OSD" shortcut="false" value="ServerCommand.OSD" label="Show OSD" />
+            <button id="ServerCommand.BACK" shortcut="false" value="ServerCommand.BACK" label="Back" />
+            <button id="ServerCommand.HOME" shortcut="false" value="ServerCommand.HOME" label="Home" />
+            <button id="ServerCommand.VOLUP" shortcut="false" value="ServerCommand.VOLUP" label="Volume up" />
+            <button id="ServerCommand.MUTE" shortcut="false" value="ServerCommand.MUTE" label="Mute/Unmute" />
+            <button id="ServerCommand.VOLDOWN" shortcut="false" value="ServerCommand.VOLDOWN" label="Volume down" />
+        </group>
+        <group id="playercontrols" label="Control the player">
+            <button id="PlayerCommand.STOP" shortcut="false" value="PlayerCommand.STOP" label="Stop" />
+            <button id="PlayerCommand.PLAY" shortcut="false" value="PlayerCommand.PLAY" label="Play" />
+            <button id="PlayerCommand.PAUSE" shortcut="false" value="PlayerCommand.PAUSE" label="Pause" />
+            <button id="PlayerCommand.PREV" shortcut="false" value="PlayerCommand.PREV" label="Previous" />
+            <button id="PlayerCommand.NEXT" shortcut="false" value="PlayerCommand.NEXT" label="Next" />
+        </group>
+    </commandset>
+</plugin>

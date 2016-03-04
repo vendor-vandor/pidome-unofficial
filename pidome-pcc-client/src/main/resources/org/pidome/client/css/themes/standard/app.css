@@ -1,0 +1,936 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jul 20, 2015, 11:03:46 AM
+    Author     : John
+*/
+.root {
+     
+    -dark: rgb(58.0, 58.0, 58.0);
+    -red: rgb(237.0, 68.0, 37.0);
+    -blue: rgb(0.0, 184.0, 222.0);
+    -soft-white: #F5F5F5;
+    -white-gradient: linear-gradient(-soft-white, #d0d0d0);
+    -border-white: -soft-white;
+    
+    -fx-default-app-box-shadow: dropshadow(three-pass-box, #000000, 10, 0, 0, 0);
+    
+    -fx-default-app-components-background: #262728;
+    -fx-default-app-border-color: #000;
+    
+    -fx-default-app-text-color: #d5d6d7;
+    -fx-default-app-text-color-transparent: #d5d6d799;
+    -fx-default-app-text-shadow: dropshadow(one-pass-box, rgba(0,0,0,0.7), 2, 1.0 , 1, 1);
+    
+    -fx-default-app-background-color: #101012;
+    
+    -fx-default-app-tile-background-color: #0098d7;
+    -fx-default-app-tile-selected-background-color: #ed4425;
+    
+    -fx-default-app-color-mark: #d56909;
+    
+    -fx-default-app-list-border: #3f3f41;
+    
+    -fx-default-full-component-header-color: #0098d7;
+    -fx-default-full-component-header-border-color: #0098d7;
+    
+    -border-menu-item: #474747;
+    -color-active: #007acc;
+    -color-mark: #d56909;
+    
+    -control-color-off: #a75c5c;
+    -control-color-off-border: #7e4545;
+    -control-color-on: #5ca76d;
+    -control-color-on-border: #457e52;
+    -control-color-pressed: -color-active;
+    -control-color-pressed-border: -color-active;
+    
+    -native-control-active-color: #35b8e2;
+    -native-control-active-color-transparent: #35b8e288;
+    -native-control-inactive-color: #959595;
+    -native-control-inactive-color-transparent: #95959588;
+    -native-control-default-color: #404040;
+    -native-control-default-color-border: #606060;
+    
+    -fx-text-base-color: rgb(252.0, 240.0, 237.0);
+    -fx-text-fill: -fx-text-base-color;
+    
+    
+}
+
+.app-content {
+    -fx-background-color: -fx-default-app-background-color;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Text                                                                        *
+ *                                                                             *
+ ******************************************************************************/
+.text {
+    -fx-text-fill: -fx-text-base-color;
+    -fx-fill: -fx-text-base-color;
+}
+///// A glyph icon is a text;
+.glyph-icon{
+    -fx-fill: -soft-white;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * Label                                                                       *
+ *                                                                             *
+ ******************************************************************************/
+
+.label {
+    -fx-text-fill: -fx-text-base-color;
+}
+
+.label:disabled {
+    -fx-opacity: -fx-disabled-opacity;
+}
+
+.label:show-mnemonics > .mnemonic-underline {
+    -fx-stroke: -fx-text-base-color;
+} 
+
+.text {
+    -fx-effect:dropshadow(gaussian, rgb(0.0, 0.0, 0.0, 0.2), 0.0, 0.0, 0.0, 1.0); 
+}
+/*******************************************************************************
+ *                                                                             *
+ * Button & ToggleButton                                                       *
+ *                                                                             *
+ ******************************************************************************/
+ 
+.toggle-button, .button{
+    -fx-background-color: -red;
+    -fx-text-fill: -fx-text-base-color;
+}
+
+.toggle-button:focused,
+.button:focused,
+.button:default:focused {
+    -fx-background-color: derive(-red, 50.0%);
+}
+
+.toggle-button:focused:selected {
+    -fx-background-color: derive(-red, 50.0%), derive(-red, -20.0%);
+}
+
+.toggle-button:armed,
+.toggle-button:selected,
+.button:armed,
+.button:default:armed {
+    -fx-background-color: derive(-red, -20.0%);
+}
+ 
+/*******************************************************************************
+ *                                                                             *
+ * TextField & TextArea                                                        *
+ *                                                                             *
+ ******************************************************************************/
+
+.text-area , .text-field {
+    -fx-background-color: white;
+    -fx-prompt-text-fill: derive(-dark, 50.0%);
+    -fx-highlight-fill: rgb(94.0, 203.0, 234.0);
+}
+
+.text-area .text, .text-field > * > .text {
+    -fx-effect: null; 
+    -fx-fill: -dark;
+}
+
+.text-area .content {
+    -fx-background-color: transparent;
+}
+
+.text-area:focused  .content {
+     -fx-background-color: transparent;
+}
+
+.text-area:focused, .text-field:focused {
+    -fx-background-color: -blue, derive(rgb(94.0, 203.0, 234.0), 80.0%);
+}
+
+.scroll-bar:vertical > .track-background,
+.scroll-bar:horizontal > .track-background{
+    -fx-background-color: derive(rgb(94.0, 203.0, 234.0), 50.0%);
+}
+
+.scroll-bar:vertical > .thumb,
+.scroll-bar:horizontal > .thumb {
+    -fx-background-color: -blue;
+}
+
+.scroll-bar > .increment-button, 
+.scroll-bar > .decrement-button,
+.scroll-bar:hover > .increment-button, 
+.scroll-bar:hover > .decrement-button {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar > .increment-button > .increment-arrow,
+.scroll-bar > .decrement-button > .decrement-arrow {
+    -fx-background-color: white;
+}
+
+.scroll-bar > .track-background{
+    -fx-background-color:transparent;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * ComboBox                                                                    *
+ *                                                                             *
+ ******************************************************************************/
+//.combo-box-base {
+//    -fx-skin: "com.guigarage.flatterfx.skin.FlatterComboBoxSkin";
+//}
+
+.popup-overlay {
+    -fx-background-color: -red;
+    -fx-border-color: -red, rgb(255.0, 255.0, 255.0, 0.6);
+    -fx-border-width: 8.0;
+    -fx-background-radius:20.0;
+    -fx-border-radius:15.5, 15.5;
+}
+
+.title-bar {
+    -fx-padding: 10;
+}
+
+.title-bar .icon {
+    -fx-alignment: center-left;
+    -fx-effect:dropshadow(gaussian, rgb(0.0, 0.0, 0.0, 0.2), 0.0, 0.0, 0.0, 1.0); 
+}
+
+.title-bar .title-label {
+    -fx-padding: 0 10 0 10;
+    -fx-alignment: center;
+    -fx-font-size: 36;
+    -fx-font-weight: bolder;
+}
+
+.content-area {
+    -fx-background-color: -dark;
+}
+
+
+.content-background {
+    -fx-background-color: -red;
+    -fx-background-radius:0.0 0.0 11.0 11.0;
+    -fx-padding: 0 10 10 10;
+}
+
+
+/*******************************************************************************
+ *                                                                             *
+ * ChoiceBox                                                                   *
+ *                                                                             *
+ ******************************************************************************/
+.combo-box-base,
+.choice-box {
+    -fx-background-color: -red;
+    -fx-background-insets:  0.0;
+    -fx-background-radius: 2.0;
+    -fx-border-width: 0.0;
+}
+
+.combo-box-base > .label,
+.choice-box > .label {
+    -fx-padding:0.7em 1.7em 0.7em 0.7em;
+    -fx-text-fill: -dark;
+}
+
+.combo-box-base > .arrow-button, 
+.choice-box > .open-button {
+    -fx-padding: 1.2em 0.7em 1.2em 0.5em;
+    -fx-background-radius: 0.0 2.0 2.0 0.0;
+}
+
+.combo-box-base:focused,
+.choice-box:focused{
+    -fx-background-color: derive(-red, 10.0%); 
+}
+
+.combo-box-base > .arrow-button > .arrow,
+.choice-box > .open-button > .arrow {
+    -fx-background-color: white;
+    -fx-padding: 0.2em;
+    -fx-effect:dropshadow(gaussian, rgb(0.0, 0.0, 0.0, 0.2), 0.0, 0.0, 0.0, 1.0); 
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: -soft-white; 
+}
+
+.combo-box-popup .list-view .list-cell .text {
+    -fx-fill: -dark;
+}
+
+.combo-box-popup .list-view .list-cell:hover, .combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover {
+    -fx-background: -soft-white;
+    -fx-background-color: -color-active;
+}
+
+.combo-box-popup .list-view .list-cell:hover .text, .combo-box-popup .list-view .list-cell:filled:hover .text, .combo-box-popup .list-view .list-cell:filled:selected .text, .combo-box-popup .list-view .list-cell:filled:selected:hover .text {
+    -fx-fill: -soft-white;
+} 
+
+
+.context-menu {
+    -fx-background-color: rgb(255.0, 255.0, 255.0, 0.95);
+    -fx-background-radius: 2.0;
+}
+
+.context-menu .label {
+    -fx-text-fill: -dark;
+}
+
+.radio-menu-item:checked > .left-container > .radio, 
+.check-menu-item:checked > .left-container > .check {
+    -fx-background-color: -dark;
+    -fx-shape: "m 269.9,233.66286 c 0.15,-0.12 1.97,1.7 2.54,3.1 2.3,-7.33 4.09,-9.1 6.79,-12.1 1.5,-0.25 2.4,-0.27 4.36,0.11 -7.1,5.8 -8.8,16.7 -9.9,17.8 l -0.75,0.02 c 0,0 -2.36,-5.24 -5.6,-7.38 -0.27,-0.17 0.02,-1.5 -0.2,-1.6 z";
+    -fx-padding: 0.68em 0.5em 0.0em 0.0em;
+    -fx-effect: dropshadow(gaussian, rgb(0.0, 0.0, 0.0, 0.2), 0.0, 0.0, 0.0, 1.0); 
+}
+
+.radio-menu-item > .left-container > .radio, 
+.check-menu-item > .left-container > .check {
+    -fx-background-color: transparent;
+    -fx-shape: "m 269.9,233.66286 c 0.15,-0.12 1.97,1.7 2.54,3.1 2.3,-7.33 4.09,-9.1 6.79,-12.1 1.5,-0.25 2.4,-0.27 4.36,0.11 -7.1,5.8 -8.8,16.7 -9.9,17.8 l -0.75,0.02 c 0,0 -2.36,-5.24 -5.6,-7.38 -0.27,-0.17 0.02,-1.5 -0.2,-1.6 z";
+    -fx-padding: 0.68em 0.68em 0.0em 0.0em;
+}
+
+.menu-item:focused {
+    -fx-background-color: rgb(94.0, 203.0, 234.0);
+}
+
+
+/*******************************************************************************
+ *                                                                             *
+ * CheckBox                                                                    *
+ *                                                                             *
+ ******************************************************************************/
+
+.check-box {
+    -fx-text-fill: -fx-text-base-color;
+}
+
+.check-box > .box,
+.check-box > .box.unfocused,
+.check-box:disabled > .box,
+.check-box:selected > .box,
+.check-box:indeterminate > .box {
+    -fx-background-radius: 2.0;
+    -fx-background-color: -fx-text-base-color;
+}
+
+.check-box:focused > .box {
+    -fx-background-color: -blue, derive(rgb(94.0, 203.0, 234.0), 80.0%);
+    -fx-background-insets: 0.0, 0.15em;
+}
+
+.check-box:focused:armed > .box {
+    -fx-background-color: -blue, derive(-fx-text-base-color, 80.0%);
+    -fx-background-insets: 0.0, 0.15em;
+}
+
+.check-box:selected > .box > .mark,
+.check-box:indeterminate > .box > .mark {
+    -fx-background-color: -dark;
+}
+
+.check-box:indeterminate > .box > .mark {
+    -fx-background-insets: -0.06em -0.17em -0.07em -0.17em;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * RadioButton                                                                 *
+ *                                                                             *
+ ******************************************************************************/
+
+.radio-button {
+    -fx-text-fill: -fx-text-base-color;
+}
+
+.radio-button > .radio,
+.radio-button > .radio.unfocused,
+.radio-button:disabled > .radio,
+.radio-button:selected > .radio {
+    -fx-background-color: -fx-text-base-color;
+    -fx-padding: 0.4em;
+}
+
+.radio-button:focused > .radio {
+    -fx-background-color: -blue, derive(rgb(94.0, 203.0, 234.0), 80.0%);
+    -fx-background-insets: 0.0, 0.15em;
+    -fx-padding: 0.4em;
+}
+
+.radio-button:focused:armed > .radio {
+    -fx-background-color: -blue, derive(-fx-text-base-color, 80.0%);
+    -fx-background-insets: 0.0, 0.15em;
+}
+
+.radio-button:selected > .radio > .dot {
+    -fx-background-color: -dark;
+}
+
+
+/*******************************************************************************
+ *                                                                             *
+ * ProgressBar                                                                 *
+ *                                                                             *
+ ******************************************************************************/
+
+.progress-bar > .track {
+    -fx-background-color: -fx-text-base-color;
+    -fx-background-radius: 2.0;
+    -fx-padding: 0.0;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: -blue;
+    -fx-background-radius: 2.0;
+    -fx-background-insets: 0.0;
+    -fx-border-width: 0.0;
+    -fx-effect: null;
+}
+
+.progress-bar:indeterminate > .bar {
+    -fx-background-color: derive(-blue, 50.0%);
+    -fx-background-radius: 2.0;
+    -fx-background-insets: 0.0;
+    -fx-border-width: 0.0;
+    -fx-effect: null;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * ProgressIndicator                                                           *
+ *                                                                             *
+ ******************************************************************************/
+
+.progress-indicator > .determinate-indicator > .indicator {
+    -fx-background-color: rgb(255.0, 255.0, 255.0, 0.5);
+    -fx-padding: 0.0;
+}
+
+.progress-indicator > .determinate-indicator > .progress {
+    -fx-background-color:  -blue,  derive(-blue, 50.0%);
+    -fx-background-insets: 0.0, 0.4em;
+    -fx-padding: 1.0em;
+}
+
+.progress-indicator > .determinate-indicator > .percentage {
+    -fx-fill: white;
+    -fx-translate-y: -2.4em;
+    -fx-padding: 0.0;
+}
+
+.progress-indicator > .indeterminate-indicator > .segment {
+   -fx-background-color: rgb(0.0, 183.0, 221.0); 
+   -fx-scale-x: 0.05em;
+   -fx-scale-y: 0.05em;
+}
+/*
+.progress-indicator:indeterminate .segment {
+    -fx-shape:"M 71.079865,1.4240656 A 12.821762,12.821762 0 0 1 58.258103,14.245828 l -10e-7,-12.8217624 z";
+    -fx-scale-shape: false;
+}
+
+.progress-indicator:indeterminate .segment0 {
+     -fx-translate-x: -0.7em;
+     -fx-translate-y: -0.03em;
+}
+
+.progress-indicator:indeterminate .segment1 {
+    -fx-rotate: 90;
+    -fx-translate-x: 0.177em;
+    -fx-translate-y: -1.333em;
+    
+}
+
+.progress-indicator:indeterminate .segment2 {
+    -fx-rotate: 180;
+    -fx-translate-x: 1.5em;
+    -fx-translate-y: -0.5em;
+}
+
+.progress-indicator:indeterminate .segment3 {
+    -fx-rotate: 270;
+    -fx-translate-x: 0.67em;
+    -fx-translate-y: 0.8em;
+     
+}
+.progress-indicator:indeterminate .segment4 {-fx-shape:null;}
+.progress-indicator:indeterminate .segment5 {-fx-shape:null;}
+.progress-indicator:indeterminate .segment6 {-fx-shape:null;}
+.progress-indicator:indeterminate .segment7 {-fx-shape:null;} */
+
+
+/*******************************************************************************
+ *                                                                             *
+ * Planes                                                                      *
+ *                                                                             *
+ ******************************************************************************/
+
+//.app-content {
+//    -fx-effect: innershadow(one-pass-box, rgba(0,0,0,0.5), 5, 0, 0, 5);
+//}
+
+//.app-content > * {
+//    -fx-effect: null;
+//}
+
+/**
+ ** Application menu bar
+ **/
+.menu-bar {
+    -fx-background-color: -fx-default-app-components-background;
+    -fx-border-color: transparent transparent -fx-default-app-tile-background-color transparent;
+}
+/// Be aware that the menu icon is text or image based.
+.menu-bar .menu-icon {
+    -fx-fill: -soft-white;
+}
+
+.menu-bar .title {
+    -fx-fill: -soft-white;
+}
+
+.menu-bar .main-menu-button {
+    
+}
+
+.menu-bar .main-menu-button.active {
+    -fx-background-color: -fx-default-app-tile-background-color;
+}
+
+//// Main context menu
+.main-menu {
+    -fx-background-color: #32373c;
+    -fx-border-color: transparent derive(#32373c, 25%) derive(#32373c, 25%) derive(#32373c, 25%);
+    -fx-border-width: 0, 1, 0, 0;
+    -fx-effect: -fx-default-app-box-shadow;
+}
+
+.main-menu .header {
+    -fx-border-color: transparent transparent -border-white transparent;
+    -fx-background-color: -fx-default-app-tile-background-color;
+}
+
+.main-menu .menu-title {
+    -fx-fill: -fx-default-app-text-color;
+    -fx-effect: -fx-default-app-text-shadow;
+    -fx-border-width: 0, 0, 1, 0;
+    -fx-border-color: -fx-default-app-border-color;
+}
+
+.main-menu .menu-block {
+    -fx-border-color: transparent transparent -fx-default-app-list-border transparent;
+}
+.main-menu .menu-block:pressed {
+    -fx-background-color: -color-mark;
+}
+.main-menu .menu-block:pressed .menu-block-title {
+    -fx-fill: -fx-default-app-text-color;
+}
+.main-menu .menu-block:pressed .menu-block-icon {
+    -fx-fill: -fx-default-app-text-color;
+}
+.main-menu .menu-block .menu-block-icon {
+    -fx-fill: derive(-fx-default-app-text-color, -30%);
+}
+
+.main-menu .menu-block .menu-block-title {
+    -fx-fill: derive(-fx-default-app-text-color, -25%);
+}
+
+.main-menu .menu-block.active .menu-block-icon {
+    -fx-fill: -fx-default-app-text-color;
+}
+
+.main-menu .menu-block.active .menu-block-title {
+    -fx-fill: -fx-default-app-text-color;
+}
+
+/**
+ ** The user/client identification section
+ **/
+.who-am-i {
+    -fx-background-color: -fx-default-app-tile-background-color;
+    -fx-border-width: 0, 0, 1, 0;
+    -fx-border-color: transparent transparent derive(-fx-default-app-tile-background-color, 25%) transparent;
+    -fx-effect: dropshadow(three-pass-box, black, 2, 0.0, 0, 1);
+}
+
+.who-am-i .photo-background {
+    -fx-background-color: -fx-default-app-components-background;
+}
+
+.who-am-i .my-name {
+    
+}
+
+.footer-container {
+    -fx-background-color: -fx-default-app-tile-background-color;
+    -fx-border-width: 1, 0, 0, 0;
+    -fx-border-color: derive(-fx-default-app-tile-background-color, 25%) transparent transparent transparent;
+    -fx-effect: dropshadow(three-pass-box, black, 2, 0.0, 0, -1);
+}
+
+.footer-container .icon-background {
+    -fx-background-color: -fx-default-app-components-background;
+}
+
+.footer-container .icon-background:pressed {
+    -fx-background-color: -color-mark;
+}
+
+/**
+ ** We use a scrollpane for some lists. Setting the viewport to transparent gives us 
+ ** control back to .list-view-root { -fx-background-color: whatever; } (which is a root scrollpane for content scrolling)
+ **/
+.list-view-root {
+    -fx-background-color: transparent;
+}
+.list-view-root > .viewport {
+   -fx-background-color: transparent;
+}
+
+.custom-list-view {
+    -fx-background-color: transparent;
+} 
+
+.custom-list-view.large {
+    -fx-background-color: transparent;
+} 
+
+.custom-list-view .list-item {
+    -fx-border-color: transparent transparent -fx-default-app-list-border transparent;
+} 
+
+.custom-list-view .list-item-pressable:pressed {
+    -fx-background-color: -color-active;
+} 
+
+.custom-list-view .list-item-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent transparent -border-white;
+}
+
+.custom-list-view .list-item-button:pressed {
+    -fx-background-color: -color-active;
+}
+
+.custom-list-view.large {
+    -fx-border-color: transparent -fx-default-app-list-border transparent transparent;
+    -fx-border-width: 0 2 0 0;
+}
+
+.custom-list-view.large.first {
+    -fx-background-color: -fx-default-app-background-color;
+}
+
+.custom-list-view.large.second {
+    -fx-background-color: -fx-default-app-components-background;
+    -fx-effect: innershadow(one-pass-box, rgba(0,0,0,0.5), 5, 0, 5, 0);
+}
+
+.custom-list-view .list-cell {
+    -fx-background-color: transparent;
+}
+
+.custom-list-view .list-cell .text {
+    -fx-text-fill: -fx-text-base-color;
+    -fx-fill: -fx-text-base-color;
+}
+
+.custom-list-view .list-cell:filled:selected:focused, .custom-list-view .list-cell:filled:selected {
+    -fx-background-color: -color-active;
+}
+
+.custom-list-view .list-cell:filled:hover {
+    -fx-background-color: derive(-red, -20.0%);
+}
+
+.custom-list-view.nohover .list-cell:hover {
+    -fx-background-color: null;
+}
+
+.custom-list-view.nohover .list-cell:filled:hover {
+    -fx-background-color: -color-active;
+}
+
+.custom-list-header {
+    -fx-background-color: -fx-default-app-components-background;
+    -fx-border-color: -fx-default-app-list-border transparent -fx-default-app-border-color transparent;
+}
+.custom-list-header .text {
+    -fx-fill: -fx-text-base-color;
+}
+
+.device-control .glyph-icon {
+    -fx-fill: -soft-white;    
+}
+
+.device-control .control-name {
+    -fx-fill: -fx-default-app-text-color;
+}
+
+.full-component-large {
+    -fx-effect: innershadow(one-pass-box, rgba(0,0,0,0.5), 5, 0, 5, 0);
+}
+
+.full-device .controls-group-name {
+    -fx-border-color: transparent transparent -fx-default-full-component-header-border-color transparent;
+    -fx-fill: -fx-default-full-component-header-color;
+}
+
+.device-control-data .control-data {
+    -fx-fill: -fx-default-app-text-color;
+}
+.device-control-data .control-prefix {
+    -fx-fill: -fx-default-app-text-color;
+}
+.device-control-data .control-suffix {
+    -fx-fill: -fx-default-app-text-color;
+}
+
+.device-control .button {
+    -fx-background-color: -native-control-default-color;
+    -fx-border-color: -native-control-default-color-border;
+}
+
+.device-control-toggle {
+    -fx-background-color: -control-color-off;
+    -fx-text-fill: -fx-default-app-text-color;
+}
+
+.device-control-toggle.active {
+    -fx-background-color: -control-color-on;
+}
+
+.full-device > .text {
+    -fx-text-fill: -fx-default-app-text-color;
+}
+
+//// Media
+.media-interface-pane .media-navigation-pane,
+.media-interface-pane .media-volume-pane,
+.media-interface-pane .media-extras-pane,
+.media-interface-pane .media-player-pane,
+.media-interface-pane .media-item-visualizer {
+    -fx-background-color: #10101066;
+}
+
+.media-interface-pane .media-item-visualizer {
+    -fx-border-color: transparent transparent -soft-white transparent;
+}
+.media-interface-pane .media-item-visualizer .label {
+    -fx-effect: dropshadow(three-pass-box, #101010, 2, 0.0, 0, 1);
+}
+.media-interface-pane .media-player-pane {
+    -fx-border-color: -soft-white transparent transparent transparent;
+}
+.media-interface-pane .media-nav-button {
+    -fx-effect: dropshadow(three-pass-box, black, 2, 0.0, 0, 1);
+}
+
+.media-player-pane.large {
+    -fx-border-color: -fx-default-app-list-border transparent transparent transparent;
+}
+.media-interface-pane.large .media-navigation-pane,
+.media-interface-pane.large .media-volume-pane,
+.media-interface-pane.large .media-extras-pane,
+.media-interface-pane.large .media-player-pane,
+.media-interface-pane.large .media-item-visualizer {
+    -fx-background-color: transparent;
+}
+
+.media-item-visualizer.large .media-item-title,
+.media-item-visualizer.large .media-item-title-artist,
+.media-item-visualizer.large .media-item-album,
+.media-item-visualizer.large .media-item-duration {
+    -fx-effect: -fx-default-app-text-shadow;
+}
+.media-item-visualizer.large .media-info-container {
+    -fx-background-color: #101012AA;
+}
+
+/**
+ ** User presences
+ **/
+.visual-user-container {
+    -fx-background-color: -fx-default-app-tile-background-color;
+}
+
+.visual-user-container.present {
+    -fx-opacity: 1;
+}
+
+.visual-user-container.away {
+    -fx-opacity: 0.8;
+}
+
+/**
+ ** Scenes list
+ **/
+.list-item.scene-item:pressed {
+    -fx-background-color: -color-mark;
+}
+
+.scene-item .icon {
+    visibility: hidden;
+}
+.scene-item .icon.active {
+    visibility: visible;
+    -fx-fill: -color-active;
+}
+
+/**
+ ** Macros list
+ **/
+.list-item.macro-item:pressed {
+    -fx-background-color: -color-mark;
+}
+
+.macro-item .icon {
+    visibility: hidden;
+}
+
+.macro-item:pressed .icon {
+    visibility: visible;
+    -fx-fill: -color-active;
+}
+
+/**
+ ** Floor map
+ **/
+
+.floormap .map-container {
+    
+}
+
+.floormap .floor-list {
+    -fx-border-color: transparent -native-control-default-color-border transparent transparent;
+}
+
+.floormap .floor-layers {
+    -fx-border-color: transparent transparent transparent -native-control-default-color-border;
+}
+
+.floormap .floors-control {
+    -fx-border-color: -native-control-default-color-border transparent transparent transparent;
+}
+
+.floormap .header {
+    -fx-font-size: 1.2em;
+    -fx-border-color: transparent transparent #00669d transparent;
+}
+
+.floormap .floor-list Label,
+.floormap .floor-layers Label {
+    -fx-border-color: transparent transparent transparent transparent;
+}
+
+.floormap .floor-list  .selected,
+.floormap .floor-layers .selected {
+    -fx-background-color: #00669d;
+    -fx-border-color: #0085cd transparent #0085cd transparent;
+    -fx-text-fill: #D7D8DA;
+}
+.floormap .floor-layers .disabled {
+    -fx-text-fill: #D7D8DA50;
+}
+
+.device-discovery .list-view-root {
+    -fx-border-color: transparent -native-control-default-color-border transparent transparent;
+}
+
+.device-discovery .disabled {
+    -fx-fill: -red;
+}
+
+.device-discovery .enabled {
+    -fx-fill: -control-color-on;
+    -fx-text-fill: -control-color-on;
+}
+
+///// Discovery
+.discovered-device.known-device {
+    -fx-background-color: #62c462;
+}
+
+.discovered-device.unknown-device {
+    -fx-background-color: #f89406;
+}
+
+/**
+ ** Popup
+ **/
+.popup-base {
+    -fx-background-color: -dark;
+    -fx-border-color: rgb(93.0, 93.0, 93.0);
+}
+.popup-base .header {
+    -fx-border-color: transparent transparent rgb(93.0, 93.0, 93.0) transparent;
+}
+
+.popup-base.popup-error {
+    -fx-background-color: #6f0a0a;
+    -fx-border-color: derive(#6f0a0a, 25%);
+}
+
+////// Graphs stuff
+.chart {
+    -fx-background-color: transparent;
+}
+.chart-content {
+    -fx-background-color: transparent;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-title {
+  -fx-text-fill: -fx-text-base-color;
+}
+ 
+.chart-legend {
+   -fx-text-fill: -fx-text-base-color;
+   -fx-background-color:  transparent;
+}
+
+.axis-label {
+  -fx-text-fill: -fx-text-base-color;
+}
+
+.axis {
+    -fx-tick-label-fill: -fx-text-base-color;
+}
+ .chart-horizontal-grid-lines {
+    -fx-stroke-width: 1px;
+    -fx-effect: null;
+    -fx-stroke: #626367; 
+}
+.chart-series-line,
+.chart-series-area-line {    
+    -fx-stroke-width: 2px;
+}
+.chart-series-area-line { 
+    -fx-stroke: #2b7d7d; 
+}
+
+.default-color0.chart-series-line { -fx-stroke: #2b7d7d; }
+.default-color0.chart-line-symbol { -fx-background-color: #2b7d7d; }
+.default-color0.chart-series-symbol { -fx-background-color: transparent }

@@ -1,0 +1,55 @@
+<package collection="pidome-server-devices" version="0.1" enabled="true">
+    <author>
+        <createdby>PiDome</createdby>
+        <name>John Sirach</name>
+        <email>john.sirach@gmail.com</email>
+        <website>http://pidome.org</website>
+    </author>
+    <decription>These drivers and devices are made by PiDome for native support of the PiDome created devices and services. Besides this this package will also support al lot of third party devices and services out of the box</decription>
+    <delivers>
+        <devices>
+            <device version="0.1" devicedriver="org.pidome.driver.device.pidomeServerDevice" enabled="true" driver="org.pidome.driver.driver.nativeServerDriver">
+                <description>This device is used for displaying server data on the clients</description>
+                <originates>
+                    <manufacturer>PiDome (John Sirach)</manufacturer> 
+                    <devicename>PiDome Server</devicename>
+                </originates>
+            </device>
+            <device version="0.1" devicedriver="org.pidome.driver.device.nativeAB400S" enabled="true" driver="org.pidome.driver.driver.nativePT2262BasicDriver">
+                <description>This is the Elro (Flamingo) device driver fot the native 433Mhz proxy</description>
+                <originates>
+                    <manufacturer>Flamingo (ELRO)</manufacturer> 
+                    <devicename>AB 400S</devicename>
+                </originates>
+            </device>
+            <device version="0.1" devicedriver="org.pidome.driver.device.nativeSelectRemoteAL7901" enabled="true" driver="org.pidome.driver.driver.nativePT2262BasicDriver">
+                <description>This is the SELECTREMOTE AL-7901 sold by the Blokker/Action etc..</description>
+                <originates>
+                    <manufacturer>SELECTREMOTE</manufacturer> 
+                    <devicename>SELECTREMOTE AL-7901</devicename>
+                </originates>
+            </device>
+            <device version="0.1" devicedriver="org.pidome.driver.device.aidenGedenkPlek" enabled="true" driver="org.pidome.driver.driver.nativeRfDriver">
+                <description>Onze gedenkplek</description>
+                <originates>
+                    <manufacturer>PiDome (John Sirach)</manufacturer> 
+                    <devicename>None, personal</devicename>
+                </originates>
+            </device>
+            <device version="0.1" devicedriver="org.pidome.driver.device.i2cLtsLc" enabled="true" driver="org.pidome.driver.driver.nativeDefaultI2CDriver">
+                <description>Arduino UNO based control of the Adafruit Neopixel Ledstrip. Does also temperature and lux readings, used with I2C</description>
+                <originates>
+                    <manufacturer>PiDome (Marcel Wiebenga)</manufacturer> 
+                    <devicename>I2C Test device</devicename>
+                </originates>
+            </device>
+            <device version="0.1" devicedriver="org.pidome.driver.device.bareboneI2CDevice" enabled="true" driver="org.pidome.driver.driver.nativeDefaultI2CDriver">
+                <description>This is a mediator device. it is used to create devices based on merely XML without any programmatic based driver.</description>
+                <originates>
+                    <manufacturer>PiDome (John Sirach)</manufacturer> 
+                    <devicename>I2C Barebonce mediator device driver</devicename>
+                </originates>
+            </device>
+        </devices>
+    </delivers>
+</package>

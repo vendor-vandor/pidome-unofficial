@@ -1,0 +1,27 @@
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>console</headerType>
+  <jar>PiDome_JavaFX_Client.jar</jar>
+  <outfile>dist\pidome-client.exe</outfile>
+  <errTitle>PiDome Client launch error</errTitle>
+  <cmdLine></cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>https://jdk8.java.net/download.html</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>false</stayAlive>
+  <manifest></manifest>
+  <icon>C:\Users\John\Documents\dev\pidome\clients\pidome-client\resources\images\app\app.ico</icon>
+  <singleInstance>
+    <mutexName>PiDome Client Running Instance</mutexName>
+    <windowTitle>PiDome Client</windowTitle>
+  </singleInstance>
+  <jre>
+    <path></path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <minVersion>1.8.0</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <opt>-Djava.net.preferIPv4Stack=true -Djavafx.autoproxy.disable=true</opt>
+  </jre>
+</launch4jConfig>

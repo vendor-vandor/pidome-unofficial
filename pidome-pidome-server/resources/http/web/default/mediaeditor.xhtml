@@ -1,0 +1,161 @@
+<div style=" padding: 0px 5px 0px 5px;">
+    <#if !installed_id?? && !media_id??>
+        <h2>Add media plugin</h2>
+        <p>Add a new media plugin here. The above part shows the default plugin options to make it work in the server. Optional is that below the default options
+            plugin options are shown specific for the plugin self.</p>
+        <div class="nvp">
+            <div class="n">
+                Select your media device
+            </div>
+            <div class="v">
+                <div id="installed_id"></div>
+            </div>
+        </div>
+        <script>
+                var adapterSource = {
+                    datatype: "json",
+                    localdata: [{'id':0,'name':'Select...'},<#list pluginlist?keys as pluginKey>{'id':${pluginKey}, 'name':'${pluginlist[pluginKey].name}'},</#list>],
+                    datafields: [
+                        { name: 'id' },
+                        { name: 'name' }
+                    ]
+                };
+                var pluginsAdapter = new $.jqx.dataAdapter(adapterSource);
+                $("#installed_id").jqxDropDownList({ source: pluginsAdapter, displayMember: "name", valueMember: "id", selectedIndex: 0, width: '250', height: '25', theme: siteSettings.getTheme()});
+                $("#installed_id").on('select', function (event) {
+                    if (event.args) {
+                        var item = event.args.item;
+                        if (item) {
+                            $('#mediaeditcontent').empty();
+                            $('#mediaeditcontent').load("/mediaeditor.xhtml?installed_id=" + item.value + "&ajax=true" );
+                        }
+                    }
+                });
+        </script>
+    <#else>
+        <#if installed_id??>
+            <h2>Add media plugin</h2>
+            <p>Add a new media plugin here. The above part shows the default plugin options to make it work in the server. Optional is that below the default options
+                plugin options are shown specific for the plugin self.</p>
+        <#else>
+            <h2>Edit media plugin</h2>
+            <p>Edit the media plugin here. The above part shows the default plugin options to make it work in the server. Optional is that below the default options
+                plugin options are shown specific for the plugin self.</p>
+        </#if>
+        <div style="float:left; clear: left; width:100%;">
+            <h3>Base configuration</h3>
+            <div class="nvp">
+                <div class="n">
+                    <span>Plugin</span>
+                </div>
+                <div class="v">
+                    <span>${plugin.getBaseName()}</span>
+                </div>
+            </div>
+            <div class="nvp">
+                <div class="n">
+                    <label for="plugin_name">Name</label>
+                </div>
+                <div class="v">
+                    <input type="text" name="plugin_name" id="plugin_name" value="${plugin.getPluginName()}" />
+                </div>
+            </div>
+            <div class="nvp">
+                <div class="n">
+                    <label for="plugin_desc">Description</label>
+                </div>
+                <div class="v">
+                    <input type="text" name="plugin_desc" id="plugin_desc" value="${plugin.getPluginDescription()}" />
+                </div>
+            </div>
+            <div class="nvp">
+                <div class="n">
+                    <label for="plugin_fav">Favorite</label>
+                </div>
+                <div class="v">
+                    <div id="plugin_fav"></div>
+                </div>
+            </div>            
+            <div class="nvp">
+                <div class="n">
+                    <label for="plugin_location">Location</label>
+                </div>
+                <div class="v">
+                    <div id="plugin_location"></div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function() {
+                createWebInputField($('#plugin_name'));
+                createWebInputField($('#plugin_desc'));
+                var adapterSource = {
+                     datatype: "json",
+                     localdata: [<#list locations as location>{'id':${location.id}, 'name':'${location.name}'},</#list>],
+                     datafields: [
+                         { name: 'id' },
+                         { name: 'name' }
+                     ]
+                 };
+                 var locationsAdapter = new $.jqx.dataAdapter(adapterSource);
+                 $("#plugin_location").jqxDropDownList({ source: locationsAdapter, displayMember: "name", valueMember: "id", width: '250', height: '25', theme: siteSettings.getTheme()});
+                 var item = $("#plugin_location").jqxDropDownList('getItemByValue', ${plugin.getPluginLocationId()});
+                 $("#plugin_location").jqxDropDownList('selectItem', item );
+                var adapterFavoriteSource = {
+                    datatype: "json",
+                    localdata: [{'id':'true', 'name':'Yes'},{'id':'false', 'name':'No'}],
+                    datafields: [
+                        { name: 'id' },
+                        { name: 'name' }
+                    ]
+                };
+                var favoriteAdapter = new $.jqx.dataAdapter(adapterFavoriteSource);
+                $("#plugin_fav").jqxDropDownList({ source: favoriteAdapter, displayMember: "name", valueMember: "id", width: '250', height: '25', theme: siteSettings.getTheme()});
+                var yesno = $("#plugin_fav").jqxDropDownList('getItemByValue', ${plugin.getIsFavorite()?c});
+                $("#plugin_fav").jqxDropDownList('selectItem', yesno );
+            });
+        </script>
+        <div style="float:left; clear: left; width:100%;">
+            <#assign configurationSets=plugin.getConfiguration()>
+            <#assign configSetsList=configurationSets.getOptions()>
+            <div id="optionCollection">
+                <#list configSetsList as configSet>
+                    <h3>${configSet.getConfigurationSetTitle()}</h3>
+                    <#if configSet.getConfigurationSetDescription()??><p>${configSet.getConfigurationSetDescription()}</p></#if>
+                    <#assign optionsList = configSet.getOptions()>
+                    <#list optionsList as option>
+                        <div class="nvp">
+                            <div class="n">
+                                <label for="mediaOption_${option.getId()}">${option.getOptionName()}</label>
+                            </div>
+                            <div class="v">
+                                <input type="text" data-inputtype="${option.getFieldType()}" name="mediaOption_${option.getId()}" id="mediaOption_${option.getId()}" value="${(option.getValue())!""}" />
+                            </div>
+                        </div>
+                        <script>
+                            $(document).ready(function() {
+                                $("#mediaOption_${option.getId()}").jqxTooltip({ content: '${option.getOptionDescription()}', position: 'top', name: 'optiontooltip', theme: siteSettings.getTheme()});
+                                createWebInputField($("#mediaOption_${option.getId()}"));
+                            });
+                        </script>
+                    </#list>
+                </#list>
+            </div>
+        </div>
+        <button id="save_media" name="save_media" value="Save Media plugin">Save Media plugin</button>
+    </div>
+        <script>
+            $(document).ready(function() {
+                $("#save_media").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+                $("#save_media").on('click', function () {
+                    saveMediaPlugin();
+                });
+            });
+        </script>
+    </#if>
+    <#if installed_id??>
+        <input type="hidden" name="installed_id" id="installed_id" value="${installed_id}" />
+    </#if>
+    <#if media_id??>
+        <input type="hidden" name="media_id" id="media_id" value="${media_id}" />
+    </#if>

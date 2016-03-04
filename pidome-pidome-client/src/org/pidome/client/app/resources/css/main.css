@@ -1,0 +1,176 @@
+.root {
+    -fx-font-family: "Free Sans";
+    -fx-background-size: stretch;
+}
+.button {
+    -fx-line-spacing: -3px;
+}
+
+.button Text {
+    -fx-line-spacing: -3px;
+}
+
+.label {
+    -fx-line-spacing: -3px;
+}
+.devicesdisplay .catagorybar {
+    -fx-font-size: 1.2em;
+}
+
+.error-message .date {
+    -fx-font-size: 1.2em;
+}
+.error-message .message {
+    -fx-font-size: 2em;
+}
+.error-message .submessage{
+    -fx-font-size: 1.2em;
+}
+
+#tabbed .maintitle {
+    -fx-font-size: 1.6em;
+}
+
+#tabbed .toggle-button {
+    -fx-padding: 0;
+}
+
+#NotificationBar {
+    -fx-padding: 0;
+    -fx-background-size: stretch;
+}
+
+#NotificationBar .presencetime {
+    -fx-font-size: 1.5em;
+}
+
+.smallselectlist .title {
+    -fx-font-size:1.8em;
+    -fx-font-weight: bold;
+}
+.smallselectlist .item.selected {
+    -fx-font-weight: bold;
+}
+
+.smallselectlist .optiontitle {
+    -fx-font-size:1.3em;
+}
+
+.appsettings .sectiontitle {
+    -fx-font-size:1.4em;
+}
+.appsettings .sectionheader {
+    -fx-font-size:1.2em;
+}
+/*
+The console if shown
+*/
+#Console {
+    -fx-background-color: #161616;
+    -fx-text-fill: white;
+    -fx-display-caret: false;
+}
+
+/*
+Device list window
+*/
+.deviceslist label {
+    -fx-font-size: 1.1em;
+}
+
+/*
+The listedWindow styles display
+*/
+.categorylist .categorybar {
+    -fx-font-size: 1.1em;
+}
+
+/*
+Default windowing style
+*/
+.windowbase {
+    /* -fx-border-color: #202020; */
+}
+.windowtitle {
+    -fx-font-size: 1.2em;
+}
+
+#userpresencedisplay .name {
+    -fx-font-size: 1.6em;
+}
+
+/*
+Default style for sliders
+*/
+.slider .track {
+    -fx-padding: 1;
+}
+.slider .thumb {
+    -fx-padding: 7.5;
+}
+
+.windowcontent .slider .thumb {
+    -fx-padding: 13;
+}
+
+.devicedisplay .devicenamebar {
+    -fx-font-size: 1.1em;
+}
+.devicedisplay .locationname {
+    -fx-font-size: 1.5em;
+}
+.devicedisplay .devicename {
+    -fx-font-size: 1.5em;
+}
+.devicedisplay .groupname {
+    -fx-font-size: 1.2em;
+}
+.devicedisplay .descheader {
+    -fx-font-size: 1.2em;
+}
+.colorpickerwindow .currentcolorheader {
+    -fx-font-size: 1.2em;
+}
+
+.colorpickerwindow .selectiontext {
+    -fx-font-size: 1.2em;
+}
+/*
+Th container at the bottom
+*/
+#BottomBar .button{
+    -fx-padding: 10 20 10 20;
+}
+
+/*
+Base dialog styles
+*/
+#BaseDialog .button {
+    -fx-padding: 12 30 12 30;
+}
+
+#messageswindow .readdetailbox .label,
+#messageswindow .writedetailbox .label {
+    -fx-font-size: 1.1em;
+}
+
+#mediaplayer .title {
+    -fx-font-size: 1.1em;
+}
+
+#pidomeremote {
+  -fx-border-radius: 2em 2em 2em 2em;
+  -fx-background-radius: 2em 2em 2em 2em;
+  -fx-background-color: #202021;
+  -fx-border-color: #3e3e42;
+}
+
+#pidomeremote .remotetoptitle {
+    -fx-border-color: transparent transparent #d46809 transparent;
+}
+
+#pidomeremote .remotebutton {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-font-weight: bold;
+}

@@ -1,0 +1,270 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<input type="hidden" name="default_lat" value="${latitude}" />
+<input type="hidden" name="default_lon" value="${longitude}" />
+<div id="pageinfotext" class="popup medium roundedcorners">
+    <p>On this page you have an overview of users known by the system. Here you can set various user options like:</p>
+    <ul>
+        <li>Full name</li>
+        <li>Passwords and reset</li>
+        <li>View mobile devices known for this user</li>
+        <li>Set presence options on how users are detected</li>
+        <li>When enabled user localizations (GPS)</li>
+        <li>Throttle user data when not connecting through WIFI</li>
+    </ul>
+    <p>Possible user statusses:<br/>
+        <br/>
+        <span class="label label-success">Home</span> This user is present<br/>
+        <br/>
+        <span class="label label-warning">Away</span> This user is not present<br/>
+        <br/>
+        <span class="label label-danger">Unknown</span> Unknown status, mostly there is no presence detectable device or access token or the server has just started and none of these have been used.<br/>
+    </p>
+</div>
+
+<div id="known-users-toolbar">
+    <h2 style="margin-top:0px; margin-bottom: 0px; float:left;">Known users</h2>
+    <button class="btn btn-info" id="adduserbutton" style="float:left; margin-left: 10px;">Add user</button>
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-8">
+                <table id="clientstable" class="table table-striped table-hover"
+                       data-toolbar="#known-users-toolbar"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-search="true">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-visible="false"></th>
+                            <th data-field="firstname" data-visible="false"></th>
+                            <th data-field="lastname" data-visible="false"></th>
+                            <th data-field="devices" data-visible="false"></th>
+                            <th data-field="admin" data-visible="false"></th>
+                            
+                            <th data-field="presence" data-width="80" data-formatter="presenceFormatter">Present</th>
+                            <th data-field="clientname" data-width="150">Username</th>
+                            <th data-field="firstname" data-formatter="fullNameFormatter">Name</th>
+                            <th data-field="distance" data-width="100" data-formatter="distanceFormatter">Where</th>
+                            <th data-field="lastlogin" data-width="150">Since</th>
+                            <th data-field="action" data-width="150" data-formatter="actionFormatter">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-md-4">
+                <h2 style="margin-top:10px; margin-bottom: 10px;">Localization map</h2>
+                <div style="width:100%; height:300px; border: 1px solid #1f1f1f; margin-top: 5px;" id="locationmapholder">
+                    <div id="locationmap" class="smallmap" style="width:100%; height:300px;"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<div id="dialog-confirm-delete" title="Confirm" style="display:none;">
+    <div>Confirm event delete</div>
+    <div></div>
+</div>
+<script src="../shared/js/libs/openstreetmap/ol.js"></script>
+<script>
+
+$("#adduserbutton").off("click").on("click", function (){
+    refreshPageContent("/desktop/peopleedit.html");
+});
+
+function presenceFormatter(value, row){
+    if(row.admin===true){
+        return 'Not used';
+    } else {
+        return getGlobalUserPresenceForThisPage(value);
+    }
+}
+    
+function fullNameFormatter(value, row){
+    return row.firstname + " " + row.lastname;
+}
+
+function trueFalseFormatter(value, row){
+    return (value===true)?"Yes":"No";
+}
+
+function distanceFormatter(value, row){
+    return (value/1000).toFixed(2) + " km";
+}
+
+function actionFormatter(value, row){
+    if(row.clientname!=="admin"){
+        return '<button class="btn btn-info edit-user" id="edituser-'+row.id+'">Edit</button> <button class="btn btn-danger delete-user" id="deleteuser-'+row.id+'">Delete</button>';
+    }
+}
+var thisPageGlobalPresenceTypes = [];
+
+function getGlobalUserPresenceForThisPage(id){
+    for(var i=0; i < thisPageGlobalPresenceTypes.length; i++){
+        if(thisPageGlobalPresenceTypes[i].id===id){
+            if(id===1){
+                return '<span class="label label-success">'+thisPageGlobalPresenceTypes[i].name+'</span>';
+            } else {
+                return '<span class="label label-warning">'+thisPageGlobalPresenceTypes[i].name+'</span>';
+            }
+        }
+    }
+    return '<span class="label label-danger">Unknown</span>';
+}
+
+$('#clientstable').bootstrapTable({
+    cache: false,
+    height: 354,
+    toolbarAlign: 'left',
+    responseHandler: function(data){
+        var workData = returnResultData(data);
+        return workData;
+    },
+    onLoadSuccess: function (data) {
+        $(".delete-user").off('click').on("click", function(){
+            var personId = $(this).attr('id').split("-")[1];
+            yesnoConfirmation('Remove user', '<p>Are you sure you want to delete this user?</p>', 
+                function(){
+                    getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"UserService.removeUser\", \"params\": ["+personId+"] \"id\": \"UserService.removeUser\"}",function(data) {
+                        clearAllUserDataFields();
+                        $('#clientstable').bootstrapTable("refresh",{ silent: true });
+                    });
+                },
+            "Remove", "Cancel");
+        });
+        $(".edit-user").off('click').on("click", function(){
+            var personId = $(this).attr('id').split("-")[1];
+            window.location.href = "/desktop/peopleedit.html?user=" + personId;
+        });
+    },
+    onClickRow: function (row) {
+        getHttpJsonRPC('{"jsonrpc": "2.0", "method": "UserService.getUser", "params": {"id":'+row.id+'}, "id":"UserService.getUser"}', function(data){
+            var workData = data;
+            if(workData.lastLatLon.lastLon!=0 && workData.lastLatLon.lastLat!=0){
+                if(workData.present==false){
+                    setMapLocation(map, workData.lastLatLon.lastLat, workData.lastLatLon.lastLon, workData.lastLatLon.lastAcc, 16);
+                } else {
+                    setMapLocation(map, ${latitude}, ${longitude}, 10, 14);
+                }
+            } else {
+                setMapLocation(map, ${latitude}, ${longitude}, 10, 14);
+            }
+            
+        });
+    }
+});
+
+function setMapLocation(map, lat, lon, acc, zoom){
+    map.removeLayer(currentProximityLayer);
+    map.getView().setCenter(ol.proj.transform([lon, lat], 'EPSG:4326', 'EPSG:3857'));
+    map.getView().setZoom(zoom);
+    positionFeature.setGeometry(new ol.geom.Point(map.getView().getCenter()));
+    currentProximityLayer = drawRadiusAccuracy(map, acc);
+    map.addLayer(currentProximityLayer);
+}
+
+var currentProximityLayer;
+
+var view = new ol.View({
+  center: [${latitude}, ${longitude}],
+  zoom: 1,
+  units: "m"
+});
+
+var map = new ol.Map({
+  layers: [
+    new ol.layer.Tile({
+      source: new ol.source.OSM()
+    })
+  ],
+  target: 'locationmap',
+  interactions: ol.interaction.defaults({DragAndDrop:false}),
+  controls: ol.control.defaults({
+    attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
+      collapsible: false
+    })
+  }),
+  view: view
+});
+
+var drawRadiusAccuracy = function(map, radius) {
+    var radius = (radius / ol.proj.METERS_PER_UNIT.m);
+    var center = map.getView().getCenter();
+
+    var circle = new ol.geom.Circle(center, radius);
+    var circleFeature = new ol.Feature(circle);
+
+    // Source and vector layer
+    var vectorSource = new ol.source.Vector({
+        projection: 'EPSG:4326'
+    });
+    vectorSource.addFeature(circleFeature);
+    var vectorLayer = new ol.layer.Vector({
+        source: vectorSource
+    });
+
+    return vectorLayer;
+}
+
+var positionFeature = new ol.Feature();
+positionFeature.setStyle(new ol.style.Style({
+  image: new ol.style.Circle({
+    radius: 6,
+    fill: new ol.style.Fill({
+      color: '#3399CC'
+    }),
+    stroke: new ol.style.Stroke({
+      color: '#fff',
+      width: 2
+    })
+  })
+}));
+
+var featuresOverlay = new ol.FeatureOverlay({
+  map: map,
+  features: [positionFeature]
+});
+
+$(document).ready(function() {
+    
+    $("#dialog-confirm-delete").jqxWindow({
+        width: 400,
+        height: 150,
+        theme: siteSettings.getTheme(),
+        autoOpen: false,
+        isModal: true
+    });
+});    
+
+getHttpJsonRPC('{"jsonrpc": "2.0", "method": "PresenceService.getPresences", "id":"PresenceService.getPresences"}', function(data){
+    for(var i=0; i < data.length; i++){
+        thisPageGlobalPresenceTypes.push({'id':data[i].id, 'name':data[i].name});
+    }
+    $('#clientstable').bootstrapTable("refresh",{ url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserService.getUsers", "id":"UserService.getUsers"}', silent: true });
+});
+
+pidomeRPCSocket.addCallback(function(thingy) {
+    $('#clientstable').bootstrapTable("refresh",{ silent: true });
+}, "UserService.setUserPresence");
+
+
+pidomeRPCSocket.addCallback(function(thingy) {
+    $('#clientstable').bootstrapTable("refresh",{ silent: true });
+    if(thingy.params.id == currentUser){
+        setMapLocation(map, thingy.params.lat, thingy.params.lon, thingy.params.acc, 16);
+    }
+}, "UserService.updateLocation");
+    
+setPageBreadcrumbs(2, 'page_people', "${page_title}", "/desktop/people.html");
+setPageTitleDescription("Server user management");
+preparePageInfo();
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

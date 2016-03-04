@@ -1,0 +1,111 @@
+.root { 
+    display: block;
+    -fx-text-fill: white;
+    -fx-font-family: "Free Sans";
+}
+
+.label {
+    -fx-text-fill: white;
+}
+
+.text {
+    -fx-fill: white;
+    -fx-font-smoothing-type: lcd;
+    -fx-line-spacing: -3px;
+}
+
+.appTitle {
+    -fx-font-family: "QuicksandBold-Regular";
+    -fx-font-size: 5.5em;
+    -fx-fill: linear-gradient(white, #d0d0d0);
+}
+
+.bootTitleDesc {
+    -fx-font-family: "QuicksandBold-Regular";
+    -fx-font-size: 1.2em;
+    -fx-fill: linear-gradient(white, #d0d0d0);
+}
+
+#BootScreen {
+    -fx-background-image: url("preloader.jpg");
+    -fx-background-repeat: stretch;   
+    -fx-background-position: center center;
+    -fx-border-color: rgba(255,255,255,0.8);
+}
+
+.BootTopBox {
+    -fx-border-color: rgba(0,0,0,0) rgba(255,255,255,0.8) rgba(255,255,255,0.8) rgba(0,0,0,0);
+    -fx-background-color: #000000;
+}
+
+.bootTopText {
+    -fx-font-size: 1em;
+    -fx-fill: lightgrey;
+}
+
+.BootBottomBox {
+    -fx-border-color: rgba(255,255,255,0.8) rgba(0,0,0,0) rgba(0,0,0,0) rgba(0,0,0,0);
+    -fx-background-color: #000000;
+}
+
+.BootBottomBoxText {
+    -fx-fill: lightgrey;
+    -fx-font-size: 0.9em;
+}
+
+.bootTitleHeader {
+    -fx-text-fill: linear-gradient(white, #f0f0f0);
+    -fx-effect: dropshadow( one-pass-box , rgba(0, 0, 0, 0.9) , 0, 0.0 , 0 , 1 );
+}
+
+.bootTitleDesc {
+    -fx-text-fill: linear-gradient(white, #f0f0f0);
+    -fx-effect: dropshadow( one-pass-box , rgba(0, 0, 0, 0.9) , 0, 0.0 , 0 , 1 );
+}
+
+.progress-bar {
+    -fx-background-color: -fx-box-border,
+                          linear-gradient(to bottom, derive(-fx-color,30%) 5%, derive(-fx-color,-17%));
+    -fx-background-insets: 0, 1;
+}
+
+.progress-bar .bar {
+    -fx-background-color:
+        -fx-box-border,
+        #000000,
+        linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(30,30,30,0.9)),
+        linear-gradient(to bottom, rgba(255,255,255,0.7), rgba(30,30,30,0.7));
+    -fx-background-insets: 0, 0, 1, 1;
+    -fx-padding: 0.416667em; /* 5 */
+}
+
+.LoginLabelHeader {
+    -fx-fill: linear-gradient(white, #f0f0f0);
+    -fx-effect: dropshadow( one-pass-box , rgba(0, 0, 0, 0.9) , 0, 0.0 , 0 , 1 );
+    -fx-font-size: 1.6em;
+}
+
+.LoginDesc {
+    -fx-fill: linear-gradient(white, #f0f0f0);
+    -fx-effect: dropshadow( one-pass-box , rgba(0, 0, 0, 0.9) , 0, 0.0 , 0 , 1 );
+    -fx-font-size: 1.1em;
+}
+
+.FormLabel {
+    -fx-text-fill: linear-gradient(white, #f0f0f0);
+    -fx-effect: dropshadow( one-pass-box , rgba(0, 0, 0, 0.9) , 0, 0.0 , 0 , 1 );
+    -fx-font-size: 1.1em;
+}
+
+.FormInput {
+    -fx-text-fill: black;
+    -fx-font-smoothing-type: lcd;
+}
+
+.FormButton {
+    -fx-background-color: #000000,linear-gradient(#696969, #363636);
+    -fx-background-insets: 0,1;
+    -fx-background-radius: 3,2;
+    -fx-padding: 12 30 12 30;
+    -fx-text-fill: linear-gradient(white, #f0f0f0);
+}

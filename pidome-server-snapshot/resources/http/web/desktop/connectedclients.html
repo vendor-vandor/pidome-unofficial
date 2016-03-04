@@ -1,0 +1,215 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<div id="pageinfotext" class="popup medium roundedcorners">
+    Below is a list of clients connected to the server.<br/>
+    <br/>
+    <span class="label label-danger">Not allowed</span> This client is connected but is not (yet) approved to interact with the server. Click on this client to approve or disapprove the connection.<br/>
+    <br/>
+    <span class="label label-success">Connected</span> This client is connected and approved to interact with the server. Click on this client to send a message to it or disconnect.
+</div>
+<div id="connected-clients-toolbar">
+    <h2 style="margin-top:0px; margin-bottom: 0px;">Connected clients</h2>
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <table id="clientstable" class="table table-striped table-hover"
+                       data-toolbar="#connected-clients-toolbar"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-search="true">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-visible="false"></th>
+                            <th data-field="connected" data-width="100" data-formatter="allowedFormatter">Connected</th>
+                            <th data-field="address" data-width="100">Address</th>
+                            <th data-field="devicetype" data-width="200">Interface</th>
+                            <th data-field="clienttype" data-width="100">Type</th>
+                            <th data-field="supername" data-width="300">Login/Name</th>
+                            <th data-field="clientinfo">Info</th>
+                            <th data-field="since" data-width="150">Connected</th>
+                            <th data-field="duration" data-width="100" data-formatter="formatDuration">Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal for client interaction -->
+<div class="modal fade" id="dialog-interaction" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="dialog-interaction-type">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <div id="modalcontent">
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    
+function formatDuration(value, row){
+    return value.toHHMMSS();
+}
+
+function allowedFormatter(value, row) {
+    if(value===true){
+        return '<span class="label label-success">Connected</span>';
+    } else {
+        return '<span class="label label-danger">Not allowed</span>';
+    }
+}
+    
+    $('#clientstable').bootstrapTable({
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "ClientService.getAllClients", "id":"ClientService.getAllClients"}',
+        cache: false,
+        height: 720,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            var newArr = new Array();
+            for(var i=0; i<workData.length;i++){
+                if(workData[i].devicetype==="WEB"){
+                    if(workData[i].clienttype!=="WEBSOCKET"){
+                        newArr.push(workData[i]);
+                    }
+                } else {
+                    newArr.push(workData[i]);
+                }
+            }
+            return newArr;
+        },
+        onClickRow: function (row) {
+            if(row.connected===false){
+                yesnoConfirmation('Allow mobile device', '<p>Below you can approve or deny a client for interacting with the server.</p>' + 
+                                 '<p>To approve <span style="font-weight:bold;">\''+row.clientinfo+'\'</span> select the user to who you want to bind the device to and press "Approve". This client will then be able to interact with PiDome.</p>' + 
+                                 '<div class="form-group">'+
+                                 '        <label for="aprove-mobile-user-selection" class="control-label">Select person:</label>'+
+                                 '        <select id="aprove-mobile-user-selection" class="form-control">'+
+                                 '        </select>'+
+                                 '</div>' +
+                                 '<div style="clear:both;"></div><p>When you deny (disapprove) a client it will not be able to interact with the server.</p>', 
+                    function(){
+                        aproveClient(row.name);
+                    }, "Assign", "Absolutely not", 
+                    function(){
+                        disaproveClient(row.name);
+                    });
+                $("#aprove-mobile-user-selection").empty();
+                getHttpJsonRPC('{"jsonrpc": "2.0", "method": "UserService.getUsers", "id":"UserService.getUsers"}', function (data) {
+                    for(var i = 0; i < data.length; i++){
+                        if(data[i].clientname!=="admin"){
+                            $("#aprove-mobile-user-selection").append('<option value="'+data[i].id+'">'+data[i].clientname+'</option>');
+                        }
+                    }
+                });
+            } else if(row.connected===true){
+                $("#dialog-interaction-type").text("Message or disconnect client");
+                simpleDialog("Message or disconnect client/user", '<p>Below you can send a message to a client or disconnect the client from the server.</p>' + 
+                                                             '<hr size="1px" />' +
+                                                             '<p>Send a message to client <strong>'+row.supername+'</strong></p>' +
+                                                             '<div><textarea name="sendclientMessage" id="sendclientMessage" cols="40" rows="3" /></textarea></div>' +
+                                                             '<button name="sendMessage" id="sendMessage" type="button" id="myStateButton" class="btn btn-info" autocomplete="off">Send message</button>' +
+                                                             '<hr size="1px" />' +
+                                                             '<p>Click the button below to disconnect the client from the server</p>' + 
+                                                             '<button name="disConnectClient" id="disConnectClient" type="button" id="myStateButton" class="btn btn-danger" autocomplete="off">Disconnect client</button>', 
+                    function(){}, "Close");
+                $("#sendMessage").off('click').on('click', function (event) {
+                    sendClientMessage(row.supername, $("#sendclientMessage").val());
+                });
+                $("#disConnectClient").off('click').on('click', function (event) {
+                    disconnectClient(row.name);
+                });
+            }
+        }
+    });
+    
+    /**
+     * Aapprove the client
+     * @param {type} client
+     * @returns {Boolean}
+     */
+    function aproveClient(client){
+        getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"ClientService.approveClient\", \"params\": [\""+client+"\", "+$("#aprove-mobile-user-selection").val()+"] \"id\": \"ClientService.approveClient\"}",
+            function(data) {
+                simpleDialog("Client approval", "Client's connection has been approved.", function(){
+                    $('#clientstable').bootstrapTable("refresh",{ silent: true });
+                }, "Ok");
+            });
+        return false;
+    }
+
+    /**
+     * Disapprove the client
+     * @param {type} client
+     * @returns {Boolean}
+     */    
+    function disaproveClient(client){
+        getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"ClientService.disApproveClient\", \"params\": [\""+client+"\"] \"id\": \"ClientService.disApproveClient\"}",
+            function(data) {
+                simpleDialog("Client approval", "Client's connection has been denied.", function(){
+                    $('#clientstable').bootstrapTable("refresh",{ silent: true });
+                }, "Ok");
+            });
+        return false;
+    }
+    
+    /**
+     * Sends a message to a client.
+     * @param {type} client
+     * @param {type} message
+     * @returns {Boolean}
+     */
+    function sendClientMessage(client, message){
+        getHttpJsonRPC("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"ClientService.sendDisplayClientMessage\", \"params\": [\""+client+"\", \""+message+"\"] \"id\": \"ClientService.sendDisplayClientMessage\"}",
+            function(data) {
+                simpleDialog("Client message", "Message to <strong>"+client+"</strong> has been send.", function(){}, "Close");
+            });
+        return false;
+    }
+    /**
+     * Disconnects a client from the server.
+     * @param {type} client
+     * @returns {Boolean}
+     */
+    function disconnectClient(client){
+        getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"ClientService.disconnectClient\", \"params\": [\""+client+"\", \"Disconnected via web interface\"] \"id\": \"ClientService.disconnectClient\"}",
+        function(data) {
+                simpleDialog("Client disconnect", "Client " + client + " has been disconnected from the server.", function(){}, "Close");
+                $('#clientstable').bootstrapTable("refresh",{ silent: true });
+            }, "json");
+        return false;
+    }
+    
+    pidomeRPCSocket.addCallback(function(thingy) {
+        $('#clientstable').bootstrapTable("refresh",{ silent: true });
+    }, "ClientService.signOn");
+
+    pidomeRPCSocket.addCallback(function(thingy) {
+        $('#clientstable').bootstrapTable("refresh",{ silent: true });
+    }, "ClientService.signOff");
+    
+    $(document).ready(function() {
+        setPageBreadcrumbs(5, "page_connectedclients", "Connected clients", "/desktop/connectedclients.html");
+        setPageTitleDescription("Lists and actions on currently connected clients.");
+        preparePageInfo();
+    });
+
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

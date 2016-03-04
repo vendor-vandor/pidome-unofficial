@@ -1,0 +1,247 @@
+<#include "html_includes/header.xhtml">
+<h1><#if device??>Edit<#else>New</#if> custom device</h1>
+<p>Here you can edit/add simple devices.</p>
+<form method="post" id="simpleDeviceEditForm">
+    <div id="pageTabs">
+        <ul>
+            <li><a href="#simpleDeviceVisual">Visual editor</a></li>
+            <li><a href="#simpleDevice">Raw text editor</a></li>
+        </ul>
+        <div id="simpleDevice">
+            <fieldset>
+                <legend>Device information</legend>
+                <div class="nvp">
+                    <div class="n" style="width:100px;"><label for="macro_description">Device type</label></div>
+                    <div class="v">
+                        <#if device??>
+                        ${device.driver}
+                        <#else>
+                        <select name="driver" id="driver">
+                            <option value="org.pidome.driver.device.bareboneI2CDevice" selected="selected">I²C Device</option>
+                            <option value="org.pidome.driver.device.bareboneArduinoDevice">Arduino (Board USB connected)</option>
+                        </select>
+                        </#if>
+                        <#if device??>
+                            <input type="hidden" name="driver_driver" id="driver_driver" value="${device.driver_driver}" />
+                        <#else>
+                            <input type="hidden" name="driver_driver" id="driver_driver" value="2" />
+                        </#if>
+                        <input type="hidden" name="package" id="package" value="3" />
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n" style="width:100px;"><label for="name">Identifier</label></div>
+                    <div class="v">
+                        <#if device??>
+                            ${device.name}
+                            <input type="hidden" name="name" id="name" value="${device.name}" />
+                        <#else>
+                            <input type="text" name="name" id="name" value="" />
+                        </#if>
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n" style="width:100px;"><label for="friendlyname">Name</label></div>
+                    <div class="v"><input type="text" name="friendlyname" id="friendlyname" value="<#if device??>${device.friendlyname}</#if>" /></div>
+                </div>
+                <div class="nvp">
+                    <div class="n" style="width:100px;"><label for="macro_description">Device XML</label></div>
+                    <div class="v"><textarea name="xml" id="xml" rows="40" style="width:100%;"><#if device??>${device.xml}
+<#else><device>
+    <display>
+        <width>300</width>
+        <height>300</height>
+    </display>
+    <name></name>
+    <description></description>
+    <command type="expression">Almost obsolete because of input field modifiers</command>
+    <commandset>
+        <group id="location">
+            <description>A location description</description>
+            <input type="text" id="address" value="" label="" datatype="null" modify="null">The device address</input>
+        </group>
+    </commandset>
+</device></#if></textarea></div>
+                </div>
+            </fieldset>
+        </div>
+        <div id="simpleDeviceVisual">
+            <div id="deviceDesc" class="ui-dialog ui-widget ui-widget-content ui-corner-all" style="position: relative;">
+                <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">Device information</div>
+                <p>Here you can edit the device information.</p>
+                <div id="deviceDescEditor" class="ui-dialog-content ui-widget-content">
+                    <div class="nvp" style="position: relative; clear: both;">
+                            <p><strong id="devicecreationdevicetyperemark">
+                            <#if device??>
+                            <#if device.driver_driver=="2">I²C devices only support HEX datatypes. Other datatypes, if chosen, can lead to undesired results</#if>
+                            </#if>
+                            </strong></p>
+                        <div class="n"><label for="macro_description">Device type</label></div>
+                        <div class="v">
+                            <#if device??>
+                            ${device.driver}<br/>
+                            <#else>
+                            <select id="vis-driver">
+                                <option value="org.pidome.driver.device.bareboneI2CDevice" selected="selected">I²C Device</option>
+                                <option value="org.pidome.driver.device.bareboneArduinoDevice">Arduino (Board USB connected)</option>
+                            </select>
+                            </#if>
+                        </div>
+                        <div class="n">Device name</div>
+                        <div class="v"><input type="text" id="visual_name" value=""/></div>
+                        <div class="n">Generated id</div>
+                        <div class="v"><input type="text" id="visual_name-gen" value="" readonly="readonly"/></div>
+                        <div class="n">Description</div>
+                        <div class="v"><textarea id="visual_description" rows="6" cols="120"></textarea></div>
+                    </div>
+                </div>
+            </div>
+            <div id="deviceXmlEditor" class="ui-dialog ui-widget ui-widget-content ui-corner-all" style="position: relative; margin-top: 30px;">
+                <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">Device actions</div>
+                <p>This is where the magic happens. Create device actions or device data reading fields. Also, here you also define how devices are displayed in clients. Device components can only exist in groups.<br/>
+                   With groups you can define which sort of actions belong together. In this way you can split up color actions, settings actions or just an on/off section. A group is an requirement though.</p>
+                <div id="deviceDescEditor" class="ui-dialog-content ui-widget-content">
+                    <div style="width:175px; position: relative; display:block;">
+                        <div id="deviceActionsMenu">
+                            <h3>Components</h3>
+                            <ul id="vis-selectComponents">
+                                <li id="vis-addGroup" class="ui-state-default vis-addGroup">Add group</li>
+                                <li id="vis-addData" class="ui-state-default vis-addItem">Add data field</li>
+                                <li id="vis-addButton" class="ui-state-default vis-addItem">Add single button</li>
+                                <li id="vis-addToggleButton" class="ui-state-default vis-addItem">Add toggle button</li>
+                                <li id="vis-addSlider" class="ui-state-default vis-addItem">Add slider</li>
+                                <li id="vis-addColorPicker" class="ui-state-default vis-addItem">Add color picker</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="deviceActionsComposer">
+                        <h3>Device actions</h3>
+                        <div id="deviceActionsField">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="deviceOptionsData" class="ui-dialog ui-widget ui-widget-content ui-corner-all" style="position: relative; margin-top: 30px;">
+                <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">Device command prefix settings</div>
+                <p>Here you can add/remove/change command prefixes for your device. These prefixes are send before every command. The user who adds a device gets device options presented.<span style="float:right; display: inline-block;"><button class="vis-add-option" id="vis-add-option">Add a prefix</button></span></p>
+                <div id="vis-options-data">
+                    
+                </div>
+                <div style="clear:both"></div>
+            </div>
+            <div id="deviceLocData" class="ui-dialog ui-widget ui-widget-content ui-corner-all" style="position: relative; margin-top: 30px;">
+                <div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix">Device location settings</div>
+                <p>Here you can edit the location data information. This address is used to identify a device on a data bus. The address of a lamp or other device somewhere. If there is no address used fill this in in the label so the user knows it.</p>
+                <div id="deviceLocationEditor" class="ui-dialog-content ui-widget-content">
+                    <div class="nvp" style="position: relative; clear: both;">
+                        <div class="n">Label</div>
+                        <div class="v"><input type="text" id="visual_address-label" value="" /></div>
+                        <div class="n">Address type</div>
+                        <div class="v">
+                            <select name="visual_location_type" id="visual_location_type">
+                                <option value="null">Not used</option>
+                                <option value="hex">HEX based address</option>
+                            </select>
+                        </div>
+                        <div class="n">Restrictions</div>
+                        <div class="v">
+                            <select name="visual_location_modification" id="visual_location_modification">
+                                <option value="null">None</option>
+                                <option value="uppercase">All uppercase</option>
+                            </select>
+                        </div>
+                        <div class="n">Locations settings description</div>
+                        <div class="v"><textarea id="visual_address_description" rows="6" cols="120"></textarea></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="margin:10px;">
+            <#if device??>
+                <button value="editDevice" class="saveDevice" id="editDevice" name="editDevice" style="margin-top: 10px;" onclick="return false;">Update device</button>
+            <#else>
+                <button value="newDevice" class="saveDevice" id="newDevice" name="newDevice" style="margin-top: 10px;" onclick="return false;">Save new device</button>
+            </#if>
+        </div>
+    </div>
+</form>
+<#if device??>
+<input type="hidden" name="editType" id="simpleDeviceEditType" value="edit" />
+<#else>
+<input type="hidden" name="editType" id="simpleDeviceEditType" value="new" />
+</#if>
+<script src="js/simpledeviceeditor.js"></script>
+<script>
+    $( "#driver" ).change(function() {
+        $("#vis-driver").val($(this).val());
+        setDeviceDriverDriver($(this).val());
+    });
+    $( "#vis-driver" ).change(function() {
+        $("#driver").val($(this).val());
+        setDeviceDriverDriver($(this).val());
+    });
+    function setDeviceDriverDriver(driverName){
+        $("#driver_driver").val(driverName);
+        if(driverName==2){
+            $("#devicecreationdevicetyperemark").html("I²C devices only support HEX datatypes. Other datatypes, if chosen, can lead to undesired results");
+        } else {
+            $("#devicecreationdevicetyperemark").html("");
+        }
+    }
+    $( "button.saveDevice" ).button({icons: { primary: "ui-icon-document" }})
+    .click(function() {
+        <#if device??>
+            saveSimpleDevice(${device.id});
+        <#else>
+            saveSimpleDevice(0);
+        </#if>
+    });
+
+    $( "#vis-add-option" ).button({icons: { primary: "ui-icon-plus" }})
+    .click(function() {
+        try {
+        addDeviceOption();
+        } catch (exception){
+        
+        }
+        return false;
+    });
+
+    function saveSimpleDevice(deviceId){
+        $("#pleaseWaitProgress").dialog( "open" );
+        var postFields = {};
+        var deviceGet = "";
+        if(deviceId===0){
+            postFields["newDevice"] = "newDevice";
+            postFields["name"] = $("#name").val();
+            postFields["driver"] = $("#driver").val();
+            postFields["driver_driver"] = $("#driver_driver").val();
+            postFields["package"] = $("#package").val();
+        } else {
+            postFields["editDevice"] = "editDevice";
+            deviceGet = "?device=" + deviceId;
+        }
+        postFields["friendlyname"] = $("#friendlyname").val();
+        postFields["xml"] = $("#xml").val();
+        $.post("simpleDeviceEditor.json" + deviceGet, postFields)
+            .done(function(data) {
+                var obj = jQuery.parseJSON(data);
+                if(obj.result[0].exec !== true){
+                    $("#pleaseWaitProgress").dialog( "close" );
+                    alert("Could not save device: " + obj.result[0].reason);
+                } else {
+                    $("#pleaseWaitProgress").dialog( "close" );
+                    if(deviceId===0){
+                        alert("Device added");
+                        window.location.href="/simpledevices.xhtml";
+                    } else {
+                        alert("Device modified");
+                        window.location.href="/simpledevices.xhtml";
+                    }
+                }
+            }, "json");
+        return false;
+    }
+</script>
+<#include "html_includes/footer.xhtml">

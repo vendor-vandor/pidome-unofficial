@@ -1,0 +1,25 @@
+<package collection="pidome-server-drivers" version="0.1" enabled="true">
+    <author>
+        <createdby>PiDome</createdby>
+        <name>John Sirach</name>
+        <email>john.sirach@gmail.com</email>
+        <website>http://pidome.org</website>
+    </author>
+    <decription>These drivers and devices are made by PiDome for native support of the PiDome created devices and services. Besides this this package will also support al lot of third party devices and services out of the box</decription>
+    <delivers>
+        <drivers>
+            <driver version="0.0.1" driver="org.pidome.driver.driver.nativeServerDriver" enabled="true" id="NATIVE_PIDOMESERVERDEVICE_DRIVER" peripheral="org.pidome.driver.peripherals.pidomeServerPeripheral">
+                <description>This driver is the "glue" between the server device and the server peripheral hardware/software layer</description>
+            </driver>
+            <driver version="0.0.1" driver="org.pidome.driver.driver.nativeArduinoXmlDriver" enabled="true" id="NATIVE_PIDOMEARDUINOBAREBONE_DRIVER" peripheral="org.pidome.driver.peripherals.pidomeNativeArduino">
+                <description>Driver used for comunication between the Arduino Barebone device driver (Simple devices) and the pidome default arduino comunication driver</description>
+            </driver>
+            <driver version="0.0.1" driver="org.pidome.driver.driver.nativeRfDriver" enabled="true" id="NATIVE_RF_DRIVER" peripheral="org.pidome.driver.peripherals.pidomeNativeArduino">
+                <description>This is the driver for some basic internally used RF stuff, available open source</description>
+            </driver>
+            <driver version="0.0.1" driver="org.pidome.driver.driver.nativeDefaultI2CDriver" enabled="true" id="NATIVE_PIDOMEI2C_DRIVER" peripheral="org.pidome.driver.peripherals.pidomeNativeI2CBus">
+                <description>This driver is used to talk to devices on the I2C bus on the raspberry pi.</description>
+            </driver>
+        </drivers>
+    </delivers>
+</package>

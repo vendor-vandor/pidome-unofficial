@@ -1,0 +1,95 @@
+<div id="pageinfotext">
+    Macros are small little programs which executes a various amount of commands. These commands can come from devices, plugins or even other macro's.<br/>
+    The make it easy to create and execute a large list of commands which you would otherwise use within automation rules.<br/>
+    <br/>
+    Unlike scenes, macro's are an one shot action. This means that commands are executed once and devices or other selected items are not kept in the selected state.
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="macroedittable-toolbar" style="align:right;">
+                    <button class="btn btn-info addNewMacro" id="notification-read-all">Add new macro</button> 
+                </div>
+                <table id="macroedittable" class="table table-striped table-hover"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-search="true"
+                       data-toolbar="#macroedittable-toolbar">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-visible="false"></th>
+                            <th data-field="id" data-width="100" data-formatter="runFormatter"></th>
+                            <th data-field="favorite" data-width="100">Favorite</th>
+                            <th data-field="name">Name</th>
+                            <th data-field="description">Description</th>
+                            <th data-field="executions" data-width="75">Commands</th>
+                            <th data-align="right" data-width="178" data-formatter="actionsFormatter"><div style="float:left;">Action</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    
+    $(document).ready(function() {
+
+        setPageBreadcrumbs(3, "page_macros", "Macros", "/macros.html");
+        setPageTitleDescription("Create, delete, edit and execute macros");
+        preparePageInfo();
+
+        $(".addNewMacro").on('click', function () {
+            refreshPageContent('/macro.html');
+        });
+        
+    });
+    
+    function actionsFormatter(value, row, index){
+        return '<button class="btn btn-info editMacroButton" id="macroedit-'+row.id+'">Edit</button> '+ 
+               '<button class="btn btn-danger deleteMacroButton" id="macrodelete-'+index+'">Delete</button>';
+    }
+
+    function runFormatter(value, row){
+        return '<button class="btn btn-success runMacroButton" id="macrorun-'+row.id+'">Run</button>';
+    }
+    
+    $('#macroedittable').bootstrapTable({
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MacroService.getMacros","id":"MacroService.getMacros"}',
+        cache: false,
+        height: 720,
+        toolbarAlign: 'left',
+        undefinedText: 'No macros',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        },
+        onLoadSuccess: function (data) {
+            $(".runMacroButton").on("click", function (){
+                var macro = $(this).attr('id').split("-")[1];
+                getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"MacroService.runMacro\", \"params\":{\"id\":"+macro+"},\"id\":\"MacroService.runMacro\"}", function(){
+                    quickMessage("success","Macro is running/has been ran");
+                });
+            });
+            $(".editMacroButton").on('click', function () {
+                var macro = $(this).attr('id').split("-")[1];
+                refreshPageContent('/macro.html?id=' + macro);
+            });
+            $(".deleteMacroButton").on('click', function () {
+                var data = getTableRowData('#macroedittable', $(this).attr('id').split("-")[1]);
+                var macro = data.id;
+                var macroName = data.name;
+                yesnoConfirmation('Delete: ' + macroName, 'Are you sure you want to delete macro "' + macroName + '"', function(){
+                    getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"MacroService.deleteMacro\", \"params\":{\"id\":" + macro + "},\"id\":\"MacroService.deleteMacro\"}", function(){
+                        quickMessage("success","Macro has been deleted", 1000);
+                        $('#macroedittable').bootstrapTable("refresh",{ silent: true });
+                    });
+                });
+            });
+        }
+    });
+</script>

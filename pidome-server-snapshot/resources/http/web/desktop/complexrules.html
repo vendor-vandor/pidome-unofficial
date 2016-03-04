@@ -1,0 +1,110 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<div id="pageinfotext">
+    <p>Below is a list of automation rules. These rules are meant to automate your devices behaviors. For example switching lights
+    when it is dark for 2 minutes and off when it is lighter again. Automation rules run next to the triggers which are meant as a quick action/reaction system. Automation
+    rules are more complex to set up but give more control on the automation part then triggers.<br/>
+    <br/>Be aware that this automation rule system is not a finished implementation yet.</p>
+</div>
+
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="rulesedittable-toolbar" style="align:right;">
+                    <button class="btn btn-fill btn-info mutationAddNewRule" id="mutationAddNewRule" name="mutationAddNewRule" style="margin-top: 10px;">Add new rule</button>
+                </div>
+                <table id="rulesedittable" class="table table-striped table-hover"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-toolbar="#rulesedittable-toolbar"
+                       data-search="true"
+                       data-sort-name="name"
+                       data-sort-order="asc"
+                       data-pagination="true">
+                    <thead>
+                        <tr>
+                            <th data-field="id"></th>
+                            <th data-field="name">Name</th>
+                            <th data-field="description">Description</th>
+                            <th data-field="active" data-width="100" data-formatter="activeFormatter">Active</th>
+                            <th data-align="right" data-width="178" data-formatter="actionsFormatter"><div style="float:left;">Action</div></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+
+    setPageBreadcrumbs(3, "page_complexrules", "Automation rules", "/desktop/complexrules.html");
+    setPageTitleDescription("Create, delete, edit complex automation rules");
+    preparePageInfo();
+
+    $(".mutationAddNewRule").on('click', function () {
+        window.location.href="/desktop/complexrule.html";
+    });        
+    
+    function actionsFormatter(value, row, index){
+        var container = '<button class="btn btn-fill btn-info mutationEditRule" name="mutationEditRule" id="mutationEditRule-'+row.id+'" value="'+row.id+'">Edit</button>';
+        container += '<button class="btn btn-fill btn-danger mutationDeleteRule" name="mutationDeleteRule" id="mutationDeleteRule-'+row.id+'-'+index+'" value="'+row.id+'">Delete</button>';
+        return container;
+    }
+    
+    function activeFormatter(value, row, index){
+        return '<div class="checkbox"><label>'+"\n"+'<input name="mutationActiveRule-'+row.id+'-'+index+'" value="'+row.id+'" type="checkbox" id="mutationActiveRule-'+row.id+'-'+index+'" class="rule-active-switch" '+((value===true)?'checked="checked" ':'')+'/>&nbsp;&nbsp;&nbsp;&nbsp;Active'+"\n"+'</label></div>';
+    }
+    
+    $('#rulesedittable').bootstrapTable({
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "AutomationRulesService.getRules", "id":"AutomationRulesService.getRules"}',
+        cache: false,
+        height: 720,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        },
+        onLoadSuccess: function (data) {
+            setButtonHandlers();
+        },
+        onPostBody : function(){
+            setButtonHandlers();
+        }
+    });
+    
+    function setButtonHandlers(){
+        $(".rule-active-switch").off('click').on('click', function(){
+            var checked = $(this).prop('checked');
+            var ruleId = $(this).attr('value');
+            var ruleData = getTableRowData("#rulesedittable", $(this).attr('id').split("-")[2]);
+            getHttpJsonRPC('{"jsonrpc": "2.0", "method": "AutomationRulesService.enableRule", "params": {"id":'+ruleId+', "active": '+checked+'}, "id":"AutomationRulesService.enabledRule"}',function(data) {
+                quickMessage("success", 'Rule "' + ruleData.name + '" has been <strong>' + ((checked===true)?'enabled':'disabled')) + '</strong>';
+                //$('#rulesedittable').bootstrapTable("refresh",{ silent: true });
+            });
+        });
+        $(".mutationEditRule").off('click').on('click', function () {
+            window.location.href="/desktop/complexrule.html?rule=" + $(this).attr("value");
+        });
+        $(".mutationDeleteRule").off('click').on("click", function(){
+            var ruleId = $(this).attr('value');
+            var ruleData = getTableRowData("#rulesedittable", $(this).attr('id').split("-")[2]);
+            yesnoConfirmation('Remove device', '<p>Are you sure you want to delete rule "<strong>'+ruleData.name+'</strong>"?</p>', 
+                function(){
+                    getHttpJsonRPC('{"jsonrpc": "2.0", "method": "AutomationRulesService.deleteRule", "params": {"id":'+ruleId+'}, "id":"AutomationRulesService.deleteRule"}',function(data) {
+                        quickMessage("success", '<strong>' + ruleData.name + '</strong> has been deleted');
+                        $('#rulesedittable').bootstrapTable("refresh",{ silent: true });
+                    });
+                },
+            "Remove", "Cancel");
+        });
+    }
+</script>
+
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

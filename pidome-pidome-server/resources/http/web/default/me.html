@@ -1,0 +1,194 @@
+<script>
+$(document).ready(function () {    
+    setPageBreadcrumbs(9, 'page_myself', "My info", "/me.html");
+});
+</script>
+<div class="defaultcontent" style="max-width:1000px;">
+    <div style="width:48%; float:left; padding: 0% 1% 0% 0%; border-right: 1px solid #964a06;">
+        <h3>User info</h3>
+        <div class="nvp">
+            <div class="n">Admin user</div>
+            <div class="v"><input type="checkbox" id="user_ifadmin" disabled="disabled"/></div>
+        </div>
+        <div class="nvp">
+            <div class="n">Login name</div>
+            <div class="v"><input type="text" id="user_login" disabled="disabled"></div>
+        </div>
+        <h3>Change password</h3>
+        <div class="nvp">
+            <div class="n">Current Password</div>
+            <div class="v"><input type="password" id="user_pass_current"></div>
+        </div>
+        <div class="nvp">
+            <div class="n">new Password</div>
+            <div class="v"><input type="password" id="user_pass"></div>
+        </div>
+        <div class="nvp">
+            <div class="n">Retype password</div>
+            <div class="v"><input type="password" id="user_passagain"></div>
+        </div>
+        <div class="nvp">
+            <div class="n">Require change</div>
+            <div class="v"><input type="checkbox" id="user_passchange" disabled="disabled"/></div>
+        </div>
+        <hr size="1px" style="clear:left;"/>
+        <div class="nvp">
+            <div class="n">Allow external connections</div>
+            <div class="v"><input type="checkbox" id="user_canexternal" disabled="disabled"/></div>
+        </div>
+        <div class="nvp">
+            <div class="n">First name</div>
+            <div class="v"><input type="text" id="user_firstname" disabled="disabled"></div>
+        </div>
+        <div class="nvp">
+            <div class="n">Last name</div>
+            <div class="v"><input type="text" id="user_lastname" disabled="disabled"></div>
+        </div>
+        <div style="clear:both"></div>
+        <h3 style="padding-top:10px;">Location limitations</h3>
+        <p style="padding-bottom:0px; margin-bottom: 0px;">Below is a list of locations where you can control devices/media etc.. If nothing is selected you have access to all.</p>
+        <div id="locationcontainer">
+
+        </div>
+    </div>
+    <div style="width:49%; float:left; padding: 0% 0% 0% 1%;">
+        <h3>Presence bindings</h3>
+        <p>With presence bindings users presence can be checked/changed</p>
+        <!-- <h4>Devices</h4>
+        <p>With device bindings you can select devices which should identify a specific user. This will be available when we have a device capable of user identifications.</p> -->
+        <h4 style="clear:both; padding-top: 10px;">Client bindings</h4>
+        <p id="showdeviceexplain">Below are mobile clients shown which can identify you in the system.</p>
+        <div id="linkeddevicelist">
+            
+        </div>
+        <h4 style="clear:both; padding-top: 10px;">Non Client binding</h4>
+        <p>If you have a device which does not connect to the server (yet) an ip address of your device can be shown here.</p>
+        <div id="nonclientsdevicelist">
+            <div class="nvp">
+                <div class="n">Ip address</div>
+                <div class="v"><input type="text" name="nonclientip" id="nonclientip" disabled="disabled"/></div>
+            </div>
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+    <div style="border-top: 1px solid #007acc;margin-top: 10px; padding-top: 8px;">
+        <input type="hidden" name="mutationuserid" id="mutationuserid" value="" />
+        <button id="savemutationdata" style="margin-left: 25px; float:right;">Update user (password)</button>
+        <button id="cancelmutationdata" style="float:right;">Cancel</button>
+        <div style="clear:both;"></div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+$(document).ready(function() {
+    $("#cancelmutationdata").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+    $("#cancelmutationdata").on('click', function () {
+        clearAllUserDataFields();
+    });
+    
+    $("#savemutationdata").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+    $("#savemutationdata").on('click', function () {
+        var oldpass = $("#user_pass_current").val();
+        var pass = $("#user_pass").val();
+        var passagain = $("#user_passagain").val();
+        if(pass.length<8){
+            showErrorMessage("Password error", "Password should be at least 8 characters");
+        } else if (pass !== passagain){
+            showErrorMessage("Password error", "Passwords are not the same");
+        } else {
+            $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserService.updatePassword", "params": {"oldpass":"'+oldpass+'","newpass":"'+pass+'","newpassagain":"'+passagain+'"}, "id":"UserService.updatePassword"}', function(data){
+                updatePersonalized();
+                $("#passchangeobligated").empty();
+            });
+        }
+    });
+    
+    function clearAllUserDataFields(){
+        $("#user_ifadmin").prop("checked","");
+        $("#user_passchange").prop("checked","");
+        $("#user_pass_current").val("");
+        $("#user_pass").val("");
+        $("#user_passagain").val("");
+        $('.locationchecked').each(function(){
+            $(this).prop("checked", "");
+        });
+    }
+    
+    function updatePersonalized(){
+        $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserService.getMyData", "id":"UserService.getMyData"}', function(data){
+            try {
+                clearAllUserDataFields();
+                var workData = data.result.data;
+                $("#mutationuserid").val(workData.id);
+                if(workData.roleset.role!==undefined && workData.roleset.role==="admin"){
+                    $("#user_ifadmin").prop("checked","checked");
+                } else {
+                    $("#user_ifadmin").prop("checked","");
+                }
+                if(workData.cpwd!==undefined && workData.cpwd===true){
+                    $("#user_passchange").prop("checked","checked");
+                } else {
+                    $("#user_passchange").prop("checked","");
+                }
+                $("#user_login").val(workData.clientname);
+                $("#user_pass").val("");
+                $("#user_passagain").val("");
+                $("#user_firstname").val(workData.firstname);
+                $("#user_lastname").val(workData.lastname);
+
+                try {
+                    $("#nonclientip").val(workData.roleset.nonclientpresence);
+                } catch (err){}
+
+                if(workData.roleset.locations!==undefined){
+                    for(var i=0; i<workData.roleset.locations.length;i++){
+                        $("#locationselected_"+workData.roleset.locations[i]).prop("checked", "checked");
+                    }
+                }
+                loadDevicesForUser();
+            } catch(err){
+                showErrorMessage("User error", "Could not retreive/parse user info, file a bug report.");
+            }
+        });
+    }
+    
+    function loadDevicesForUser(){
+        $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserService.getMyDevices", "id":"UserService.getMyDevices"}', function(deviceData){
+            var deviceWorkData = deviceData.result.data;
+            if(deviceWorkData.length>0){
+                $("#linkeddevicelist").empty();
+                for(var i=0; i<deviceWorkData.length; i++){
+                    $("#linkeddevicelist").append('<div>\n\
+<div style="width:16px; overflow:hidden; float:left; clear:left;">&nbsp;</div>\n\
+<div style="width:150px; overflow:hidden; float:left;">'+deviceWorkData[i].devicelogin+'</div>\n\
+<div style="width:290px; overflow:hidden; float:left;">'+deviceWorkData[i].deviceinfo+'</div>\n\
+                                                   </div>');
+                }
+            } else {
+                $("#showdeviceexplain").show();
+            }
+        });
+    }
+    
+    $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "LocationService.getLocations", "id":"LocationService.getLocations"}', function(data){
+        try {
+            var lastFloor = 0;
+            for(var i=0; i < data.result.data.length; i++){
+                var workData = data.result.data[i];
+                if(workData.id!==1){
+                    var currentFloor = workData.floor;
+                    if(lastFloor!==currentFloor){
+                        $("#locationcontainer").append('<div style="width:98%; float:left; clear:left; padding-left:1%; padding-right:1%;" id="restrictfloor_'+currentFloor+'"><h4 style="margin-bottom:0px;">'+workData.floorname+'</h4></div>');
+                    }
+                    $('#restrictfloor_'+currentFloor).append('<div style="vertical-align:middle;width:25%;overflow:hidden;float:left;"><input type="checkbox" class="locationchecked" id="locationselected_'+workData.id+'" disabled="disabled"/>'+workData.name+'</div>');
+                    lastFloor = currentFloor;
+                }
+            }
+            $("#locationcontainer").append('<div style="clear:both;"></div>');
+            updatePersonalized();
+        } catch(err){
+            showErrorMessage("Locations error", "Could not retreive locations, restrictions not possible, defaults to all locations");
+        }
+    });
+} );
+</script>

@@ -1,0 +1,2 @@
+INSERT INTO installed_plugins ('name','type','path', 'package','active','fixed') VALUES ('Kodi 14',1,'org.pidome.plugins.media.kodi14',(SELECT id FROM installed_packages WHERE packageid='PIDOME-NATIVE-MEDIA-KODI' LIMIT 1),1,0);
+PRAGMA user_version=32;

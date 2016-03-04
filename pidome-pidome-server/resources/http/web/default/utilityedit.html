@@ -1,0 +1,205 @@
+<div class="defaultcontent" style="max-width:1000px;">
+    <fieldset style="margin-top: 10px">
+        <legend>Measurement explanations</legend>
+        <p>Please refer to the specific plugin documentation on how to setup the chosen plugin.
+            <#if pluginsalive==true>If you want to stop using this plugin use the button "Stop using plugin". You will then have the option to use another one.<br/><br/>
+            <button class="deleteplugin" name="deleteplugin" id="deleteplugin" value="">Stop using plugin</button>
+            </#if></p>
+    </fieldset>
+</div>
+<div class="defaultcontent" style="max-width:1000px;">
+    <fieldset>
+        <legend>Settings</legend>
+        <#if plugin??>
+            <div style="float:left; clear: left; width:100%;">
+                <#assign configurationSets=plugin.getConfiguration()>
+                <#assign configSetsList=configurationSets.getOptions()>
+                <div id="optionCollection">
+                    <#list configSetsList as configSet>
+                        <h3>${configSet.getConfigurationSetTitle()}</h3>
+                        <p>${configSet.getConfigurationSetDescription()}</p>
+                        <#assign optionsList = configSet.getOptions()>
+                        <#list optionsList as option>
+                            <div class="nvp" style="clear:left; margin-top:3px;">
+                                <div class="n">
+                                    <label for="utilityOption_${option.getId()}">${option.getOptionName()}</label>
+                                </div>
+                                <div class="v">
+                                    <#if option.getFieldType().toString()=="DEVICEDATA">
+                                        <button class="selectDevice" name="selectionDevice_${option.getId()}" id="selectionDevice_${option.getId()}" value=""><#if option.getValue()?? && option.getValue()!="">Change<#else>Set</#if> Device</button>
+                                        <span id="${option.getId()}_device_content"><#if deviceSet??>${deviceSet[option.getId()]!""}</#if></span>
+                                    <#elseif option.getFieldType().toString()=="CHECKBOX">
+                                    <input type="checkbox" name="utilityOption_${option.getId()}" id="utilityOption_${option.getId()}" <#if option.getValue()??><#if option.getValue()!="">checked="checked"</#if></#if> />
+                                    <#elseif option.getFieldType().toString()=="SELECT">
+                                        <select name="utilityOption_${option.getId()}" id="utilityOption_${option.getId()}">
+                                            <#list option.getSet()?keys as optionName>
+                                                <option value="${optionName}"<#if option.getValue()==optionName> selected="selected"</#if>>${option.getSet()[optionName]}</option>
+                                            </#list>
+                                        </select>
+                                    <#else>
+                                        <input type="text" data-inputtype="${option.getFieldType()}" name="utilityOption_${option.getId()}" id="utilityOption_${option.getId()}" value="${(option.getValue())!""}" />
+                                        <script>
+                                            $(document).ready(function() {
+                                                $("#utilityOption_${option.getId()}").jqxTooltip({ content: '${option.getOptionDescription()}', position: 'top', name: 'optiontooltip', theme: siteSettings.getTheme()});
+                                                createWebInputField($("#utilityOption_${option.getId()}"));
+                                            });
+                                        </script>
+                                    </#if>
+                                </div>
+                            </div>
+                        </#list>
+                    </#list>
+                    <#if pluginsalive==true>
+                        <input type="hidden" name="installedid" id="pluginid" value="${pluginid}"/>
+                    <#else>
+                        <input type="hidden" name="installedid" id="installedid" value="${installed_id}"/>
+                    </#if>
+                    <div class="nvp">
+                        <div class="n"></div>
+                        <div class="v">
+                            <button class="saveUtility" name="saveUtility" id="saveUtility" value="saveUtility">Save settings</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <#else>
+            <div class="nvp">
+                <div class="n">
+                    Please select the utility measurements plugin you whish to use
+                </div>
+                <div class="v">
+                    <select name="selectutilityplugin" id="selectutilityplugin">
+                        <#list plugindataset?keys as pluginid>
+                            <option value="${pluginid}">${plugindataset[pluginid].pluginname}</option>
+                        </#list>
+                    </select>
+                </div>
+                <div class="n">
+                    &nbsp;
+                </div>
+                <div class="v">
+                    <button id="selectutilitypluginconfirm" name="selectutilitypluginconfirm">Use selected</button>
+                </div>
+            </div>
+        </#if>
+    </fieldset>
+</div>
+<div id="innerscrollmargin"></div>
+<div id="dialog-confirm-delete" title="Confirm" style="display:none;">
+    <div>Confirm utility plugin stop/delete</div>
+    <div></div>
+</div>
+<script>
+    $(document).ready(function() {
+        <#if plugin??>
+            <#if pluginsalive==true>        
+                $("#dialog-confirm-delete").jqxWindow({
+                    width: 400,
+                    height: 150,
+                    theme: siteSettings.getTheme(),
+                    autoOpen: false,
+                    isModal: true
+                });
+                $("#deleteplugin").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                $("#deleteplugin").on('click', function () {
+                    $("#dialog-confirm-delete").jqxWindow('setContent','<p style="text-align:center;">Are you sure you want to stop using this plugin?</p>' + 
+                                                                       '<div style="text-align:center;">'+
+                                                                       '    <input type="button" id="dialog-do-delete" value="Yes Stop/delete" />'+
+                                                                       '    <input type="button" id="dialog-do-cancel" value="No cancel" />'+
+                                                                       '</div>');
+                    $("#dialog-do-delete").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                    $("#dialog-do-delete").on('click', function () {
+                        $.getJSON('/jsonrpc.json?rpc={"method":"UtilityMeasurementService.removePlugin", "params":{"id": ${pluginid}},"id":"UtilityMeasurementService.removePlugin"}')
+                            .done(function(data) {
+                                $("#pleaseWaitProgress").dialog("close");
+                                alert(JSON.stringify(data));
+                            }, "json");
+                        $("#dialog-confirm-delete").jqxWindow('close');
+                    });
+                    $("#dialog-do-cancel").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                    $("#dialog-do-cancel").on('click', function () {
+                        $("#dialog-confirm-delete").jqxWindow('close');
+                    });
+                    $("#dialog-confirm-delete").jqxWindow('open');
+                });
+            </#if>
+
+            var itemSelectionModal = new ItemSelectionModal();
+            itemSelectionModal.setOptions({"deviceFilter": ["data"], "deviceTypeFilter":["devices"]});
+            itemSelectionModal.setSelectionType("match");
+
+            try {
+
+                $(".selectDevice").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                $(".selectDevice").on('click', function () {
+                    var typeName = $(this).attr("id").split("_")[1];
+                    itemSelectionModal.setCallBack(function(returnData){
+                        setSelectedDevice(typeName, returnData);
+                    });
+                    itemSelectionModal.open();   
+                });
+
+                function setSelectedDevice(contentDivName, data){
+                    $('#' + contentDivName + "_device_content").html(data.deviceName + ', ' + data.deviceCommandName + 
+                        '<input type="hidden" id="utilityOption_'+contentDivName+'" name="utilityOption_'+contentDivName+'" value="' + data.deviceId +';' + data.deviceGroupId + ';' + data.deviceCommandId + '" >');
+
+                }
+
+            } catch (err){
+                //// This plugin does not support devices.
+            } 
+
+            try {
+                $("#saveUtility").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+                $("#saveUtility").on('click', function () {
+                    saveUtilityPlugin();
+                });
+            } catch (err)  {
+                /// We are in plugin selection            
+            }
+
+            function saveUtilityPlugin(){
+                var postData = {};
+                $("#optionCollection input:hidden").each(function(){
+                    postData[$(this).attr("id")] = $(this).val();
+                });
+                $("#optionCollection input:text").each(function(){
+                    postData[$(this).attr("id")] = $(this).val();
+                });
+                $("#optionCollection input:checkbox").each(function(){
+                    postData[$(this).attr("id")] = (this.checked ? "checked" : "");
+                });
+                $("#optionCollection select").each(function(){
+                    postData[$(this).attr("id")] = $(this).val();
+                });
+                <#if pluginid??>
+                     postData["pluginid"] = ${pluginid};
+                </#if>
+
+                ///alert(JSON.stringify(postData));
+                $.post("/utilityeditor.json", postData)
+                        .done(function(data) {
+                            if (data.result.exec !== true) {
+                                showErrorMessage("Utility plugin error", "Could not save utility plugin: " + data.result.reason);
+                            } else {
+                                showInfoMessage("Utility plugin saved", "Utility plugin has been added/modified");
+                            }
+                        }, "json").fail(function( jqXHR, textStatus, errorThrown ) {
+                            showErrorMessage("Utility plugin error", "Could not modify utility plugin: Request error - " + textStatus + ", " + errorThrown);
+                        });
+            }
+            <#else>
+                $("#selectutilitypluginconfirm").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                $("#selectutilitypluginconfirm").on('click', function () {
+                    refreshPageContent("/utilityedit.html?installed_id=" + $("#selectutilityplugin").val());   
+                });
+            </#if>
+        });
+        function clearHandlers(){
+            clearInternalWidgetHandlers("#optionCollection");
+        }
+        
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_editutility", "Utilities edit", "/utilityedit.html");
+    });
+</script>

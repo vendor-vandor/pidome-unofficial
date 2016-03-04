@@ -1,0 +1,1 @@
+sc create PiDomeServer binPath= "%CD%\pidome-server-service.exe" type= own start= auto DisplayName= "PiDome Server"

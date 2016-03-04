@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="error" name="pidome-server" packages="org.pidome.server.logging">
+    <appenders>
+        <RollingFile name="RollingFile" fileName="logs/system/appLog.txt" filePattern="logs/system/history/appLog-%d{yyyy-MM-dd}-%i.gz">
+          <PatternLayout>
+            <pattern>%d [%t] %-5p %c - %m%n</pattern>
+          </PatternLayout>
+          <Policies>
+            <TimeBasedTriggeringPolicy />
+            <SizeBasedTriggeringPolicy size="5 MB"/>
+          </Policies>
+          <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+    </appenders>
+    <loggers>
+        <root level="info">
+            <appender-ref ref="RollingFile" />
+        </root>
+    </loggers>
+</configuration>

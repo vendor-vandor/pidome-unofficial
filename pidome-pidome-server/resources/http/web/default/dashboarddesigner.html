@@ -1,0 +1,472 @@
+<div id="pageinfotext" class="popup medium roundedcorners">
+    <h3>Design dashboards</h3>
+    Here you can design your own, or if you are an administrator, dashboards for other users and/or display clients.<br/>
+    <br/>
+    When you create a new dashboard you can select what kind of dashboard you are creating and if you are an administrator for who it is.<br/>
+    Currently only web based dashboards are available, when the clients are able to show these custom dashboards they will be added to the selection list.
+    <h4>User dashboards</h4>
+    An user can have multiple dashboard types. One for larger displays like the web interface and tablets, and one for small displays like phones.
+    <h4>Display dashboards</h4>
+    A display just has one dashboard as a display is a fixed settlement. But, displays are able to show personalized dashboards for users interacting with the display.
+</div>
+<p class="contentfield roundedcorners">
+    Only the <strong>web</strong> dashboard type is supported as the other types are reserved for future use. Also you can only create ONE dashboard per user. You can be bold and start creating other dashboard types (also ONE per user), but these will be available when these are implemented.
+</p>
+<div class="container" style="width:100%;">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Dashboard details</h3>
+                </div>
+                <div class="panel-body">
+                    <form class="form-horizontal" id="dasheditform">
+                        <div class="form-group">
+                            <label for="dash_name" class="col-sm-1 control-label">Name</label>
+                            <div class="col-sm-11">
+                                <input type="text" data-type="alphanumeric" class="form-control" name="dash_name" id="dash_name" placeholder="Enter the dashboard name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dash_type" class="col-sm-1 control-label">Dashboard type</label>
+                            <div class="col-sm-11">
+                                <select class="form-control" id="dash_type">
+                                    <option value="WEB">Web interface</option>
+                                    <option value="MOBILE">Mobiles</option>
+                                    <#if _SERVER.userloginrole=="ADMIN"><option value="DISPLAY">Displays</option></#if>
+                                    <option value="HYBRID">Personalized to be used on a display (Do not use (yet!))</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="dash_user" class="col-sm-1 control-label" id="dash_user_label_naming">For user/display</label>
+                            <div class="col-sm-11">
+                                <select class="form-control" id="dash_user"></select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="personlized-form-group" style="display:none;">
+                            <label for="dash_persclient" class="col-sm-1 control-label" id="dash_persclient_label">Select display</label>
+                            <div class="col-sm-11">
+                                <select class="form-control" id="dash_persclient"></select>
+                            </div>
+                        </div>
+                        <input type="hidden" name="hidden_dashId" value="${dashid}">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title" style="float:left;">Dashboard contents</h3>
+                <div style="float:right">
+                    <button type="button" class="btn btn-info" aria-label="Left Align" id="dashboardaddspacerbutton">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add spacer / header
+                    </button>
+                    <button type="button" class="btn btn-info" aria-label="Left Align" id="dashboardaddbutton">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add item
+                    </button>
+                    <button type="button" class="btn btn-success" aria-label="Left Align" id="savedasheditmode">
+                        <span class="glyphicon glyphicon-th" aria-hidden="true"></span> Save dashboard
+                    </button>
+                    <button type="button" class="btn btn-danger" aria-label="Left Align" id="canceldasheditmode">
+                        <span class="glyphicon glyphicon-remove-circle" aria-hidden="true"></span> Cancel
+                    </button>
+                </div>
+                <div class="clearfloat"></div>
+            </div>
+            <div class="panel-body">
+                <div class="gridster" style="border: 1px solid #000;" id="gridsterdisplaycontainer">
+                    <ul>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<link rel="stylesheet" href="/shared/js/libs/gridster/jquery.gridster.min.css" />
+<link rel="stylesheet" href="/shared/css/dashboard.css" />
+<script>
+    
+    function setCorrectForm(value, clientid, personid, dashid){
+        $("#gridsterdisplaycontainer").width("auto");
+        $("#gridsterdisplaycontainer").height("auto");
+        $("#dash_type").val(value);
+        switch(value){
+            case "WEB":
+            case "MOBILE":
+            case "HYBRID":
+                if(value==="MOBILE"){
+                    $("#dash_persclient_label").text("Select Mobile");
+                    $("#personlized-form-group").show();
+                    setPersonalizedDisplays(value, undefined, personid);
+                }else if(value==="HYBRID"){
+                    $("#dash_persclient_label").text("Select display");
+                    $("#personlized-form-group").show();
+                    setPersonalizedDisplays(value);
+                } else {
+                    $("#personlized-form-group").hide();
+                }
+                $("#dash_user_label_naming").text("For user");
+                if(typeof personid!=="undefined"){
+                    setDashUsersSelectionFromExisting("users", personid, dashid);
+                } else {
+                    if(value==="WEB"){
+                        setDashUsersSelection("web");
+                    } else {
+                        setDashUsersSelection("users");
+                    }
+                }
+            break;
+            case "DISPLAY":
+                $("#personlized-form-group").hide();
+                $("#dash_user_label_naming").text("For display");
+                if(typeof clientid!=="undefined"){
+                    setDashUsersSelectionFromExisting("displays", clientid, dashid);
+                } else {
+                    setDashUsersSelection("displays");
+                }
+            break;
+        }
+        $("#dash_user").off("change").on("change", function(){
+            if($("#dash_type").val()==="MOBILE"){
+                setPersonalizedDisplays($("#dash_type").val(), undefined, parseInt($("#dash_user").val()));
+            } else if($("#dash_type").val()==="DISPLAY"){
+                if(typeof $(this).val() !== "undefined" && $(this).val() !== null && $(this).val() !== ""){
+                    getHttpJsonRPC('{"jsonrpc": "2.0", "method": "ClientService.getDisplayClient", "params": {"id": '+parseInt($(this).val())+'} "id":"ClientService.getDisplayClient"}', function(data){
+                        if(typeof data.capabilities.displayheight !== "undefined" && typeof data.capabilities.displaywidth !== "undefined"){
+                            $("#gridsterdisplaycontainer").width(data.capabilities.displaywidth);
+                            $("#gridsterdisplaycontainer").height(data.capabilities.displayheight);
+                        }
+                    });
+                }
+            }
+        });
+    }
+    
+    $("#dash_persclient").off("change").on("change", function(){
+        if($("#dash_type").val()==="MOBILE"){
+            if(typeof $(this).val() !== "undefined" && $(this).val() !== null && $(this).val() !== ""){
+                getHttpJsonRPC('{"jsonrpc": "2.0", "method": "UserService.getUserBoundDevice", "params": {"clientid": '+parseInt($(this).val())+'} "id":"UserService.getUserBoundDevice"}', function(data){
+                    if(typeof data.capabilities.displayheight !== "undefined" && typeof data.capabilities.displaywidth !== "undefined"){
+                        $("#gridsterdisplaycontainer").width(data.capabilities.displaywidth);
+                        $("#gridsterdisplaycontainer").height(data.capabilities.displayheight);
+                    }
+                });
+            }
+        } else if($("#dash_type").val()==="HYBRID"){
+            if(typeof $(this).val() !== "undefined" && $(this).val() !== null && $(this).val() !== ""){
+                getHttpJsonRPC('{"jsonrpc": "2.0", "method": "ClientService.getDisplayClient", "params": {"id": '+parseInt($(this).val())+'} "id":"ClientService.getDisplayClient"}', function(data){
+                    if(typeof data.capabilities.displayheight !== "undefined" && typeof data.capabilities.displaywidth !== "undefined"){
+                        $("#gridsterdisplaycontainer").width(data.capabilities.displaywidth);
+                        $("#gridsterdisplaycontainer").height(data.capabilities.displayheight);
+                    }
+                });
+            }
+        }
+    });
+    
+    function setPersonalizedDisplays(type, selectedId, userid){
+        $("#dash_persclient").empty();
+        switch(type){
+            case "MOBILE":
+                if(typeof userid !== "undefined"){
+                    getHttpJsonRPC('{"jsonrpc": "2.0", "method": "UserService.getUserBoundDevices", "params": {"userid": '+userid+'} "id":"UserService.getUserBoundDevices"}', function(data){
+                        var found = false;
+                        if(typeof selectedId !== "undefined"){
+                            for(var i=0; i<data.length;i++){
+                                if(data[i].id===selectedId){
+                                    found = true;
+                                }
+                                $("#dash_persclient").append('<option value="'+data[i].id+'"'+((data[i].id===selectedId)?' selected="selected"':'')+'>'+data[i].deviceinfo+'</option>');
+                            }
+                        } else {
+                            for(var i=0; i<data.length;i++){
+                                $("#dash_persclient").append('<option value="'+data[i].id+'">'+data[i].deviceinfo+'</option>');
+                            }
+                        }
+                        if(typeof selectedId !== "undefined" && !found){
+                            $("#dash_persclient").append('<option value="" selected="selected">Invalid, missing mobile?</option>');
+                            $("#dash_persclient").removeAttr("disabled");
+                        }
+                        $("#dash_persclient").trigger("change");
+                    });
+                }
+            break;
+            case "HYBRID":
+                getHttpJsonRPC('{"jsonrpc": "2.0", "method": "ClientService.getDisplayClients", "id":"ClientService.getDisplayClients"}', function(data){
+                    if(typeof selectedId !== "undefined"){
+                        for(var i=0; i<data.length;i++){
+                            $("#dash_persclient").append('<option value="'+data[i].id+'"'+((data[i].id===selectedId)?' selected="selected"':'')+'>'+data[i].clientname+'</option>');
+                        }
+                    } else {
+                        for(var i=0; i<data.length;i++){
+                            $("#dash_persclient").append('<option value="'+data[i].id+'">'+data[i].clientname+'</option>');
+                        }
+                    }
+                    $("#dash_persclient").trigger("change");
+                });
+            break;
+        }
+    }
+    
+    function setDashUsersSelection(type){
+        var url;
+        switch(type){
+            case "web":
+                url = '{"jsonrpc": "2.0", "method": "UserService.getUsers", "id":"UserService.getUsers"}';
+            break;
+            case "users":
+                url = '{"jsonrpc": "2.0", "method": "UserService.getNormalizedUsers", "id":"UserService.getNormalizedUsers"}';
+            break;
+            case "displays":
+                url = '{"jsonrpc": "2.0", "method": "ClientService.getDisplayClients", "id":"ClientService.getDisplayClients"}';
+            break;
+        }
+        getHttpJsonRPC(url, function(data){
+            $("#dash_user").empty();
+            switch(type){
+                case "users":
+                case "web":
+                    for(var i=0; i<data.length;i++){
+                        $("#dash_user").append('<option value="'+data[i].id+'">'+data[i].firstname+'</option>');
+                    }
+                break;
+                case "displays":
+                    for(var i=0; i<data.length;i++){
+                        $("#dash_user").append('<option value="'+data[i].id+'">'+data[i].clientname+'</option>');
+                    }
+                break;
+            }
+            $("#dash_user").trigger( "change" );
+        });
+    }
+    
+    function setDashUsersSelectionFromExisting(type, selectedId, dashid){
+        var url;
+        if(dashid!==0){
+            $("#dash_type").attr("disabled", "disabled");
+            $("#dash_user").attr("disabled", "disabled");
+            $("#dash_persclient").attr("disabled", "disabled");
+        }
+        switch(type){
+            case "users":
+                url = '{"jsonrpc": "2.0", "method": "UserService.getUsers", "id":"UserService.getUsers"}';
+            break;
+            case "displays":
+                url = '{"jsonrpc": "2.0", "method": "ClientService.getDisplayClients", "id":"ClientService.getDisplayClients"}';
+            break;
+        }
+        getHttpJsonRPC(url, function(data){
+            $("#dash_user").empty();
+            switch(type){
+                case "users":
+                    for(var i=0; i<data.length;i++){
+                        <#if _SERVER.userloginrole=="ADMIN">
+                            $("#dash_user").append('<option value="'+data[i].id+'"'+((data[i].id===selectedId)?' selected="selected"':'')+'>'+data[i].firstname+'</option>');
+                        <#else>
+                            if(data[i].id===selectedId){
+                                $("#dash_user").append('<option value="'+data[i].id+'" selected="selected">'+data[i].firstname+'</option>');
+                            }
+                        </#if>
+                    }
+                break;
+                case "displays":
+                    for(var i=0; i<data.length;i++){
+                        $("#dash_user").append('<option value="'+data[i].id+'"'+((data[i].id===selectedId)?' selected="selected"':'')+'>'+data[i].clientname+'</option>');
+                    }
+                break;
+            }
+            $("#dash_user").trigger("change");
+        });
+    }
+    
+    $(document).ready(function() {
+        setPageBreadcrumbs(4, "page_dashboards", "Dashboards", "/dashboarddesigner.html", "Add/Edit Dashboard");
+        setPageTitleDescription("Create/Edit a dashboard");
+        preparePageInfo();
+
+        $("#dash_type").on("change", function(){
+            setCorrectForm($(this).val());
+        });
+
+        var dashBuilder;
+
+        function setGridEnabled(dashid){
+            var grid = $(".gridster ul").gridster({
+                widget_margins: [5, 5],
+                widget_base_dimensions: [90, 90],
+                autogrow_cols: false,
+                serialize_params: function($w, wgd) { 
+                    var tag = $($w).first().find('.dashboard-tile');
+                    var tagset = {};
+                    $(tag[0].attributes).each(function() {
+                        tagset[this.nodeName]=this.nodeValue;
+                    });
+                    return { 
+                        col: wgd.col, row: wgd.row, size_x: wgd.size_x, size_y: wgd.size_y, config: tagset 
+                    }; 
+                },
+                resize: {
+                    enabled: true,
+                    stop: function(e, ui, $widget) {
+                        var item = $widget.children().first();
+                        if(item.attr("data-type")!=="spacer"){
+                            $widget.find(".dashboard-delete-tile").remove();
+                            item.empty();
+                            switch(item.attr("data-type")){
+                                case "weather":
+                                    dashBuilder.dashBoardWeatherBuilder(item, false);
+                                    dashBuilder.setDeleteIcon(item.parent());
+                                break;
+                                case "time":
+                                    dashBuilder.dashBoardTimeBuilder(item, false);
+                                    dashBuilder.setDeleteIcon(item.parent());
+                                break;
+                                case "scene":
+                                    dashBuilder.dashBoardSceneBuilder(item, parseInt(item.attr("data-id")));
+                                    dashBuilder.setDeleteIcon(item.parent());
+                                break;
+                                case "macro":
+                                    dashBuilder.macroBuilder(item, parseInt(item.attr("data-id")));
+                                    dashBuilder.setDeleteIcon(item.parent());
+                                break;
+                                case "device":
+                                    dashBuilder.dashBoardDeviceBuilder(item, parseInt(item.attr("data-id")), item.attr("data-group"), item.attr("data-control"), item.attr("data-visual"));
+                                    dashBuilder.setDeleteIcon(item.parent());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }).data('gridster');
+            dashBuilder = new DashBoardBuilder(grid, $(".gridster ul"));
+            dashBuilder.build();
+            dashBuilder.setEdit(true);
+            grid.enable();
+            $("#dashboardaddspacerbutton").off("click").on("click", function(){
+                yesnoConfirmation("Add spacer/header", '<form id="dash-spacer-asheader">'+
+                    '<div id="dash-spacer-asheader">'+
+                    '    <div class="form-group">'+
+                    '        <label for="dash-spacer-asheader-typetext" class="control-label">Show:</label>'+
+                    '        <input type="text" class="form-control" name="dash-spacer-asheader-typetext" id="dash-spacer-asheader-typetext" placeholder="Leave empty to use as spacer, or enter text to use this as a header">'+
+                    '    </div>'+
+                    '</div>'+
+                    '</form>', function(){
+                        var showHeader = '';
+                        if($("#dash-spacer-asheader-typetext").val()!==""){
+                            showHeader = ' data-content="'+$("#dash-spacer-asheader-typetext").val()+'"';
+                        }
+                        if(showHeader!==''){
+                            dashBuilder.setDeleteIcon(grid.add_widget('<li style="background-color:rgba(0,0,0,.5);"><div class="dashboard-tile" data-type="spacer"'+showHeader+'><div style="text-align:left; width:100%; height:90px; display: table-cell; vertical-align:bottom; padding-bottom: 5px;">' + 
+                                                '<h3 style="font-size: 2.4em; border-bottom: 1px solid #fff; padding-bottom: 10px;">'+
+                                                    $("#dash-spacer-asheader-typetext").val()+
+                                                '</h3>'+
+                                           '</div></div></li>', 3, 1));
+                        } else {
+                            dashBuilder.setDeleteIcon(grid.add_widget('<li style="background-color:rgba(0,0,0,.5);"><div class="dashboard-tile" data-type="spacer"'+showHeader+'><div style="text-align:center; display: table-cell; vertical-align:middle;"></div></div></li>', 1, 1));
+                        }
+                }, "Add", "Cancel");
+            })
+            $("#canceldasheditmode").off("click").on("click", function(){
+                $("#canceldasheditmode").hide();
+                $("#dashboardaddbutton").hide();
+                $("#savedasheditmode").hide();
+                dashBuilder.setEdit(false);
+                grid.disable();
+                quickMessage("error", "Dashboard edit cancelled");
+                refreshPageContent("/dashboards.html");
+            });
+            
+            function hideButtons(){
+                $("#canceldasheditmode").hide();
+                $("#dashboardaddbutton").hide();
+                $("#savedasheditmode").hide();
+            }
+            
+            $("#savedasheditmode").off("click").on("click", function(){
+                if(dashBuilder.inEdit()){
+                    dashBuilder.setEdit(false);
+                    grid.disable();
+                    switch($("#dash_type").val()){
+                        case "WEB":
+                            if($("#dash_name").val()!=="" && $("#dash_type").val()!=="" && $("#dash_user").val()!==""){
+                                hideButtons();
+                                dashBuilder.saveGrid(dashid, $("#dash_name").val(), $("#dash_type").val(), 0, parseInt($("#dash_user").val()));
+                            } else {
+                                extendedPageError("Incorrect setup", "Please set correct client information");
+                            }
+                        break;
+                        case "MOBILE":
+                            if($("#dash_name").val()!=="" && $("#dash_type").val()!=="" && $("#dash_persclient").val()!=="" && $("#dash_user").val()!==""){
+                                hideButtons();
+                                dashBuilder.saveGrid(dashid, $("#dash_name").val(), $("#dash_type").val(), parseInt($("#dash_persclient").val()), parseInt($("#dash_user").val()));
+                            } else {
+                                extendedPageError("Incorrect setup", "Please set correct client information");
+                            }
+                        break;
+                        case "DISPLAY":
+                            if($("#dash_name").val()!=="" && $("#dash_type").val()!=="" && $("#dash_user").val()!==""){
+                                hideButtons();
+                                dashBuilder.saveGrid(dashid, $("#dash_name").val(), $("#dash_type").val(), parseInt($("#dash_user").val()), 0);
+                            } else {
+                                extendedPageError("Incorrect setup", "Please set correct client information");
+                            }
+                        break;
+                        case "HYBRID":
+                            if($("#dash_name").val()!=="" && $("#dash_type").val()!=="" && $("#dash_persclient").val()!=="" && $("#dash_user").val()!==""){
+                                hideButtons();
+                                dashBuilder.saveGrid(dashid, $("#dash_name").val(), $("#dash_type").val(), parseInt($("#dash_persclient").val()), parseInt($("#dash_user").val()));
+                            } else {
+                                extendedPageError("Incorrect setup", "Please set correct client information");
+                            }
+                        break;
+                    }
+                }
+            });
+        }
+
+        $("#cancel_dashboard").off("click").on("click", function(e){
+            e.preventDefault();
+            quickMessage("info", "Dashboard add/edit cancelled", 1000);
+            refreshPageContent("/dashboards.html");
+        });
+        $.when(
+            $.getScript( "/shared/js/libs/gridster/jquery.gridster.min.js" ),
+            $.getScript( "/shared/js/sitelibs/dashboard.js" ),
+            $.Deferred(function( deferred ){
+                $( deferred.resolve );
+            })
+        ).done(function(){
+            var dashid = ${dashid};
+            if(dashid!==0){
+                getHttpJsonRPC('{"jsonrpc": "2.0", "method": "DashboardService.getDashboardById", "params":{"id":'+dashid+'}, "id":"DashboardService.getDashboardById"}', function(data){
+                    $("#dash_name").val(data.name);
+                    setCorrectForm(data.clienttype, data.clientid, data.personid);
+                    if(data.clienttype==="MOBILE"){
+                        setPersonalizedDisplays(data.clienttype, data.clientid,data.personid);
+                    } else {
+                        setPersonalizedDisplays(data.clienttype, data.clientid);
+                    }
+                    var serialization = Gridster.sort_by_row_and_col_asc(data.data);
+                    var gridpane = $(".gridster ul");
+                    $.each(serialization, function() {
+                        var contentDiv = "<div ";
+                        for(var item in this.config){
+                            contentDiv += (item + '="'+this.config[item]+'" ');
+                        }
+                        contentDiv += "></div>"
+                        gridpane.append('<li data-row="'+this.row+'" data-col="'+this.col+'" data-sizex="'+this.size_x+'" data-sizey="'+this.size_y+'">' + contentDiv + '</li>');
+                    });
+                    setGridEnabled(dashid);
+                });
+            } else {
+                setCorrectForm("WEB", 0, ${_SERVER.userloginid}, dashid);
+                setGridEnabled(dashid);
+                $(".gridster").resizable({ ghost: true });
+            }
+        });
+    });
+</script>

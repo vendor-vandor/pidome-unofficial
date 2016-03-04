@@ -1,0 +1,2 @@
+CREATE TABLE [fixedclients] ([id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, [clientname] TEXT, [clientpass] TEXT, [lastlogin] DATETIME, [roleset] TEXT, [ext] BOOLEAN NOT NULL DEFAULT 0, [created] DATETIME NOT NULL DEFAULT (datetime('now')), [modified] DATETIME NOT NULL DEFAULT (datetime('now')));
+PRAGMA user_version=7;

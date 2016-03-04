@@ -1,0 +1,4 @@
+INSERT INTO installed_packages (`packageid`, `name`,`version`,`sequence`,`active`,`install_base`,`package_type`,`author`,`email`,`website`,`permissions`) VALUES ('PIDOME-NATIVE-MODIFIERS', 'pidome-modifiers','0.0.1',1,1,'pidome-modifiers.jar','plugin','PiDome','support@pidome.org','http://pidome.org','[]');
+INSERT INTO plugin_types (`name`, `description`) VALUES ('Data modifiers', 'Data modifiers are plugins which can deliver data to devices or get data delivered from device perform calculations and pass them back.');
+INSERT INTO installed_plugins (`name`,`type`,`path`,`package`,`active`,`fixed`) VALUES ('Sun position calculator',7,'org.pidome.plugins.modifiers.sunPosition',(SELECT id FROM installed_packages WHERE packageid='PIDOME-NATIVE-MODIFIERS' LIMIT 1),1,0);
+PRAGMA user_version=64;

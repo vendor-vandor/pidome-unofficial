@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.1" id="two-ways-up-down" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="100 100 312 312" enable-background="new 0 0 512 512" xml:space="preserve">
+<g>
+	<rect fill="#fff" fill-opacity="0.2" x="135.972" y="351.053" width="120.028" height="23.764"/>
+	<polygon fill="#fff" fill-opacity="0.2" points="207.989,137.183 183.982,137.183 183.982,275.749 135.972,275.749 195.987,335.158 256.002,275.749 207.989,275.749"/>
+	<polygon fill="#fff" fill-opacity="0.2" points="256,236.251 304.011,236.251 304.011,374.816 328.018,374.816 328.018,236.251 376.028,236.251 316.016,176.842"/>
+	<rect fill="#fff" fill-opacity="0.2" x="256" y="137.183" width="120.028" height="23.764"/>
+</g>
+</svg>

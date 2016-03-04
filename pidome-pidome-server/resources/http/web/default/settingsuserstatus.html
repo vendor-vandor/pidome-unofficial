@@ -1,0 +1,263 @@
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(6, "page_edituserstatus", "User statuses", "/settingsuserstatuses.html");
+    });
+</script>
+<div class="defaultcontent" id="settingslocationeditor" style="max-width:976px;">
+    <fieldset>
+        <legend>Edit user statuses</legend>
+        <p>All though a small settings screen, user statuses have a huge impact in the server. A userstatus is a server wide setting to let the system know what the current userstatus is of the environment. This userstatus can be used and set in triggers where actions can be taken based on this userstatus</p>
+        <p>By default some default user statuses can not be deleted, but it is always possible to add/edit/delete user defined user statuses</p>
+        <div style="float:left;">
+            <h3>Add new userstatus</h3>
+            <section class="itemeditor">
+                <div class="nvp">
+                    <div class="n">
+                        <label for="newUserStatusName">Name</label>
+                    </div>
+                    <div class="v">
+                        <input data-inputtype="string" type="text" name="newUserStatusName" id="newUserStatusName" value="" />
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        <label for="newUserStatusDescription">Description</label>
+                    </div>
+                    <div class="v">
+                        <input data-inputtype="string" type="text" name="newUserStatusDescription" id="newUserStatusDescription" value=""/>
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        &nbsp;
+                    </div>
+                    <div class="v">
+                        <button id="newUserStatus" name="newUserStatus" value="">Add</button>
+                        <button id="cancelNewUserStatus" name="cancelNewUserStatus" value="cancelNewUserStatus" style="margin-left: 10px;">Cancel</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div style="float:left; margin-left:15px;">
+            <h3>Edit/Delete user statuses</h3>
+            <section class="itemeditor">
+                <div style="float:left; width:220px;">
+                    <div id="userstatusList"></div>
+                </div>
+                <div style="float:left;">
+                    <div class="nvp">
+                        <div class="n">
+                            <label for="editUserStatusName">Name</label>
+                        </div>
+                        <div class="v">
+                            <input data-inputtype="string" type="text" name="editUserStatusName" id="editUserStatusName" value="" />
+                        </div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            <label for="editUserStatusDescription">Description</label>
+                        </div>
+                        <div class="v">
+                            <input data-inputtype="string" type="text" name="editUserStatusDescription" id="editUserStatusDescription" value=""/>
+                        </div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            &nbsp;
+                        </div>
+                        <div class="v">
+                            <button id="updateUserStatus" name="updateUserStatus" value="">Update</button>
+                            <button id="cancelUpdateUserStatus" name="cancelUpdateUserStatus" value="cancelUpdateUserStatus" style="margin-left: 10px;">Cancel</button>
+                            <button id="deleteUpdateUserStatus" name="deleteUpdateUserStatus" value="deleteUpdateUserStatus" style="margin-left: 10px;">Delete</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="updateUserStatusId" id="updateUserStatusId" value="" />
+                </div>
+            </section>
+        </div>
+    </fieldset>
+</div>
+<h2>Last user statuses</h2>
+<table id="userstatustable">
+    <thead>
+        <tr>
+            <th align="left">Name</th>
+            <th align="left">Description</th>
+            <th align="left">Last activated</th>
+            <th align="left">Editable</th>
+            <th align="left">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function () {
+
+        var allUserStatusSource = {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int'},
+                { name: 'name', type: 'string'},
+                { name: 'fixed', type: 'boolean'},
+                { name: 'lastactivated', type: 'string'},
+                { name: 'description', type: 'string'}
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserStatusService.getUserStatuses", "id":"UserStatusService.getUserStatuses"}',
+            root: "result>data"
+        };
+        var allUserStatusSourceData = new $.jqx.dataAdapter(allUserStatusSource);
+        
+        $("#userstatustable").jqxDataTable({ source: allUserStatusSourceData, filterable: true, filtermode: 'simple', selectionMode: "none", height: 360, width: 1000, sortable: true, pageable: true, pageSize: 9, pagerButtonsCount: 10, theme: siteSettings.getTheme(),
+            columns: [
+                {text: 'id', dataField: 'id', hidden:true},
+                {text: 'Name', dataField: 'name', width: 200},
+                {text: 'Description', dataField: 'description'},
+                {text: 'Last activated', dataField: 'lastactivated', width: 150},
+                {text: 'Deletable', dataField: 'fixed', width: 60,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return value===true?"No":"Yes";
+                    }      
+                },
+                {text: 'Action', width: 75,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return '<button class="setUserStatusActive" name="setUserStatusActive" id="setUserStatusActive-'+rowData.id+'" value="'+rowData.id+'">Set</button>'
+                    }      
+                }
+            ],
+            rendering: function(){
+                    // destroys all buttons.
+                    if ($(".setUserStatusActive").length > 0) {
+                        $(".setUserStatusActive").jqxButton('destroy');
+                    }
+            },
+            rendered: function () {
+                try {
+                    $(".setUserStatusActive").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".setUserStatusActive").on('click', function () {
+                        var userstatus = $(this).attr('id').split("-")[1];
+                        $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserStatusService.setUserStatus", "params":{"id": '+userstatus+'},"id":"UserStatusService.setUserStatus"}')
+                            .done(function(data) {
+                                allUserStatusSourceData.dataBind();
+                            })
+                            .fail(function() {
+                                showErrorMessage("Error","Could not set user status");
+                            });
+                    });
+                } catch(error){
+                    /// Nothing to edit.
+                }
+            }
+        });
+        
+        $("#userstatusList").jqxComboBox({
+            placeHolder: "Select status", source: allUserStatusSourceData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme()
+        });
+        
+        $("#userstatusList").on('select', function (event) {
+            if (event.args) {
+                var item = event.args.item;
+                if (item) {
+                    $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserStatusService.getUserStatus", "params":{"id": '+item.value+'},"id":"UserStatusService.getUserStatus"}')
+                            .done(function(data) {
+                                setUserStatusEditEnabled(data.result.data.name,data.result.data.description,data.result.data.fixed);
+                                $("#updateUserStatusId").val(data.result.data.id);
+                            })
+                            .fail(function() {
+                                showErrorMessage("Error","Could not retrieve user status " + item.label);
+                            });
+                }
+            }
+        });
+        
+        $("#cancelUpdateUserStatus").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelUpdateUserStatus").on('click', function (event) {
+            setUserStatusEditDisabled();
+        });
+        $("#updateUserStatus").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#updateUserStatus").on('click', function (event) {
+            if(inputFieldValid($("#editUserStatusName")) && inputFieldValid($("#editUserStatusDescription"))){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserStatusService.updateUserStatus", "params":{"id": '+$("#updateUserStatusId").val()+', "name":"'+$("#editUserStatusName").val()+'","description":"'+$("#editUserStatusDescription").val()+'"},"id":"UserStatusService.updateUserStatus"}')
+                    .done(function(data) {
+                        showInfoMessage("Updated","User status has been udated");
+                        setUserStatusEditDisabled();
+                        allUserStatusSourceData.dataBind();
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not update user status");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct user status data.");
+            }
+        });
+        $("#deleteUpdateUserStatus").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#deleteUpdateUserStatus").on('click', function (event) {
+            $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserStatusService.deleteUserStatus", "params":{"id": '+$("#updateUserStatusId").val()+'},"id":"UserStatusService.deleteUserStatus"}')
+                .done(function(data) {
+                    showInfoMessage("Updated","UserStatus has been deleted");
+                    setUserStatusEditDisabled();
+                    allUserStatusSourceData.dataBind();
+                })
+                .fail(function() {
+                    showErrorMessage("Error","Could not delete user status");
+                });
+        });
+        setUserStatusEditDisabled();
+        
+        function setUserStatusEditEnabled(name, description, fixed){
+            $("#updateUserStatus").jqxButton({disabled: false });
+            $("#cancelUpdateUserStatus").jqxButton({disabled: false });
+            if(fixed===false){
+                $("#deleteUpdateUserStatus").jqxButton({disabled: false });
+            }
+            resetEditInputs(name,description);
+        }
+        
+        function setUserStatusEditDisabled(){
+            $("#updateUserStatus").jqxButton({disabled: true });
+            $("#cancelUpdateUserStatus").jqxButton({disabled: true });
+            $("#deleteUpdateUserStatus").jqxButton({disabled: true });
+            resetEditInputs("","");
+        }
+        
+        function resetEditInputs(name, description){
+            $("#editUserStatusName").val(name);
+            $("#editUserStatusDescription").val(description);
+            createSizedWebInputField($("#editUserStatusName"), 250);
+            createSizedWebInputField($("#editUserStatusDescription"), 250);
+        }
+        
+        $("#cancelNewUserStatus").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelNewUserStatus").on('click', function (event) {
+            resetUserStatusNewInputs();
+        });
+        $("#newUserStatus").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#newUserStatus").on('click', function (event) {
+            if(inputFieldValid($("#newUserStatusName")) && inputFieldValid($("#newUserStatusDescription"))){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserStatusService.addUserStatus", "params":{"name":"'+$("#newUserStatusName").val()+'","description":"'+$("#newUserStatusDescription").val()+'"},"id":"UserStatusService.addUserStatus"}')
+                    .done(function(data) {
+                        showInfoMessage("Updated","User status has been added");
+                        resetUserStatusNewInputs("","");
+                        allUserStatusSourceData.dataBind();
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not add user status");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct user status data.");
+            }
+        });        
+        
+        function resetUserStatusNewInputs(name, description){
+            $("#newUserStatusName").val(name);
+            $("#newUserStatusDescription").val(description);
+            createSizedWebInputField($("#newUserStatusName"), 250);
+            createSizedWebInputField($("#newUserStatusDescription"), 250);
+        }
+        
+        resetUserStatusNewInputs("","");
+        
+    });
+</script>

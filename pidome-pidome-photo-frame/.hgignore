@@ -1,0 +1,8 @@
+\.orig$
+\.orig\..*$
+\.chg\..*$
+\.rej$
+\.conflict\~$
+\.gradle$
+local\.properties
+\build$

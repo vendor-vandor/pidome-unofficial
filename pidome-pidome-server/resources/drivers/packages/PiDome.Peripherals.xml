@@ -1,0 +1,25 @@
+<package collection="pidome-peripheral-drivers" version="0.1" enabled="true">
+    <author>
+        <createdby>PiDome</createdby>
+        <name>John Sirach</name>
+        <email>john.sirach@gmail.com</email>
+        <website>http://pidome.org</website>
+    </author>
+    <description>This peripheral drivers are made by PiDome to communicate with native supported peripherals</description>
+    <delivers>
+        <peripherals>
+            <peripheral version="0.1" driver="org.pidome.driver.peripherals.pidomeServerPeripheral" internalname="Server Device" friendlyname="PiDome Server peripheral interface" vid="PiDome" pid="ServerDevicePeripheral">
+                <description>This peripheral driver is used for interfaciong with the server itself, from hardware information to loaded devices etc..</description>
+            </peripheral>
+            <peripheral version="0.1" driver="org.pidome.driver.peripherals.pidomeNativeI2CBus" internalname="GPIO I2C" friendlyname="PiDome GPIO I2C interface" vid="PiDome" pid="GPIOI2C">
+                <description>This peripheral driver is used for communication over the GPIO I2C interface.</description>
+            </peripheral>
+            <peripheral version="0.1" driver="org.pidome.driver.peripherals.pidomeNativeSerial" internalname="GPIO Serial" friendlyname="PiDome GPIO Serial interface" vid="PiDome" pid="GPIOSerial">
+                <description>This peripheral driver is used for communication over the GPIO Serial interface.</description>
+            </peripheral>
+            <peripheral version="0.1" driver="org.pidome.driver.peripherals.pidomeNativeArduino" internalname="Arduino UNO" friendlyname="Arduino Uno" vid="2341" pid="0043">
+                <description>This peripheral driver can be used to communicate to Arduino boards with Atmega chip.</description>
+            </peripheral>
+        </peripherals>
+    </delivers>
+</package>

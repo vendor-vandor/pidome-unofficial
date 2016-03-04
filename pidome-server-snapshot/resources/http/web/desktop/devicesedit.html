@@ -1,0 +1,437 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<div id="pageinfotext" class="popup medium roundedcorners">
+    <p>On this page you add/remove and edit your device information and set device settings. There are two kind of devices:</p>
+    <ul>
+        <li>Default available devices</li>
+        <li>Your own created custom devices created with the "Custom device editor"</li>
+    </ul>
+    <p>Both these devices behave the exact same way on this page.</p>
+    <p>Possible device statusses:<br/>
+        <br/>
+        <span class="label label-success">Running</span> Device is loaded, active and controlled by it's driver or plugin.<br/>
+        <br/>
+        <span class="label label-warning">Not running</span> This device is not loaded because of the driver or plugin is not active or loaded.<br/>
+        <br/>
+        <span class="label label-danger">Error</span> There is something wrong with the device. This device can possible be running if the driver or plugin is loaded. "Check/Start" to see what's wrong.<br/>
+    </p>
+    <p>In rare occasions you need to start a device manually. Often when it happens it is misconfigured, incorrect created or other reasons. Click on "Check/Start" to manually start the device. If something is wrong with it will show up. Otherwise it is started.</p>
+</div>
+
+
+<div id="deviceedittable-toolbar" style="width:100%;">
+    <h2 style="margin-top:0px; margin-bottom: 0px; float:left;">Your devices</h2>
+    <button type="button" class="btn btn-info" style="float:left; margin-left: 25px;" id="mutationAddNewDevice">Add a new device</button>
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <table id="deviceedittable" class="table table-striped table-hover"
+                       data-toolbar="#deviceedittable-toolbar"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-search="true"                       
+                       data-sort-name="locationname"
+                       data-sort-order="asc"
+                       data-pagination="true">
+                    <thead>
+                        <tr>
+                            <th data-field="active" data-width="100" data-formatter="sttatusFormatter">Status</th>
+                            <th data-field="id" data-width="75">ID</th>
+                            <th data-field="locationname" data-width="150" data-sortable="true">Location</th>
+                            <th data-field="categoryname" data-width="150" data-sortable="true">Category</th>
+                            <th data-field="name" data-sortable="true">Name</th>
+                            <th data-field="fixed" data-width="50" data-formatter="fixedFormatter">Fixed</th>
+                            <th data-field="favorite" data-width="50" data-formatter="favoriteFormatter">Favorite</th>
+                            <th data-field="action" data-width="245" data-formatter="actionFormatter">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<div id="dialog-confirm-delete" title="Confirm" style="display:none;">
+    <div>Confirm device delete</div>
+    <div></div>
+</div>
+<script>
+    
+var globalCategoryList;
+var globalLocationsList;
+var globalKnownActiveDriversList;
+var globalModifiersList;
+
+function sttatusFormatter(value, row){
+    if(value===true){
+        return '<span class="label label-success">Running</span>';
+    } else {
+        return '<span class="label label-warning">Not running</span>';
+    }
+}
+
+function fixedFormatter(value, row){
+    if(value===true){
+        return 'Yes';
+    } else {
+        return 'No';
+    }
+}
+
+function favoriteFormatter(value, row){
+    if(value===true){
+        return 'Yes';
+    } else {
+        return 'No';
+    }
+}
+
+function actionFormatter(value, row, index){
+    var container = "";
+    if(row.fixed===false){
+        container += '<button class="btn btn-danger delete-device" id="deletedevice-'+row.id+'-'+index+'" style="float:right;">Delete</button>';
+    } else {
+        container += '<button class="btn btn-danger" style="float:right;" disabled="disabled">Delete</button>';
+    }
+    if(row.id!==1){
+        container += '<button class="btn btn-info edit-device" style="float:right; margin-right: 5px;" id="mutationEditDevice-'+row.id+'" value="'+row.id+'">Edit</button>';
+    } else {
+        container += '<button class="btn btn-info" style="float:right; margin-right: 5px;" disabled="disabled">Edit</button>';
+    }
+    if(row.active===false){
+        container += '<button class="btn btn-success start-device" style="float:right; margin-right: 5px;" id="mutationStartDevice-'+row.id+'" value="'+row.id+'">Check/Start</button>';
+    }
+    return container;
+}
+
+$('#deviceedittable').bootstrapTable({
+    url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getDeclaredDevices","id":"DeviceService.getDeclaredDevices"}',
+    cache: false,
+    height: 707,
+    toolbarAlign: 'left',
+    responseHandler: function(data){
+        var workData = returnResultData(data);
+        return workData;
+    },
+    onLoadSuccess: function (data) {
+        setButtonHandlers();
+    },
+    onPostBody : function(){
+        setButtonHandlers();
+    }
+});
+
+function setButtonHandlers(){
+    $(".delete-device").off('click').on("click", function(){
+        var deviceId = $(this).attr('id').split("-")[1];
+        var deviceData = getTableRowData("#deviceedittable", $(this).attr('id').split("-")[2]);
+        yesnoConfirmation('Remove device', '<p>Are you sure you want to delete <strong>'+deviceData.name+'</strong>?</p>', 
+            function(){
+                getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.deleteDevice\", \"params\": ["+deviceId+"], \"id\": \"DeviceService.deleteDevice\"}",function(data) {
+                    quickMessage("success", '<strong>' + deviceData.name + '</strong> has been deleted');
+                    $('#deviceedittable').bootstrapTable("refresh",{ silent: true });
+                });
+            },
+        "Remove", "Cancel");
+    });
+    $(".edit-device").off('click').on('click', function () {
+        var device = $(this).attr('id').split("-")[1];
+        getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.getDeviceSettings\", \"params\": {\"id\":"+device+"}, \"id\": \"DeviceService.getDeviceSettings\"}", function(data){
+            var form = buildDeviceForm(data);
+            yesnoConfirmation("Edit device: " + data.device.name, form, function(){
+                saveEditDevice();
+            }, "Update", "Cancel");
+        });
+    });
+    $(".start-device").off('click').on('click', function () {
+        var device = $(this).attr('id').split("-")[1];
+        getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.startDevice\", \"params\": ["+device+"], \"id\": \"DeviceService.startDevice\"}", function(data){
+            quickMessage("Start device", "Device started");
+        });
+    });
+}
+
+function addDevice(){
+    var data = {device: {id:0,name:'',location:0,category:0,favorite:false}, options:[], address:{}};
+    var form  = '<h4>Device selection</h4>'+
+                '<form class="form-horizontal">' +
+                '<div class="form-group">' +
+                '    <label for="deviceDriverMutationSelect" class="col-sm-3 control-label">Select driver/plugin</label>' +
+                '    <div class="col-sm-9">' +
+                '        <select class="form-control" id="deviceDriverMutationSelect">' +
+                '            <option value="0">Select driver....</option>' +
+                '        </select>' +
+                '    </div>' +
+                '</div>'+
+                '<div class="form-group" id="deviceSelectionVisibility" style="display:none;">' +
+                '    <label for="deviceMutationSelect" class="col-sm-3 control-label">Select device</label>' +
+                '    <div class="col-sm-8">' +
+                '        <select class="form-control" id="deviceMutationSelect">' +
+                '        </select>' +
+                '    </div>' +
+                '    <div class="col-sm-1">' +
+                '        <img src="/shared/images/info_medium.png" id="deviceInfoIcon" alt="Device info" style="float:left;margin-top:4px;"/>' +
+                '    </div>' +                
+                '</div>'+
+                '</form>';
+        form += '<div id="deviceFormVisibility"></div>';
+    yesnoConfirmation("Add device", form, function(){
+        saveNewDevice();
+    }, "Add device", "Cancel");
+    $("#dialog-yesnoconfirmation-confirmed").attr("disabled", "disabled");
+    
+    $("#deviceDriverMutationSelect").off("change").on("change", function(){
+        $('#deviceSelectionVisibility').show();
+        $("#deviceMutationSelect").html('<option value="0">Select device....</option>');
+        $("#dialog-yesnoconfirmation-confirmed").attr("disabled", "disabled");
+        $("#deviceFormVisibility").empty();
+        getHttpJsonRPC('{"jsonrpc": "2.0", "method": "DeviceService.getDevicesByPeripheralSoftwareDriver", "params":{"id":'+$("#deviceDriverMutationSelect").val()+'}, "id":"DeviceService.getDevicesByPeripheralSoftwareDriver"}',function(resultData) {
+            for(var q=0;q<resultData.length;q++){
+                $("#deviceMutationSelect").append('<option value="'+resultData[q].id+'">'+ resultData[q].name+'</option>');
+            }
+            $('#deviceMutationSelect').off("change").on("change", function(){
+                $("#deviceFormVisibility").empty();
+                if($("#deviceMutationSelect").val()!=="0"){
+                    getHttpJsonRPC('{"jsonrpc": "2.0", "method": "DeviceService.getInstalledDeviceSettings", "params":{"id":'+$("#deviceMutationSelect").val()+'}, "id":"DeviceService.getInstalledDeviceSettings"}',function(resultData) {
+                        data.options = resultData.options;
+                        data.address = resultData.address;
+                        $("#deviceFormVisibility").html(buildDeviceForm(data));
+                        $("#dialog-yesnoconfirmation-confirmed").removeAttr("disabled");
+                    });
+                }
+            });
+        });
+    });
+    
+    if(typeof globalKnownActiveDriversList !== "undefined" && globalKnownActiveDriversList.length>0){
+        for(var q=0;q<globalKnownActiveDriversList.length;q++){
+            $("#deviceDriverMutationSelect").append('<option value="'+globalKnownActiveDriversList[q].id+'">'+ globalKnownActiveDriversList[q].name+'</option>');
+        }
+    } else {
+        
+        getHttpJsonRPC('{"jsonrpc": "2.0", "method": "HardwareService.getPeripheralSoftwareDrivers", "id":"HardwareService.getPeripheralSoftwareDrivers"}',function(resultData) {
+            globalKnownActiveDriversList = resultData;
+            for(var q=0;q<globalKnownActiveDriversList.length;q++){
+                $("#deviceDriverMutationSelect").append('<option value="'+globalKnownActiveDriversList[q].id+'">'+ globalKnownActiveDriversList[q].name+'</option>');
+            }
+        });
+        
+    }
+    
+}
+
+function buildDeviceForm(data){
+    var form =  '<h4>Basic device info</h4>'+
+                '<form class="form-horizontal">' +
+                '<input type="hidden" name="deviceMutationDevice" id="deviceMutationDevice" value="'+data.device.id+'" />' +
+                '<div class="form-group">' +
+                '    <label for="mutationInputBase-name" class="col-sm-3 control-label">Name</label>' +
+                '    <div class="col-sm-9">' +
+                '        <input type="text" class="form-control" id="mutationInputBase-name" placeholder="Set device name" value="'+data.device.name+'">' +
+                '    </div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '    <label for="locationMutationSelect" class="col-sm-3 control-label">Device location</label>' +
+                '    <div class="col-sm-9">' +
+                '        <select class="form-control" id="locationMutationSelect">';
+                for(var q=0;q<globalLocationsList.length;q++){
+                    form +='<option value="'+globalLocationsList[q].id+'"'+((globalLocationsList[q].id===data.device.location)?' selected="selected"':'')+'>'+ globalLocationsList[q].floorname + ': ' + globalLocationsList[q].name+'</option>';
+                }
+        form += '        </select>' +
+                '    </div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '    <label for="categoryMutationSelect" class="col-sm-3 control-label">Device category</label>' +
+                '    <div class="col-sm-9">' +
+                '        <select class="form-control" id="categoryMutationSelect">';
+                for(var q=0;q<globalCategoryList.length;q++){
+                    form +='<option value="'+globalCategoryList[q].id+'"'+((globalCategoryList[q].id===data.device.category)?' selected="selected"':'')+'>'+ globalCategoryList[q].name+'</option>';
+                }
+        form += '        </select>' +
+                '    </div>' +
+                '</div>' +
+                '<div class="form-group">' +
+                '    <label for="favoriteMutationSelect" class="col-sm-3 control-label">Favorite</label>' +
+                '    <div class="col-sm-9">' +
+                '        <select class="form-control" id="favoriteMutationSelect">'+
+                '           <option value="1"'+((data.device.favorite===true)?' selected="selected"':'')+'>Yes</option>' +
+                '           <option value="0"'+((data.device.favorite===false)?' selected="selected"':'')+'>No</option>' +
+                '        </select>' +
+                '    </div>' +
+                '</div>';
+        
+        if(typeof data.modifiers !== "undefined" && data.modifiers.length>0){
+            form += '<h4>Attach script to control</h4><div id="modifiersblock">';
+            for(var j=0; j<data.modifiers.length;j++){
+                var modifier = data.modifiers[j];
+                form += '<div class="form-group">' +
+                        '    <label for="modifier-'+modifier.group+'-'+modifier.control+'" class="col-sm-3 control-label">'+modifier.controllabel+'</label>' +
+                        '    <div class="col-sm-9">' +
+                        '        <select class="form-control" id="modifier-'+modifier.group+'-'+modifier.control+'" data-group="'+modifier.group+'" data-control="'+modifier.control+'">'+
+                        '           <option value="0">None</option>';
+                        for(var q=0;q<globalModifiersList.length;q++){
+                            form +='<option value="'+globalModifiersList[q].id+'"'+((globalModifiersList[q].id===modifier.modifierid)?' selected="selected"':'')+'>'+ globalModifiersList[q].name+'</option>';
+                        }
+                form += '        </select>' +
+                        '    </div>' +
+                        '</div>';
+            }
+            form += '</div>';
+        }
+        
+        if(typeof data.options !== "undefined" && typeof data.options.struct !== "undefined" && data.options.struct.length>0){
+            form += '</form>' +
+                    '<h4>Device settings</h4>'+
+                    '<form class="form-horizontal" id="deviceMutionSettingsSets">';
+            for(var i=0; i< data.options.struct.length;i++){
+                var currentValue = '';
+                var option = data.options.struct[i];
+                if(typeof data.options.values !== "undefined"){
+                        for (var property in data.options.values) {
+                            if (data.options.values.hasOwnProperty(property)) {
+                                if(property == option.id){
+                                    currentValue = data.options.values[property];
+                                }
+                            }
+                        }
+                }
+                form += '<div class="form-group">' +
+                        '    <label for="mutationInputDeviceOptionExtend-'+option.id+'" class="col-sm-3 control-label">'+option.label+'</label>' +
+                        '    <div class="col-sm-9">';
+                if(option.type==="select"){
+                    form += '        <select class="form-control" id="mutationInputDeviceOptionExtend-'+option.id+'">';
+                    for(var j=0; j< option.selectset.length;j++){
+                        form += '<option value="'+option.selectset[j].value+'"'+((option.selectset[j].value===currentValue)?' selected="selected"':'')+'>'+ option.selectset[j].label +'</option>';
+                    }
+                    form += '        </select>';
+                } else {
+                    form += '<input class="form-control" type="text" data-inputtype="'+option.type+'" id="mutationInputDeviceOptionExtend-'+option.id+'" value="'+currentValue+'" />';
+                }
+                form += '    </div>' +
+                        '</div>';                 
+            }
+            form += '</form>';
+        }
+        if(typeof data.address !== "undefined" && typeof data.address.inputtype !== "undefined"){
+            form += '<h4>Device address settings</h4>';
+            if(typeof data.address.inputtype !== "undefined" && data.address.description !== ""){
+                form += '<p>'+data.address.description+'</p>'
+            }
+            form += '<form class="form-horizontal">' +
+                    '<div class="form-group">' +
+                    '    <label for="mutationInputDeviceOptionBase-address" class="col-sm-3 control-label">'+data.address.label+'</label>' +
+                    '    <div class="col-sm-9">';
+            if(data.address.inputtype === "text"){
+                form += '        <input type="text" class="form-control" id="mutationInputDeviceOptionBase-address" placeholder="Set device name" value="'+data.address.currentvalue+'">';
+            }
+            form += '    </div>' +
+                    '</div>' +
+                    '</form>';
+        }
+    return form;
+}
+
+$(document).ready(function() {
+
+    setPageBreadcrumbs(2, "page_editdevices", "${page_title}", "/desktop/devicesedit.html");
+    setPageTitleDescription("Add, remove devices or change their settings.");
+    preparePageInfo();
+
+    getHttpJsonRPC('{"jsonrpc": "2.0", "method": "LocationService.getLocations", "id":"LocationService.getLocations"}',function(resultData) {
+        globalLocationsList = resultData;
+    });
+
+    getHttpJsonRPC('{"jsonrpc":"2.0", "id": "CategoryService.getFullCategoryList","method": "CategoryService.getFullCategoryList"}',function(resultData) {
+        globalCategoryList = resultData;
+    });
+
+    getHttpJsonRPC('{"jsonrpc": "2.0", "method": "DataModifierService.getPlugins", "id":"DataModifierService.getPlugins"}',function(resultData) {
+        globalModifiersList = resultData;
+    });
+
+    $("#mutationAddNewDevice").off('click').on('click', function () {
+        addDevice();
+    });
+});
+
+function saveNewDevice(){
+    var settings = {};
+    $("#deviceMutionSettingsSets input, #deviceMutionSettingsSets select").each(function() {
+        if($(this).attr("id")!==undefined && $(this).attr("id").startsWith("mutationInputDeviceOptionExtend-")){
+            settings[$(this).attr("id").replace("mutationInputDeviceOptionExtend-","")] = $(this).val();
+        }
+    });
+    var modifiers = [];
+    $("#modifiersblock select").each(function() {
+        if($(this).attr("id")!==undefined && $(this).attr("id").startsWith("modifier-")){
+            var modifierSet = {'group'  :$(this).attr("data-group"), 
+                               'control':$(this).attr("data-control"), 
+                                    'id':parseInt($(this).val())};
+            modifiers.push(modifierSet);
+        }
+    });
+    var json = [
+        parseInt($("#deviceMutationSelect").val()),
+        parseInt($("#locationMutationSelect").val()),
+        $("#mutationInputDeviceOptionBase-address").val(),
+        $("#mutationInputBase-name").val(),
+        parseInt($("#categoryMutationSelect").val()),
+        parseInt($("#favoriteMutationSelect").val())===0?false:true,
+        settings,
+        modifiers
+    ];
+    getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.addDevice\", \"params\": "+JSON.stringify(json)+" \"id\": \"DeviceService.saveDevice\"}", function(data) {
+        quickMessage("success", "'" + json[3] + "' has been added to the server");
+        $('#deviceedittable').bootstrapTable("refresh",{ silent: true });
+    });
+
+}
+
+function saveEditDevice(){
+    var settings = {};
+    $("#deviceMutionSettingsSets input, #deviceMutionSettingsSets select").each(function() {
+        if($(this).attr("id")!==undefined && $(this).attr("id").startsWith("mutationInputDeviceOptionExtend-")){
+            settings[$(this).attr("id").replace("mutationInputDeviceOptionExtend-","")] = $(this).val();
+        }
+    });
+    var modifiers = [];
+    $("#modifiersblock select").each(function() {
+        if($(this).attr("id")!==undefined && $(this).attr("id").startsWith("modifier-")){
+            var modifierSet = {'group'  :$(this).attr("data-group"), 
+                               'control':$(this).attr("data-control"), 
+                                    'id':parseInt($(this).val())};
+            modifiers.push(modifierSet);
+        }
+    });
+    var json = [
+        parseInt($("#deviceMutationDevice").val()),
+        parseInt($("#locationMutationSelect").val()),
+        $("#mutationInputDeviceOptionBase-address").val(),
+        $("#mutationInputBase-name").val(),
+        parseInt($("#categoryMutationSelect").val()),
+        parseInt($("#favoriteMutationSelect").val())==='0'?false:true,
+        settings,
+        modifiers
+    ];
+    getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.editDevice\", \"params\": "+JSON.stringify(json)+" \"id\": \"DeviceService.editDevice\"}", function(data) {
+        quickMessage("success", "Device '" + json[3] + "' has been modified");
+        $('#deviceedittable').bootstrapTable("refresh",{ silent: true });
+    });
+}
+
+function clearHandlers(){
+    globalCategoryList = undefined;
+    globalLocationsList= undefined;
+    globalKnownActiveDriversList = undefined;
+}
+    
+</script>
+<div id="innerscrollmargin"></div>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

@@ -1,0 +1,226 @@
+<p class="defaultcontent">Custom events are especially interesting for users who connect to the server and gives the possibility to define an event identifier which are usable 
+    in automation rules. These events are passed to the server using JSON-RPC on any JSON-RPC supported endpoint (http, websockets and raw sockets).<br/><br/>
+    <span style="font-weight: bold;">Please consider this: </span>You can not use a custom event in an else rule! An event is an one shot happening which follows a true/false scheme. This means
+that if you would use it within an if(event){ dothis; } else { dothat; } it will first do "dothis;" when it is true and follows immediately with executing "dothat;" because it turns false after it has been true.</p>
+
+<table id="eventstable">
+    <thead>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<h2>Event details</h2>
+<div class="defaultcontent" style="max-width:1000px;">
+    <div style="width: 48%; float:left; padding: 0% 1% 0% 0%; border-right: 1px solid #964a06;">
+        <h3>Event info</h3>
+        <div class="nvp">
+            <div class="n">Identifier</div>
+            <div class="v"><input type="text" id="event_identifier" /></div>
+        </div>
+        <div class="nvp">
+            <div class="n">Name</div>
+            <div class="v"><input type="text" id="event_name"></div>
+        </div>
+        <div class="nvp">
+            <div class="n">Description</div>
+            <div class="v"><input type="text" id="event_description"></div>
+        </div>
+    </div>
+    <div style="width:49%; float:left; padding: 0% 0% 0% 1%;">
+        <h3>Last occurrence</h3>
+        <div class="nvp">
+            <div class="n">Last occurrence</div>
+            <div class="v">: <span id="event_lastoc"></span></div>
+        </div>
+        <div class="nvp">
+            <div class="n">Reason</div>
+            <div class="v">: <span id="event_lastocreason"></span></div>
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+    <div style="border-top: 1px solid #007acc;margin-top: 10px; padding-top: 8px;">
+        <input type="hidden" name="eventmutationid" id="eventmutationid" value="" />
+        <button id="event_savedata" style="float:left;">Add event</button>
+        <button id="event_canceldata" style="margin-left: 25px; float:left;">Cancel</button>
+        <div style="clear:both;"></div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<div id="dialog-confirm-delete" title="Confirm" style="display:none;">
+    <div>Confirm event delete</div>
+    <div></div>
+</div>
+<script>
+    
+var allEventsSource = {
+    datatype: "json",
+    datafields: [
+        { name: 'id', type: 'int'},
+        { name: 'identifier', type: 'string'},
+        { name: 'name', type: 'string'},
+        { name: 'description', type: 'string'},
+        { name: 'lastoccurrence', type: 'string'},
+        { name: 'reason', type: 'string'},
+    ],
+    url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "EventService.getCustomEvents", "id":"EventService.getCustomEvents"}',
+    root: "result>data"
+};
+var allEventsSourceData = new $.jqx.dataAdapter(allEventsSource);
+
+function clearAllEventDataFields(){
+    $("#event_identifier").val("");
+    $("#event_name").val("");
+    $("#event_description").val("");
+    $("#event_lastoc").html("");
+    $("#event_lastocreason").html("");
+    $('#event_savedata').jqxButton('val', 'Add event');
+    $("#eventmutationid").val("");
+    $("#event_identifier").prop("disabled","");
+}
+
+$(document).ready(function() {
+    
+    $("#dialog-confirm-delete").jqxWindow({
+        width: 400,
+        height: 150,
+        theme: siteSettings.getTheme(),
+        autoOpen: false,
+        isModal: true
+    });
+    
+    $("#eventstable").jqxDataTable({ source: allEventsSourceData, selectionMode: "none", height: 335, width: 998, sortable: true, pageable: true, pageSize: 20, pagerButtonsCount: 20, theme: siteSettings.getTheme(),
+        columns: [
+            {text: 'id', dataField: 'id', width: 50},
+            {text: 'Identifier', dataField: 'identifier', width: 100},
+            {text: 'Name', dataField: 'name', width: 200},
+            {text: 'Description', dataField: 'description'},
+            {text: 'Last occurrence', dataField: 'lastoccurrence', width: 150},
+            {text: 'Action', width: 160, 
+                cellsRenderer: function (row, column, value, rowData) {
+                    var container = "<div>";
+                    container += '<button class="actionEditEvent" name="actionEditEvent" id="actionEditEvent-'+row+'" value="'+row+'">Edit</button>';
+                    container += '<button class="actionTriggerEvent" name="actionTriggerEvent" id="actionTriggerEvent-'+rowData.id+'" value="'+rowData.id+'">Trigger</button>';
+                    container += '<button class="actionDeleteEvent" name="actionDeleteEvent" id="actionDeleteEvent-'+rowData.id+'-'+row+'" value="'+rowData.id+'">Delete</button>';
+                    container += "</div>";
+                    return container;
+                }
+            }
+        ],
+        rendering: function(){
+                // destroys all buttons.
+                if ($(".actionTriggerEvent").length > 0) {
+                    $(".actionTriggerEvent").jqxButton('destroy');
+                }
+                if ($(".actionDeleteEvent").length > 0) {
+                    $(".actionDeleteEvent").jqxButton('destroy');
+                }
+        },
+        rendered: function () {
+            try {
+                $(".actionTriggerEvent").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                $(".actionTriggerEvent").on('click', function () {
+                    clearAllEventDataFields();
+                    $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "EventService.occurById", "id":"EventService.occurById", "params": {"id":'+$(this).attr('id').split("-")[1]+', "reason":"Trigger in web interface"}}', function(data){});
+                });
+            } catch(error){
+                /// Nothing to edit.
+            }
+            try {
+                $(".actionEditEvent").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                $(".actionEditEvent").on('click', function () {
+                    openEdit(parseInt($(this).attr('id').split("-")[1]));
+                });
+            } catch(error){
+                /// Nothing to edit.
+            }
+            try {
+                $(".actionDeleteEvent").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                $(".actionDeleteEvent").on('click', function () {
+                    var eventId = $(this).attr('id').split("-")[1];
+                    var row = $(this).attr('id').split("-")[2];
+                    var eventName = $("#eventstable").jqxDataTable('getCellValue', row, 'name');
+
+                    $("#dialog-confirm-delete").jqxWindow('setTitle','Delete: ' + eventName);
+                    $("#dialog-confirm-delete").jqxWindow('setContent','<p style="text-align:center;">Are you sure you want to delete custom event "'+eventName+'"?</p>' + 
+                                                                       '<div style="text-align:center;">'+
+                                                                       '    <input type="button" id="dialog-do-delete" value="Yes delete" />'+
+                                                                       '    <input type="button" id="dialog-do-cancel" value="No cancel" />'+
+                                                                       '</div>');
+                    $("#dialog-do-delete").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                    $("#dialog-do-delete").on('click', function () {
+                        $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"EventService.deleteCustomEvent\", \"params\": ["+eventId+"] \"id\": \"EventService.deleteCustomEvent\"}")
+                            .done(function(data) {
+                                try {
+                                    if(data.result.success !== true){
+                                        showErrorMessage("Event delete error", "Could not delete event: " + data.result.message);
+                                    } else {
+                                        showInfoMessage("Event delete", "Event " + eventName + " has been deleted.");
+                                        allEventsSourceData.dataBind();
+                                    }
+                                } catch(err){
+                                    showErrorMessage("Event delete error", "Could not delete device: " + data.error.data.message);
+                                }
+                            }, "json");
+                        $("#dialog-confirm-delete").jqxWindow('close');
+                    });
+                    $("#dialog-do-cancel").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                    $("#dialog-do-cancel").on('click', function () {
+                        $("#dialog-confirm-delete").jqxWindow('close');
+                    });
+                    $("#dialog-confirm-delete").jqxWindow('open');
+
+                });
+            } catch(error){
+                /// nothing to delete
+            }
+        }
+    });
+    function openEdit(itemId) {
+        clearAllEventDataFields();
+        var row = allEventsSourceData.records[itemId];
+        $("#event_identifier").prop("disabled","disabled");
+        $('#event_savedata').jqxButton('val', 'Update event');
+        $("#event_identifier").val(row.identifier);
+        $("#event_name").val(row.name);
+        $("#event_description").val(row.description);
+        $("#event_lastoc").html(row.lastoccurrence);
+        $("#event_lastocreason").html(row.reason);
+        $("#eventmutationid").val(row.id);
+    }
+    
+    $("#event_canceldata").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+    $("#event_canceldata").on('click', function () {
+        clearAllUserDataFields();
+    });
+    
+    $("#event_savedata").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+    $("#event_savedata").on('click', function () {
+        if($("#event_identifier").val()!=="" && $("#event_name").val()!=="" && $("#event_description").val()!==""){
+            var data = {};
+            var rpc;
+            data['name'] = $("#event_name").val();
+            data['description'] = $("#event_description").val();
+            if($("#eventmutationid").val()===""){
+                data['identifier'] = $("#event_identifier").val();
+                rpc = '{"jsonrpc": "2.0", "method": "EventService.addCustomEvent", "params": '+JSON.stringify(data)+', "id":"EventService.addCustomEvent"}';
+            } else {
+                data['id'] = parseInt($("#eventmutationid").val());
+                rpc = '{"jsonrpc": "2.0", "method": "EventService.updateCustomEvent", "params": '+JSON.stringify(data)+', "id":"EventService.updateCustomEvent"}';
+            }
+            $.getJSON('/jsonrpc.json?rpc=' + rpc, function(data){
+               clearAllEventDataFields();
+               allEventsSourceData.dataBind();
+            });
+        } else {
+            showErrorMessage("Event error", "Make sure to fill in the identifier, name and description!");
+        }
+    });
+    
+});
+    $(document).ready(function() {
+        setPageBreadcrumbs(3, "page_customevents", "Custom events", "/customevents.html");
+    });
+pidomeRPCSocket.addCallback(function(thingy) {
+    allEventsSourceData.dataBind();
+}, "EventService.eventOccurred");
+</script>

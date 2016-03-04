@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+    <server server="PiDome.Server">
+        <version major="${server.version_major}" minor="${server.version_minor}" build="${server.version_build}" name="${server.version_name}" release="${server.version_release}" />
+        <date date="${server.date_date}" time="${server.date_time}" />
+    </server>
+    <plugins>
+        <mediaplugins>
+                <#list mediaplugins?keys as plugin>
+            <mediaplugin id="${plugin}" active="${mediaplugins[plugin].active?c}" location="${mediaplugins[plugin].pluginObject.getPluginLocationId()}" 
+                             name="${mediaplugins[plugin].pluginObject.getPluginName()}"
+                             description="${mediaplugins[plugin].pluginObject.getPluginDescription()}">
+                <playing>
+                        <#assign playing=mediaplugins[plugin].pluginObject.getNowPlayingData()>
+                        <#if playing.ItemType??>
+                    <item itemid="${playing.ID?c}"
+                                  type="${playing.ItemType}" 
+                                  title="${playing.TITLE?html}"
+                                  duration="${playing.DURATION?c}"
+                                  title_artist="<#if playing.TITLE_ARTIST??>${playing.TITLE_ARTIST?html}</#if>"
+                        album="<#if playing.ALBUM??>${playing.ALBUM?html}</#if>"
+                        album_artist="<#if playing.ALBUM_ARTIST??>${playing.ALBUM_ARTIST?html}</#if>">
+                    </item>
+                        </#if>
+                </playing>
+                <playlist>
+                        <#assign playingList=mediaplugins[plugin].mediaPlaylist>
+                        <#list playingList?keys as id>
+                    <item playlistid="${playingList[id].PLAYLIST_ID}" duration="${playingList[id].DURATION?c}" itemid="${playingList[id].ID?c}" pos="${playingList[id].PLAYLIST_POS}" type="${playingList[id].ITEM_TYPE}" title="${playingList[id].TITLE?html}" />
+                        </#list>
+                </playlist>
+            </mediaplugin>
+                </#list>
+        </mediaplugins>
+    </plugins>
+</data>

@@ -1,0 +1,216 @@
+apply plugin: 'java'
+apply plugin: 'distribution'
+
+sourceCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'org.pidome.server.PiDomeServerBoot'
+}
+
+def buildTime() {
+    def date = new Date()
+    def formattedDate = date.format('yyyy-MM-dd HH:mm:ss')
+    return formattedDate
+}
+
+def rawPathToModulesPath(def path) {
+    // renaming pidome-package-version.jar to pidome-package
+    def modified=path.replaceAll('.*/(pidome-.+)-.+-.+', {"packages/user/${it[1]}/${it[1]}.jar"})
+    return modified
+}
+
+repositories {
+    maven {
+        url "http://builder.pidome.org:9000/repository/pidome-platform-shared-libraries/"
+    }
+    maven {
+        url "http://builder.pidome.org:9000/repository/third-parties-dependencies/"
+    }
+    mavenCentral()
+}
+
+List interfaces = ["org.pidome.thirdparties.interfaces:hidapi:1.1",
+                   "org.scream3r:jssc:2.8.0",
+                   "org.pidome.thirdparties.interfaces:pi4j-core:1.0-SNAPSHOT",
+                   "org.pidome.thirdparties.interfaces:pi4j-device:1.0-SNAPSHOT",
+                   "org.pidome.thirdparties.interfaces:pi4j-gpio-extension:1.0-SNAPSHOT",
+                   "org.pidome.thirdparties.interfaces:pi4j-service:1.0-SNAPSHOT"]
+List sharedResources = ["org.pidome.platform:pidome-server-connector:0.1-SNAPSHOT",
+                        "org.pidome.platform.libraries.shared:joda-time:2.2"]
+
+List serverCompile = ["org.pidome.thirdparties.dependencies.server:sunrisesunset:1.0-UNKNOWN",
+                      "org.pidome.thirdparties.dependencies.server:bcprov:jdk15on-150",
+                      "org.pidome.thirdparties.dependencies.server:commons-fileupload:1.3.1",
+                      "org.pidome.thirdparties.dependencies:java-websocket:1.3.1-SNAPSHOT",
+                      "org.pidome.thirdparties.dependencies.server:jna:4.0.0",
+                      "org.pidome.thirdparties.dependencies.server:jna-platform:4.0.0",
+                      "org.freemarker:freemarker:2.3.23",
+                      "org.pidome.thirdparties.dependencies.server:javax.mail:UNKNOWN", /// In preparation
+                      "org.pidome.thirdparties.dependencies.server:rome:1.0",
+                      "com.totsp.feedpod:purl-org-content:0.3",
+                      "jdom:jdom:1.1",
+                      "com.zaxxer:HikariCP:2.4.1",
+                      "io.netty:netty-all:4.1.0.CR1",
+                      "org.eclipse.jetty.alpn:alpn-api:1.1.2.v20150522",
+                      "org.mortbay.jetty.alpn:alpn-boot:8.1.6.v20151105"
+]
+
+List serverRuntime = ["org.pidome.thirdparties.dependencies.server:bcpkix:jdk15on-150",
+                      "org.pidome.thirdparties.dependencies.server:commons-io:2.4",
+                      "org.pidome.thirdparties.dependencies.server:commons-logging-api:UNKNOWN",
+                      "org.pidome.thirdparties.dependencies.server:commons-logging:UNKNOWN",
+                      "org.pidome.thirdparties.dependencies.server:guava:15.0",
+                      "org.xerial:sqlite-jdbc:3.8.10.1"]
+
+List nativeSupport = ["org.pidome.platform.server.packages.native.devices:pidome-devices:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.devices:pidome-i2c:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.devices:pidome-klikaanklikuitarduino:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.devices:pidome-rfxcom:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.devices:pidome-piremoteish:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.drivers:pidome-drivers:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.multi:pidome-mysensors:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.peripherals:pidome-peripherals:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.plugins:pidome-plugins:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.plugins.devices:pidome-philipshue:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.plugins.devices:pidome-unipi:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.plugins.freeform:pidome-mqttbroker:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.plugins.media:pidome-kodi:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.plugins.utilityusage:pidome-plugwise:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.plugins.weather:pidome-weatherplugins:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.multi:pidome-keypad:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.devices.zwave:pidome-zwave:0.1-SNAPSHOT",
+                      "org.pidome.platform.server.packages.native.plugins.modifiers:pidome-modifiers:0.1-SNAPSHOT"]
+
+configurations.all {
+    resolutionStrategy.cacheDynamicVersionsFor 1, 'minutes'
+    resolutionStrategy.cacheChangingModulesFor 1, 'minutes'
+}
+
+configurations {
+    serverLibs 
+    interfaceLibs 
+    sharedLibs 
+    nativeLibs
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.10'
+    nativeLibs nativeSupport
+    serverLibs serverCompile,serverRuntime
+    interfaceLibs interfaces
+    sharedLibs sharedResources
+    compile serverCompile,interfaces,sharedResources
+    runtime serverRuntime
+}
+
+jar.doFirst {
+    manifest {
+        attributes('Manifest-Version': '1.0',
+               'Sealed': true,
+               'Main-Class': mainClass,
+               'Created-By': System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')',
+               'Built-With': "gradle-${project.getGradle().getGradleVersion()}",
+               'Build-Time': buildTime(),
+               'Built-By': System.getProperty('user.name'),
+               'Implementation-Title': 'pidome-server',
+               'Implementation-Version': System.getenv("ENV_CUSTOM_BUILD_VERSION") ?: "NO-PROD-CUSTOM-BUILD",
+               'Implementation-Vendor': System.getenv("ENV_CUSTOM_VENDOR") ?: "Unknown",
+               'Class-Path': configurations.serverLibs.collect {
+                                    "libs/" + it.getName() + " "
+                                }.join('') +
+                             configurations.interfaceLibs.collect {
+                                    "libs/interfaces/" + it.getName() + " "
+                                }.join('') +
+                             configurations.sharedLibs.collect {
+                                    "libs/shared/" + it.getName() + " "
+                                }.join('')
+        )
+    }
+}
+
+task testsSync(type: Sync) {
+    description 'Create a ready to run configuration by copying dependencies.'
+    into "testresource"
+    into ("libs"){
+        from configurations.runtime
+        from configurations.compile
+    }
+    into ("config"){
+        from 'resources/config'
+    }
+    into ("databases"){
+        from 'resources/databases'
+    }
+    into('drivers') {
+        from ('resources/drivers')
+    }
+}
+
+distributions {
+    main {
+        contents {
+            into ("libs"){
+                from configurations.serverLibs
+            }
+            into ("libs/shared"){
+                from configurations.sharedLibs
+            }
+            into ("libs/interfaces"){
+                from configurations.interfaceLibs
+            }
+            into ("config"){
+                from 'resources/config'
+            }
+            into ("databases"){
+                from 'resources/databases'
+            }
+            into('resources/http') {
+                from ('resources/http')
+            }
+            from ("c:/jdk-arm-hf-8-u-60/jre/") {
+                into "jre/"
+            }
+            into('packages/user') {
+                from configurations.nativeLibs.findAll {  
+                    (it.getName().startsWith("pidome-") && !it.getName().startsWith("pidome-server-connector"))
+                }
+                eachFile {details ->
+                    def targetPath = rawPathToModulesPath(details.path)
+                    details.path = targetPath
+                }
+            }
+            from files('resources/scripts/pidome-server','resources/scripts/server.sh','build/libs/pidome-server.jar')
+        }
+    }
+}
+
+test {
+    ignoreFailures=true
+    dependsOn testsSync
+    workingDir = new File("testresource")
+    classpath += configurations.compile
+    classpath += configurations.runtime
+}
+
+task prepareDist {
+    dependsOn build;
+}
+
+task createBundle(type:Zip){ 
+    baseName = "pidome-server-snapshot"
+    from "build/install/pidome-server"
+    destinationDir = new File(project.buildDir.path + "/install/")
+    includeEmptyDirs = true
+}
+
+task(alterBuildNumber) << {
+    ant.propertyfile(
+        file: "build/install/pidome-server/config/system.default.properties") {
+        entry( key: "server.build", value: System.getenv("ENV_CUSTOM_BUILD_VERSION"))
+    }
+}
+
+tasks.installDist.dependsOn prepareDist
+tasks.alterBuildNumber.dependsOn installDist
+tasks.createBundle.dependsOn alterBuildNumber

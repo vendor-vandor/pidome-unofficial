@@ -1,0 +1,6 @@
+CREATE TABLE [persons] ([id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,  [clientname] TEXT NOT NULL, [clientpass] TEXT, [firstname] TEXT, [lastname] TEXT, [lastlogin] DATETIME, [clienttype] TEXT NOT NULL, [cpwd] BOOLEAN NOT NULL DEFAULT 1, [roleset] TEXT, [ext] BOOLEAN NOT NULL DEFAULT 0, [presence] INTEGER NOT NULL CONSTRAINT [presence_link] REFERENCES [presences]([id]) ON DELETE SET DEFAULT ON UPDATE CASCADE DEFAULT 2, [fixed] BOOLEAN NOT NULL DEFAULT 0, [created] DATETIME NOT NULL DEFAULT (datetime('now')), [modified] DATETIME NOT NULL DEFAULT (datetime('now')));
+INSERT INTO persons ('clientname', 'clientpass', 'firstname', 'lastname', 'lastlogin', 'clienttype', 'cpwd','roleset','ext','fixed','created','modified') SELECT clientname, clientpass, firstname, lastname, lastlogin, clienttype, cpwd,roleset,ext,fixed,created,modified FROM clients;
+DROP TABLE [clients];
+DROP TABLE [clients_linked];
+CREATE TABLE [clients_linked] ([id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, [devicelogin] TEXT, [deviceinfo] TEXT, [created] DATETIME NOT NULL DEFAULT (datetime('now')), [binding] INTEGER NOT NULL CONSTRAINT [client_bind] REFERENCES [people]([id]) ON DELETE CASCADE ON UPDATE CASCADE);
+PRAGMA user_version=6;

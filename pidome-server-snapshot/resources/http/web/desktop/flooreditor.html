@@ -1,0 +1,101 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+    <script>
+        $(document).ready(function() {
+            setPageBreadcrumbs(4, "page_flooreditor", "${page_title}", "/desktop/flooreditor.html");
+        });
+    </script>
+    <div id="editormenu" class="defaultcontent" style="max-width:1000px;">
+        <p>On this page you can visualize your floor plan. Connect your floors with images, set room boundaries and place your devices on the correct locations. This floor plan can be visualized in clients supporting this feature. 
+            Before you start with this feature make sure you already have all the floors and locations/rooms defined. Also all the devices you want to use must have been assigned a location. This feature is in development over time, but you do not have to worry about room and device locations/sizes.</p>
+    </div>
+    <div id="flooreditor" style="margin-top: 20px;" style="max-width:1000px;">
+        <div id="controls" style="width: 200px; height: 650px; float:left;">
+            <h3 style="margin-top: 0px; padding-top: 0px;">Floors</h3>
+            <div id="floorslist"></div>
+            <input id="uploader" type="button" value="Add/Change floor image" style="width: 175px; margin-top: 10px;" class="jqx-rc-all jqx-rc-all-metrodark jqx-button jqx-button-metrodark jqx-widget jqx-widget-metrodark jqx-fill-state-normal jqx-fill-state-normal-metrodark" />
+            <h3>Layers</h3>
+            <div id="layerslist"></div>
+        </div>
+        <div id="editor" style="float: left;">
+            <h3 style="margin-top: 0px; padding-top: 0px;">Editor</h3>
+            <div id="editorcontent" style="border: 1px solid #000; padding-bottom: 0px;">
+                <div id="toolbar" style="border-bottom: 1px solid #000;">
+                    <div class="toolbarbutton" id="floormove"><img src="/shared/images/flooreditor/move.png" alt="Move floor" /></div>
+                    <!--- <div class="toolbarbutton" id="floordelete"><img src="/shared/images/flooreditor/delete_red.png" alt="Delete all" /></div> -->
+                    <span style="float:left;">||</span>
+                    <div class="toolbarbutton" id="roomdraw"><img src="/shared/images/flooreditor/rectangle_red.png" alt="Draw room" /></div>
+                    <div class="toolbarbutton" id="roommove"><img src="/shared/images/flooreditor/move_room.png" alt="Move rooms" /></div>
+                    <div class="toolbarbutton" id="roomdresize"><img src="/shared/images/flooreditor/resize_room.png" alt="Resize room" /></div>
+                    <div class="toolbarbutton" id="roomdelete"><img src="/shared/images/flooreditor/delete_room.png" alt="Remove room" /></div>
+                    <span style="float:left;">||</span>
+                    <div class="toolbarbutton" id="devicedraw"><img src="/shared/images/flooreditor/device.png" alt="Add device" /></div>
+                    <div class="toolbarbutton" id="devicemove"><img src="/shared/images/flooreditor/device_move.png" alt="Move device" /></div>
+                    <div class="toolbarbutton" id="devicedelete"><img src="/shared/images/flooreditor/device_delete.png" alt="Remove device" /></div>
+                    <div style="float:right;">(Zoom (epx.) <span id="zoomfactorpage"></span>)</div>
+                    <div style="clear:both;"></div>
+                </div>
+                <canvas width="796" height="600" id="floorcanvas" style="cursor: crosshair; margin-bottom: 0px;"></canvas>                
+            </div>
+        </div>
+    </div>
+    <div id="selectroompopup">
+        <div>Select room name</div>
+        <div>
+            <div id="selectlocationslist"></div>
+        </div>
+    </div>
+    <div id="selectdevicepopup">
+        <div>Select device</div>
+        <div>
+            <div id="selectdevicelist"></div>
+        </div>
+    </div>
+    <div id="innerscrollmargin"></div>
+    <script src="/shared/js/libs/easeljs/easeljs-0.7.1.min.js"></script>
+    <script src="/shared/js/libs/upclick.js"></script>
+    <script src="/shared/js/sitelibs/flooreditor.js"></script>
+    <script>
+    $(document).ready(function() {    
+        $.when(
+            $.getScript( "/shared/js/libs/easeljs/easeljs-0.7.1.min.js" ),
+            $.getScript( "/shared/js/libs/upclick.js" ),
+            $.Deferred(function( deferred ){
+                $( deferred.resolve );
+            })
+        ).done(function(){
+            $.when(
+                $.getScript( "/shared/js/sitelibs/flooreditor.js" ),
+                $.Deferred(function( deferred ){
+                    $( deferred.resolve );
+                })
+            ).done(function(){
+
+                $('#selectroompopup').jqxWindow({
+                            autoOpen: false, showCollapseButton: false, height: 100, width: 250
+                            , theme: siteSettings.getTheme()
+                        });
+                $('#selectdevicepopup').jqxWindow({
+                            autoOpen: false, showCollapseButton: false, height: 100, width: 250
+                            , theme: siteSettings.getTheme()
+                        });
+                $("#floormove").jqxTooltip({ content: 'Move and zoom the floor, rename rooms/items', position: 'top', name: 'toolbartip', theme: siteSettings.getTheme()});
+                /////$("#floordelete").jqxTooltip({ content: 'Delete all visuals (Can not be undone!)', position: 'top', name: 'toolbartip', theme: siteSettings.getTheme()});
+                $("#roommove").jqxTooltip({ content: 'Move a room', position: 'top', name: 'toolbartip', theme: siteSettings.getTheme()});
+                $("#roomdraw").jqxTooltip({ content: 'Draw a new room/Change room names', position: 'top', name: 'toolbartip', theme: siteSettings.getTheme()});
+                $("#roomdresize").jqxTooltip({ content: 'Resize a room', position: 'top', name: 'toolbartip', theme: siteSettings.getTheme()});
+                $("#roomdelete").jqxTooltip({ content: 'Remove a room', position: 'top', name: 'toolbartip', theme: siteSettings.getTheme()});
+                $("#devicemove").jqxTooltip({ content: 'Move a device', position: 'top', name: 'toolbartip', theme: siteSettings.getTheme()});
+                $("#devicedraw").jqxTooltip({ content: 'Add a device/Change device names', position: 'top', name: 'toolbartip', theme: siteSettings.getTheme()});
+                $("#devicedelete").jqxTooltip({ content: 'Remove a device', position: 'top', name: 'toolbartip', theme: siteSettings.getTheme()});
+
+                $("#uploader").jqxButton({theme: siteSettings.getTheme(), width: '175'});
+
+            });
+        });
+    });
+    </script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

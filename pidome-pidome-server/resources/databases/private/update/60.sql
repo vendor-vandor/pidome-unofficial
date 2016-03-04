@@ -1,0 +1,4 @@
+INSERT INTO scripted_drivers (`id`,`name`,`description`,`scriptcontent`,`driverid`) VALUES (2,'Scripted driver demo','This is a simple example of ECMAScript handling data coming from your hardware and passing this to your devices and passing from devices (button/slider/color picker/toggle button) to your hardware.
+
+To be able to use the driver please download the file ''pidome-example-driver-impl.zip'' from https://bitbucket.org/pidome/pidome-hardware/downloads which contains the ''pidome_driver/driver.js'' file. Copy and paste the contents in the editor below.','',(SELECT `id` FROM `installed_drivers` WHERE `driverid`='NATIVE_PIDOMEBAREBONESERIAL_DRIVER'));
+PRAGMA user_version=60;

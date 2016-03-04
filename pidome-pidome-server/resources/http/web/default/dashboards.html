@@ -1,0 +1,143 @@
+<div id="pageinfotext" class="popup medium roundedcorners">
+    <h3>Design dashboards</h3>
+    Here you can design your own, or if you are an administrator, dashboards for other users and/or display clients.<br/>
+    <br/>
+    When you create a new dashboard you can select what kind of dashboard you are creating and if you are an administrator for who it is.<br/>
+    Currently only web based dashboards are available, when the clients are able to show these custom dashboards they will be added to the selection list.
+    <h4>User dashboards</h4>
+    An user can have multiple dashboard types. One for larger displays like the web interface and tablets, and one for small displays like phones.
+    <h4>Display dashboards</h4>
+    A display just has one dashboard as a display is a fixed settlement. But, displays are able to show personalized dashboards for users interacting with the display (if the display supports it).
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="dashboardstable-toolbar" style="align:right;">
+                    <button class="btn btn-info addNewDashboard" id="addNewDashboard">Add new dashboard</button> 
+                </div>
+                <table id="dashboardstable" class="table table-striped table-hover"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-search="true"
+                       data-toolbar="#dashboardstable-toolbar">
+                    <thead>
+                        <tr>
+                            <th data-formatter="dashboardEditFormatter" data-width="80"></th>
+                            <th data-field="id" data-width="80">ID</th>
+                            <th data-formatter="setUserClientFormatter">User/Client</th>
+                            <th data-field="name">Name</th>
+                            <th data-field="clienttype" data-formatter="dashTypeFormatter">Dashboard type</th>
+                            <th data-field="clientid" data-formatter="boundFormatter">Bound display</th>
+                            <th data-formatter="dashboardDeleteFormatter" data-width="80"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(4, "page_dashboards", "Dashboards", "/dashboarddesigner.html");
+        setPageTitleDescription("Design dashboards to be used on the web interface, clients and phones. (Currently only web)");
+        preparePageInfo();
+    });
+    
+    function dashboardDeleteFormatter(value, row, index){
+        return '<button class="btn btn-danger deleteDashboard" id="deleteDashboard-'+index+'" style="margin-left:10px;">Delete</button>';
+    }
+    
+    function dashboardEditFormatter(value, row){
+        return '<button class="btn btn-info openDashboardEdit" id="openDashboardEdit-'+row.id+'">Edit</button>';
+    }
+    
+    function setUserClientFormatter(value, row){
+        switch(row.clienttype){
+            case "WEB":
+            case "MOBILE":
+            case "HYBRID":
+                return row.personname;
+            break;
+            case "DISPLAY":
+                return row.clientname;
+            break;
+        }
+    }
+    
+    function boundFormatter(value, row){
+        switch(row.clienttype){
+            case "WEB":
+            case "MOBILE":
+                if(value===0 || (row.clientname === null || row.clientname==="")){
+                    return "None";
+                } else {
+                    return row.clientname;
+                }
+            break;
+            case "DISPLAY":
+                return "N/A";
+            break;
+            case "HYBRID":
+                if(value===0 || (row.clientname === null || row.clientname==="")){
+                    return "None";
+                } else {
+                    return row.clientname;
+                }
+            break;
+        }
+    }
+    
+    function dashTypeFormatter(value, row){
+        switch(value){
+            case "WEB":
+                return "Web interface";
+            break;
+            case "MOBILE":
+                return "Mobile";
+            break;
+            case "DISPLAY":
+                return "Display client";
+            break;
+            case "HYBRID":
+                return "Display personalized";
+            break;
+        }
+        return "Invalid";
+    }
+    
+    $("#addNewDashboard").off("click").on("click", function(){
+        refreshPageContent("/dashboarddesigner.html?id=0");
+    });
+    
+    $('#dashboardstable').bootstrapTable({
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DashboardService.getDashboards", "id":"DashboardService.getDashboards"}',
+        cache: false,
+        height: 720,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        },
+        onLoadSuccess: function (data) {
+            $(".openDashboardEdit").off("click").on('click', function () {
+                refreshPageContent("/dashboarddesigner.html?id=" + $(this).attr('id').split("-")[1]);
+            });
+            $(".deleteDashboard").off("click").on('click', function () {
+                var data = getTableRowData('#dashboardstable', $(this).attr('id').split("-")[1]);
+                var dashboard = data.id;
+                var dashName = data.name;
+                yesnoConfirmation('Delete: ' + dashName, 'Are you sure you want to delete dashboard "' + dashName + '"?', function(){
+                    getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"DashboardService.deleteDashboard\", \"params\":{\"id\":" + dashboard + "},\"id\":\"DashboardService.deleteDashboard\"}", function(){
+                        quickMessage("success","Dashboard has been deleted", 1000);
+                        $('#dashboardstable').bootstrapTable("refresh",{ silent: true });
+                    });
+                });
+            });
+        }
+    });
+    
+</script>

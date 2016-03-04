@@ -1,0 +1,165 @@
+/*
+Copyright 2014 John.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+/* 
+    Created on : Feb 25, 2014, 4:40:40 PM
+    Author     : John
+*/
+#triggerdisplay {
+    height: 779px;
+    overflow: hidden;
+    width: 1000px;
+    position: relative;
+    background-color: #252526;
+}
+
+#editormenu {
+    width: 100%;
+    border-bottom: 1px solid #007acc;
+    height: 104px;
+}
+#triggermenubasicinfo,
+#triggermenuexeclist {
+    width: 993px;
+    display: inline-block;
+    border: 0;
+    margin-top: 3px;
+    height: 95px;
+}
+
+#editoractionlist {
+    position: absolute;
+    top: 674px;
+    height: 665px;
+    background-color: #252526;
+    background: rgba(37, 37, 38, 0.9);
+    z-index: 10000;
+}
+
+#triggermenubasicinfo .nvp {
+    width: 45%;
+    clear: none;
+}
+#triggermenuexeclist .nvp {
+    width:50%;
+}
+#triggermenubasicinfo legend,
+#triggermenuexeclist legend {
+    font-weight: bold;
+    border-bottom: 1px solid #007acc;
+    width:100%;
+    cursor: pointer;
+}
+#triggermenuexeclist legend {
+    border-top: 1px solid #007acc;
+}
+#triggermenuexeclist legend img {
+    float: right;
+    margin: 0px;
+    padding:0px;
+    vertical-align: middle;
+    margin-top: 2px;
+    margin-right: 3px;
+    height: 13px;
+}
+#editor {
+    width: 100%;
+    height: 570px;
+    position: relative;
+}
+._jsPlumb_drag_select * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: -moz-none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.baseWhen {
+    width: 85px;
+    top: 378px;
+    left: 5px;
+    font-size: 16px;
+    text-align: center;
+    font-weight: bold;
+    padding:0px;
+}
+
+.baseRule {
+    left: 200px;
+    top: 373px;
+}
+
+.triggerMatchItem {
+    left: 410px;
+    top: 373px;
+}
+
+.triggerMatchValue {
+    left: 710px;
+    top: 373px;
+}
+
+.editoritem { 	
+    padding:5px;
+    position:absolute;
+    border: 1px solid black;
+    z-index:4;
+    border-radius:1em;
+    border:2px solid #2e6f9a;
+    -moz-border-radius:8px;
+    border-radius:8px;
+    background-color:#252526;
+    font-size:11px;
+    -webkit-transition:background-color 0.25s ease-in;
+    -moz-transition:background-color 0.25s ease-in;
+    transition:background-color 0.25s ease-in;	
+}
+
+.editoritem:hover {
+    background-color: #d56909;
+    color:white;
+}
+
+.aLabel {
+    -webkit-transition:background-color 0.25s ease-in;
+    -moz-transition:background-color 0.25s ease-in;
+    transition:background-color 0.25s ease-in;
+}
+
+.aLabel._jsPlumb_hover, ._jsPlumb_source_hover, ._jsPlumb_target_hover {
+    background-color:#d56909;
+    color:white;
+}
+
+.aLabel {
+    background-color:#034678;
+    opacity:0.9;
+    padding:5px 10px 5px 10px;				
+    border-radius:0.5em;
+    border:1px solid #346789;
+    cursor:pointer;
+    font-weight: bold;
+}
+
+.editor ._jsPlumb_endpoint {
+    z-index:3;
+}
+
+.dragHover { border:2px solid orange; }
+
+path { cursor:pointer; }

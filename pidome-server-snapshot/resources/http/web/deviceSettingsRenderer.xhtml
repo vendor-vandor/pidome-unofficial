@@ -1,0 +1,189 @@
+<div id="deviceMutation" style="padding: 0px 5px 0px 5px;">
+    <#if declaredDevice??>
+        <h2>Edit device</h2>
+    <#else>
+        <h2>Add new device</h2>
+    </#if>
+    <#if postData["step"]??>
+        <#if postData["step"]=="1">
+            <div>
+                <div class="nvp">
+                    <div style="float:left;">
+                        <div class="n"><label for="deviceDriverMutationSelect">Select device type (driver)</label></div>
+                        <div class="v">
+                            <div id="deviceDriverMutationSelect"></div>
+                        </div>
+                    </div>
+                    <div style="float:left; margin-top:10px; display:none;" id="">
+                        <div class="n"><label for="deviceMutationSelect">Select device</label></div>
+                        <div class="v">
+                            <div id="deviceMutationSelect"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+
+                var driversSourceAvailableDrivers = {
+                    datatype: "json",
+                    datafields: [
+                        { name: 'id' },
+                        { name: 'name' }
+                    ],
+                    url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "HardwareService.getPeripheralSoftwareDrivers", "id":"HardwareService.getPeripheralSoftwareDrivers"}',
+                    root: "result>data"
+                };
+                var pluginsAdapterAvailableDrivers = new $.jqx.dataAdapter(driversSourceAvailableDrivers);
+                
+                var adapterSourceAvailableDevices = {
+                    datatype: "json",
+                    datafields: [
+                        { name: 'id' },
+                        { name: 'name' }
+                    ],
+                    url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getDevicesByPeripheralSoftwareDriver", "params":{"id":0} "id":"DeviceService.getDevicesByPeripheralSoftwareDriver"}',
+                    root: "result>data"
+                };
+                var pluginsAdapterAvailableDevices = new $.jqx.dataAdapter(adapterSourceAvailableDevices);
+                
+                $("#deviceDriverMutationSelect").jqxComboBox({ placeHolder: "Select a type (driver)..",autoComplete:true,searchMode: 'containsignorecase', source: pluginsAdapterAvailableDrivers, displayMember: "name", valueMember: "id", width: '335', height: '25', theme: siteSettings.getTheme()});
+                $("#deviceDriverMutationSelect").on('select', function (event) {
+                    if (event.args) {
+                        var item = event.args.item;
+                        if (item && item.value!==0) {
+                            $("#deviceMutationSelect").parent().parent().show();
+                            adapterSourceAvailableDevices.url = '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getDevicesByPeripheralSoftwareDriver", "params":{"id":'+parseInt(item.value)+'} "id":"DeviceService.getDevicesByPeripheralSoftwareDriver"}'
+                            pluginsAdapterAvailableDevices.dataBind();
+                        }
+                    }
+                });
+
+                $("#deviceMutationSelect").jqxComboBox({ placeHolder: "Select a device",autoComplete:true,searchMode: 'containsignorecase', source: pluginsAdapterAvailableDevices, displayMember: "name", valueMember: "id", width: '335', height: '25', theme: siteSettings.getTheme()});
+                $("#deviceMutationSelect").on('select', function (event) {
+                    if (event.args) {
+                        var item = event.args.item;
+                        if (item && item.value!==0) {
+                            displayDeviceEditModal(item.value, "newDevice", "2");
+                        }
+                    }
+                });
+            </script>
+        </#if>
+        <#if postData["step"]=="2">
+        <div>
+            <div class="nvp">
+                <#if declaredDevice??>
+                    <div class="n">Edit device</div>
+                    <div class="v"><span>${deviceFriendlyName}</span></div>
+                    <input type="hidden" name="deviceMutationDevice" id="deviceMutationDevice" value="${declaredDevice.id}" />
+                    <input type="hidden" name="deviceMutationDeviceBaseId" id="deviceMutationDeviceBaseId" value="${declaredDevice.devicebaseid}" />
+                    <input type="hidden" name="deviceMutationDeviceFullName" id="deviceMutationDeviceFullName" value="${declaredDevice.device}" />
+                <#else>
+                    <div class="n">New device</div>
+                    <div class="v"><span>${deviceFriendlyName}</span></div>
+                    <input type="hidden" name="deviceMutationDevice" id="deviceMutationDevice" value="${device}" />
+                </#if>
+            </div>
+            <div class="nvp">
+                <div class="n"><label for="mutationInputBase-name">Descriptive name</label></div>
+                <#if declaredDevice??>
+                    <div class="v"><input type="text" name="mutationInputBase-name" id="mutationInputBase-name" value="<#if declaredDevice.name??>${declaredDevice.name}</#if>" /></div>
+                <#else>
+                    <div class="v"><input type="text" name="mutationInputBase-name" id="mutationInputBase-name" value="" /></div>
+                </#if>
+                <script>
+                    createWebInputField($("#mutationInputBase-name"));
+                </script>
+            </div>
+            <div class="nvp">
+                <div class="n"><label for="categoryMutationSelect">Select category</label></div>
+                <div class="v">
+                    <div id="categoryMutationSelect"></div>
+                    <script>
+                        var adapterSourceAvailableCats = {
+                            datatype: "json",
+                            localdata: [<#list categories as category>{'id':${category.id}, 'name':'${category.name}'},</#list>],
+                            datafields: [
+                                { name: 'id' },
+                                { name: 'name' }
+                            ]
+                        };
+                        var pluginsAdapterAvailableCats = new $.jqx.dataAdapter(adapterSourceAvailableCats);
+                        $("#categoryMutationSelect").jqxComboBox({ selectedIndex: 1,placeHolder: "Select a category",autoComplete:true,searchMode: 'containsignorecase', source: pluginsAdapterAvailableCats, displayMember: "name", valueMember: "id", width: '335', height: '25', theme: siteSettings.getTheme()});
+                        <#if declaredDevice??>
+                            $("#categoryMutationSelect").jqxComboBox('val',${declaredDevice.category});
+                        </#if>
+                    </script>
+                </div>
+            </div>
+        
+            <div class="nvp">
+                <div class="n"><label for="favoriteMutationSelect">Favorite?</label></div>
+                <div class="v">
+                    <div id="favoriteMutationSelect"></div>
+                    <script>
+                        var adapterSourceAvailableFavs = {
+                            datatype: "json",
+                            localdata: [{'id':'0', 'name':'No'},{'id':'1', 'name':'Yes'}],
+                            datafields: [
+                                { name: 'id' },
+                                { name: 'name' }
+                            ]
+                        };
+                        var pluginsAdapterAvailableFavs = new $.jqx.dataAdapter(adapterSourceAvailableFavs);
+                        $("#favoriteMutationSelect").jqxDropDownList({ selectedIndex: 0, source: pluginsAdapterAvailableFavs, displayMember: "name", valueMember: "id", width: '335', height: '25', theme: siteSettings.getTheme()});
+                        <#if declaredDevice??>
+                            $("#favoriteMutationSelect").jqxDropDownList('val',<#if declaredDevice.favorite==true>'1'<#else>'0'</#if>);
+                        </#if>
+                    </script>
+                </div>
+            </div>
+        
+            <div class="nvp">
+                <div class="n"><label for="locationMutationSelect">Select location</label></div>
+                <div class="v">
+                    <div id="locationMutationSelect"></div>
+                    <script>
+                        var adapterSourceAvailableLocs = {
+                            datatype: "json",
+                            localdata: [<#list locations as location>{'id':${location.id}, 'name':'${location.name}'},</#list>],
+                            datafields: [
+                                { name: 'id' },
+                                { name: 'name' }
+                            ]
+                        };
+                        var pluginsAdapterAvailableLocs = new $.jqx.dataAdapter(adapterSourceAvailableLocs);
+                        $("#locationMutationSelect").jqxComboBox({ selectedIndex: 0,autoComplete:true,searchMode: 'containsignorecase', source: pluginsAdapterAvailableLocs, displayMember: "name", valueMember: "id", width: '335', height: '25', theme: siteSettings.getTheme()});
+                        <#if declaredDevice??>
+                            $("#locationMutationSelect").jqxComboBox('val',${declaredDevice.location});
+                        </#if>
+                    </script>
+                </div>
+            </div>
+            <div id="deviceMutationDeviceSettings" style="margin-top:10px; float:left;clear:left;">
+                <div id="deviceMutationDeviceXmlSettings">
+                    ${deviceSettings}
+                </div>
+                <div class="nvp" style="margin-top: 15px; float:left; clear:left; margin-bottom: 10px;">
+                    <div class="n">&nbsp;</div>
+                    <div class="v">
+                        <button name="mutationSave" id="mutationSave">Save device</button>
+                        <script>
+                            $("#mutationSave").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+                            $("#mutationSave").on('click', function () {
+                            <#if declaredDevice??>
+                                saveEditDevice();
+                            <#else>
+                                saveNewDevice();
+                            </#if>
+                            });
+                        </script>
+                    </div> 
+                </div>
+            </div>
+        </div>
+        </#if>
+    <#else>
+        <div class="error">You did something wrong or there is a bug (i guess the last one if you did something legit)</div>
+    </#if>
+</div>

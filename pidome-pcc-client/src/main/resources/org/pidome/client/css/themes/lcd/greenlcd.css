@@ -1,0 +1,20 @@
+.root {
+
+    -fx-default-dashboard-background-color: rgb( 79, 121,  19);
+    
+    -fx-default-dashboard-text-color: rgb(0, 12, 6);
+    -fx-default-dashboard-text-shadow: dropshadow(one-pass-box, rgba(0, 12, 6, 0.2), 0, 1 , 1, 2);
+    -fx-default-dashboard-border-shadow: rgba(0, 12, 6,0.3);
+
+    -fx-default-dashboard-item-active: rgb(0, 12, 6);
+    -fx-default-dashboard-item-active-text: -fx-default-dashboard-background-color;
+    -fx-default-dashboard-item-inactive: rgba(0, 12, 6, 0.1);
+    -fx-default-dashboard-item-highlight: rgba(0, 12, 6, 0.3);
+
+    -fx-default-tile-background-color: rgba(0, 12, 6, 0.1);
+
+    -fx-border-shade-position-2: rgba(0, 12, 6,0.2);
+    -fx-border-shade-position-3: rgba(0, 12, 6,0.1);
+    -fx-border-shade-position-4: rgba(0, 12, 6,0.05);
+
+}

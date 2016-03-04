@@ -1,0 +1,560 @@
+.root {
+    -fx-text-fill: #D7D8DA;
+    -fx-background-color: #050a0e;
+}
+.button {
+    -fx-text-fill: #D7D8DA;
+    -fx-border-color: #2e7893;
+    -fx-background-color: #053e57;
+}
+
+.button:pressed {
+    -fx-background-color: #e68400;
+}
+
+.button Text {
+    -fx-text-fill: #D7D8DA;
+}
+
+.label {
+    -fx-text-fill: #D7D8DA;
+}
+
+.error-message {
+    -fx-background-color: #4b0808;
+}
+#tabbed>.toggle-button {
+    -fx-background-color: #67380060;
+    -fx-border-color: transparent;
+    -fx-text-fill: lightgrey;
+}
+
+#tabbed>.toggle-button:selected {
+    -fx-background-color: #673800;
+}
+
+#NotificationBar {
+    -fx-background-image: url("file:resources/images/notificationbar/bg.png");
+    -fx-background-position: top left;
+}
+
+#NotificationBar .windowicon {
+    -fx-fill: #074a6d;
+    -fx-border-color: #096595;
+}
+
+#NotificationBar .windowiconactive {
+    -fx-fill: #096595;
+}
+
+.smallselectlist .title .text,
+.smallselectlist .subtitle .text,
+.smallselectlist .item .label .text {
+    -fx-fill: #0a1c27;
+}
+.smallselectlist .item {
+    -fx-background-color: #325366;
+}
+.smallselectlist .item.even {
+    -fx-background-color: #2e7893;
+}
+.smallselectlist .item.selected {
+    -fx-background-color: #bf966a;
+}
+
+.smallselectlist .optiontitle {
+    -fx-border-color: transparent transparent lightgray transparent;
+}
+
+.appsettings .sectiontitle {
+    -fx-border-color: transparent transparent #096595 transparent;
+    -fx-fill: #D7D8DA;
+}
+.appsettings .sectionheader {
+    -fx-fill: #D7D8DA;
+}
+.appsettings .section {
+    -fx-border-color: lightgray transparent transparent transparent;
+}
+/*
+The listedWindow styles display
+*/
+.categorylist .categorybar {
+    -fx-border-color: transparent transparent #00669d transparent;
+    -fx-background-color: #222222;
+}
+
+.categorylist .rowhiglight {
+    -fx-background-color: #e68400;
+    -fx-text-fill: #222222;
+}
+
+.categorylist .rowhiglight Text,.listedwindow .rowhiglight .label {
+    -fx-fill: #222222;
+    -fx-text-fill: #222222;
+}
+
+.combo-box .list-cell  {
+    -fx-background-color: #222222;
+    -fx-text-fill: #D7D8DA;
+}
+.combo-box-popup .list-view {
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 5 );
+    -fx-border-color: transparent #00669d #00669d #00669d;
+    -fx-background-color: #222222;
+}    
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #222222;
+    -fx-text-fill: #D7D8DA;
+}
+.combo-box-popup .list-view .list-cell:filled:hover {
+    -fx-background-color: #e68400;
+    -fx-text-fill: #222222;
+}
+.combo-box .arrow {
+    -fx-background-color: #e68400;
+}
+.combo-box .arrow-button {
+    -fx-background-color: #222222;
+}
+.combo-box-base {
+    -fx-background-color: #222222;
+}
+.combo-box-base:hover {
+    -fx-color: -fx-hover-base;
+}
+.combo-box-base:showing {
+    -fx-color: -fx-pressed-base;
+}
+
+
+/*
+Default windowing style
+*/
+.windowbase {
+    /* -fx-border-color: #202020; */
+}
+.windowcontent {
+    -fx-border-color: #202020;
+    -fx-background-color: #0d0e0e;
+}
+.windowcontent Text {
+    -fx-fill: #D7D8DA;
+}
+.windowtop {
+    -fx-background-color: #074a6d;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.4) , 8, 0.0 , 0 , 5 );
+}
+
+.windowtopactive {
+    -fx-background-color: #005a89;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.4) , 8, 0.0 , 0 , 5 );
+}
+
+.windowtitle {
+    -fx-text-fill: white;
+}
+
+.windowbottom {
+    -fx-border-color: #202020;
+    -fx-background-color: #1e1e1e;
+}
+
+/*
+Default style for sliders
+*/
+.slider .track {
+    -fx-background-color: #d2d2d2;
+    -fx-background-radius: 1;
+}
+.slider .thumb {
+    -fx-background-color: transparent;
+    -fx-background-image: url("file:resources/images/widget/widgetsliderthumb.png");
+}
+
+.windowcontent .slider .thumb {
+    -fx-background-color: transparent;
+    -fx-background-image: url("file:resources/images/full/fullsliderthumb.png");
+}
+
+.devicedisplay .devicenamebar {
+    -fx-border-color: transparent transparent #00669d transparent;
+    -fx-background-color: #222222;
+}
+
+.devicedisplay .slider .track {
+    -fx-background-color: #005a89;
+}
+
+.devicedisplay .slider .axis .axis-tick-mark,.devicedisplay .slider .axis .axis-minor-tick-mark, .devicedisplay .slider .axis .-fx-fill-tick-label {
+    -fx-stroke: #005a89;
+    -fx-fill: #005a89;
+}
+
+/*
+Graph stuff
+*/
+#graphwindow .graphdescription {
+    -fx-border-color: #005a89 transparent transparent transparent;
+    -fx-background-color: #14141499;
+}
+    
+/*
+Default styles for charts
+*/
+.axis {
+    -fx-tick-label-fill: lightgrey;
+    -fx-fill: lightgrey;
+    -fx-label-fill: lightgrey;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-alternative-row-fill {
+    -fx-fill: transparent;
+    -fx-stroke: transparent;
+    -fx-stroke-width: 0;
+}
+
+.chart-series-line,
+.chart-series-area-line {    
+    -fx-stroke-width: 2px;
+}
+
+.axis-tick-mark {
+    -fx-stroke: lightgrey;
+    -fx-stroke-width: 2; 
+}
+.axis-minor-tick-mark {
+    -fx-stroke: lightgrey;
+}
+
+.chart-legend {
+   -fx-background-color:  transparent;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: lightgrey;
+}
+.chart-horizontal-grid-lines {
+    -fx-stroke: lightgrey;
+}
+
+.default-color0.chart-series-line { -fx-stroke: #990000; }
+.default-color0.chart-line-symbol { -fx-background-color: transparent; }
+.default-color0.chart-series-symbol { -fx-background-color: transparent }
+.default-color1.chart-series-line { -fx-stroke: #996000; }
+.default-color1.chart-series-symbol { -fx-background-color: transparent }
+.default-color1.chart-line-symbol { -fx-background-color: #996000; }
+.default-color2.chart-series-line { -fx-stroke: #1c9900; }
+.default-color2.chart-series-symbol { -fx-background-color: transparent }
+.default-color2.chart-line-symbol { -fx-background-color: #1c9900; }
+.default-color3.chart-series-line { -fx-stroke: #004499; }
+.default-color3.chart-series-symbol { -fx-background-color: transparent }
+.default-color3.chart-line-symbol { -fx-background-color: #004499; }
+.default-color4.chart-series-line { -fx-stroke: #070057; }
+.default-color4.chart-series-symbol { -fx-background-color: transparent }
+.default-color4.chart-line-symbol { -fx-background-color: #070057; }
+
+.default-color0.chart-area-symbol { -fx-background-color: transparent }
+.default-color0.chart-series-area-line { -fx-stroke: #990000; }
+.default-color0.chart-series-area-fill { -fx-fill: #99000022; }
+.default-color1.chart-area-symbol { -fx-background-color: transparent }
+.default-color1.chart-series-area-line { -fx-stroke: #996000; }
+.default-color1.chart-series-area-fill { -fx-fill: #99600022; }
+.default-color2.chart-area-symbol { -fx-background-color: transparent }
+.default-color2.chart-series-area-line { -fx-stroke: #1c9900; }
+.default-color2.chart-series-area-fill { -fx-fill: #1c990022; }
+.default-color3.chart-area-symbol { -fx-background-color: transparent }
+.default-color3.chart-series-area-line { -fx-stroke: #004499; }
+.default-color3.chart-series-area-fill { -fx-fill: #00449922; }
+.default-color4.chart-area-symbol { -fx-background-color: transparent }
+.default-color4.chart-series-area-line { -fx-stroke: #070057; }
+.default-color4.chart-series-area-fill { -fx-fill: #07005722; }
+
+.default-color0.chart-bar { -fx-background-color: #990000; }
+.default-color1.chart-bar { -fx-background-color: #996000; }
+.default-color2.chart-bar { -fx-background-color: #004499; }
+.default-color3.chart-bar { -fx-background-color: #070057; }
+
+
+.chart-title {
+  -fx-text-fill: #4682b4;
+}
+
+.axis-label {
+  -fx-text-fill: #4682b4;
+}
+
+/******************************************************************************
+ * GAUGE components                                                           *
+ *****************************************************************************/
+.gauge {
+    -outer-border      :radial-gradient(focus-angle 0deg, 
+                                        focus-distance 0%, 
+                                        center 50% 50%, 
+                                        radius 50%, 
+                                        rgba(0,0,0,0) 94%, 
+                                        rgb(1,110,183), 
+                                        rgba(0,0,0,0));
+    -highlight-border  : #0d0d0d;
+    -inner-border      : radial-gradient(center 50% 50%,
+                                         radius 12%,
+                                         rgba(0,0,0,0),
+                                         rgb(68,68,68) 98%,
+                                         rgba(0,0,0,0));
+    -inner-border      : radial-gradient(focus-angle 0deg, 
+                                        focus-distance 0%, 
+                                        center 50% 50%, 
+                                        radius 50%, 
+                                        rgba(0,0,0,0) 95%, 
+                                        rgb(68,68,68), 
+                                        rgba(0,0,0,0));
+    -body              : transparent;
+    -tick-mark-fill    : rgb(68,68,68);
+    -tick-label-fill   : #f9f9f9;
+}
+.gauge .background {
+    -fx-background-color : -outer-border, -highlight-border, -inner-border, -body;
+    -fx-background-insets: 0, 3, 10, 13;
+    -fx-effect           : dropshadow(two-pass-box, rgba(0, 0, 0, 0.9), 10, 0.0, 0, 0);
+}
+/******************************************************************************
+ * GAUGE title, unit, value, interactive-text                                 *
+ *****************************************************************************/
+.gauge .title {
+    -fx-fill: #f9f9f9;
+}
+
+.gauge .unit {
+    -fx-fill: ladder(-base, derive(#303030, -20%) 49%, #303030 50%);
+}
+
+.gauge .value {
+    -fx-fill: ladder(-base, derive(white, -20%) 49%, white 50%);
+}
+
+.deviceslist .categorylist .row {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.deviceslist .categorylist .rowhiglight {
+    -fx-border-color: transparent transparent #00669d transparent;
+}
+
+.devicedisplay .categorylist .categorybar {
+    -fx-background-color: transparent;
+}
+
+.devicedisplay #tabbed .tabbedcontent {
+    -fx-border-color: #673800 transparent transparent transparent;
+}
+
+.devicedisplay .locationname {
+    -fx-fill: #002e3e;
+}
+.devicedisplay .groupname {
+    -fx-border-color: transparent transparent #00669d transparent;
+}
+.devicedisplay .descheader {
+    -fx-fill: #D7D8DA;
+    -fx-border-color: transparent transparent #00669d transparent;
+}
+.devicedisplay .description {
+    -fx-fill: #D7D8DA;
+}
+.devicebutton {
+    -fx-border-color: #015480;
+    -fx-background-color: #00304a;
+}
+.devicebutton.pressed {
+    -fx-background-color: #00669d;
+}
+.devicebutton .toggle-button,.devicebutton .button { -fx-text-fill: #d2d2d2; -fx-background-color: transparent; }
+.devicebutton .toggle-button.unknown { -fx-background-color: transparent; }
+.devicebutton .toggle-button.on { -fx-background-color: transparent; }
+.devicebutton .toggle-button.off { -fx-background-color: transparent; }
+.devicebutton .indicator.unknown { -fx-fill: #e68400; }
+.devicebutton .indicator.on { -fx-fill: #1c9900; }
+.devicebutton .indicator.off { -fx-fill: #ae1201; }
+
+.devicebutton .button:pressed,
+.devicebutton .toggle-button:pressed {
+    -fx-background-color: #e68400;
+}
+
+.colorpickerwindow .currentcolorheader {
+    -fx-border-color: transparent transparent #00669d transparent;
+}
+
+.colorpickerwindow .selectioncolors {
+    -fx-stroke: grey;
+}
+
+/************/
+/* Clock    */
+/************/
+.clock .day-mode-bosch {
+    -clock-background    : rgb(46, 46, 46);
+    -hour-pointer-color  : rgb(0, 102, 157);
+    -minute-pointer-color: rgb(0, 102, 157);
+    -major-tick-color    : rgb(0, 102, 157);
+    -minor-tick-color    : rgb(0, 102, 157);
+    -center-knob-color   : rgb(10, 10, 10);
+}
+.clock .background-bosch {
+    -fx-background-color : radial-gradient(focus-angle 0deg, 
+                                        focus-distance 0%, 
+                                        center 50% 50%, 
+                                        radius 50%, 
+                                        rgba(0,0,0,0) 94%, 
+                                        rgb(1,110,183), 
+                                        rgba(0,0,0,0)),
+                                        #0d0d0d;
+    -fx-background-insets: 0, 3;
+    -fx-effect           : dropshadow(two-pass-box, rgba(0, 0, 0, 0.9), 10, 0.0, 0, 0);
+    -fx-background-radius: 0em;
+    -fx-padding          : 0;
+    -fx-scale-shape      : true;
+    -fx-shape            : "M 0 100 C 0 44.7708 44.7708 0 100 0 C 155.2292 0 200 44.7708 200 100 C 200 155.2292 155.2292 200 100 200 C 44.7708 200 0 155.2292 0 100 Z";
+}
+.clock .foreground-bosch {
+    -fx-background-color : transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0em;
+    -fx-padding          : 0;
+    -fx-scale-shape      : false;
+    -fx-shape            : "";
+}
+
+/*
+Th container at the bottom
+*/
+#BottomBar .button{
+    -fx-background-color: 
+        linear-gradient(#ffd65b, #e68400),
+        linear-gradient(#ffef84, #f2ba44),
+        linear-gradient(#ffea6a, #efaa22),
+        linear-gradient(#ffe657 0%, #f8c202 50%, #eea10b 100%),
+        linear-gradient(from 0% 0% to 15% 50%, rgba(255,255,255,0.9), rgba(255,255,255,0));
+    -fx-background-radius: 30;
+    -fx-background-insets: 0,1,2,3,0;
+    -fx-text-fill: #654b00;
+    -fx-padding: 10 20 10 20;
+}
+
+/*
+Base dialog styles
+*/
+#BaseDialog { 
+    -fx-background-color: #696969;
+}
+
+#BaseDialog .titlebar {
+    -fx-background-color: #000000, linear-gradient(#696969, #363636);
+}
+
+#BaseDialog .titlebar .label {
+    -fx-text-fill: linear-gradient(white, #d0d0d0);
+}
+
+#BaseDialog .button {
+    -fx-background-color: #000000,linear-gradient(#696969, #363636);
+    -fx-background-insets: 0,1;
+    -fx-background-radius: 3,2;
+    -fx-text-fill: white;
+}
+
+#BaseDialog .button:selected {
+    -fx-background-color: #000000,linear-gradient(#363636, #696969);
+    -fx-text-fill: #99ff99;
+}
+
+#tabbed .tabbedcontent {
+    -fx-border-color: #673800 #353535 #353535 #353535;
+}
+
+#messageswindow .readfield {
+    -fx-border-color: #00669d transparent transparent transparent;
+    -fx-background-color: transparent;
+    -fx-text-fill: #D7D8DA;
+}
+
+#mediaplayer .player,
+#mediaplayer .buttonbar {
+    -fx-border-color: transparent transparent #00669d transparent;
+}
+
+#floorscontrol {
+    -fx-border-color: transparent #00669d transparent transparent;
+}
+#floorscontrol .header {
+    -fx-font-size: 1.2em;
+    -fx-border-color: transparent transparent #00669d transparent;
+}
+
+#floorscontrol .floorlist Label,
+#floorscontrol .layers Label {
+    -fx-border-color: transparent transparent transparent transparent;
+}
+
+#floorscontrol .floorlist .selected,
+#floorscontrol .layers .selected {
+    -fx-background-color: #00669d;
+    -fx-border-color: #0085cd transparent #0085cd transparent;
+    -fx-text-fill: #D7D8DA;
+}
+#floorscontrol .layers .disabled {
+    -fx-text-fill: #D7D8DA50;
+}
+
+.choice-box .list-cell  {
+    -fx-background-color: #222222;
+    -fx-text-fill: #D7D8DA;
+}
+.choice-box .context-menu {
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 5 );
+    -fx-border-color: #00669d;
+    -fx-background-color: #222222;
+}    
+.choice-box .arrow {
+    -fx-background-color: #e68400;
+}
+.choice-box .arrow-button {
+    -fx-background-color: #222222;
+}
+.choice-box {
+    -fx-background-color: #222222;
+}
+.choice-box:hover {
+    -fx-color: -fx-hover-base;
+}
+.choice-box:showing {
+    -fx-color: -fx-pressed-base;
+}
+
+.text-field,
+.text-area {
+    -fx-text-fill: #D7D8DA;
+    -fx-border-color: #00669d;
+    -fx-background-color: #222222;
+}
+.text-field:focused,
+.text-area:focussed {
+    -fx-border-color: #e68400;
+}
+
+///////
+.notificationMessage {
+    -fx-border-color: #3e3e42;
+}
+.notificationMessage .header {
+    -fx-background-color: #3e3e42;
+    -fx-font-weight: bold;
+}
+.notificationMessage .body {
+    -fx-background-color: #252526;
+}

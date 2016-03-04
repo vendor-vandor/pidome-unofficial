@@ -1,0 +1,3 @@
+INSERT INTO installed_packages ('packageid','name','version','active','install_base','package_type','author','email','website') values ('PIDOME-NATIVE-PLUGWISE-SUPPORT','PiDome.Plugwise','0.1',1,'PiDome_Plugwise.jar','mix','PiDome','support@pidome.org','http://pidome.org');
+INSERT INTO installed_plugins ('name','type','path','package', 'active', 'fixed') VALUES ('Plugwise Smile P1',2,'org.pidome.plugins.freeform.plugwise.plugwiseSmile',(SELECT id FROM installed_packages WHERE packageid='PIDOME-NATIVE-PLUGWISE-SUPPORT' LIMIT 1),1,0);
+PRAGMA user_version=9;

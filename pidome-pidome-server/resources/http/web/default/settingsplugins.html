@@ -1,0 +1,73 @@
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(6, "page_pluginsettings", "Plugin settings", "/settingsplugins.html");
+    });
+</script>
+<div class="defaultcontent" style="max-width:976px;">
+    <h2>Global plugin settings</h2>
+    <p>Here you can enable or disable specific plugins. If for example you have three XBMC instances and you disable the XBMC plugin, all of these will be disabled. 
+       This also works the other way around when enabling. By default all plugins are enabled.</p>
+</div>
+<table id="plugins_showtable">
+    <thead>
+        <tr>
+            <th>id</th>
+            <th>name</th>
+            <th>package</th>
+            <th>version</th>
+            <th>enabled</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div id="innerscrollmargin"></div>
+<script>
+    var pluginsSource = {
+        datatype: "json",
+        datafields: [
+            { name: 'id', type: 'int'},
+            { name: 'pluginname', type: 'string'},
+            { name: 'typename', type: 'string'},
+            { name: 'packagename', type: 'string'},
+            { name: 'packageversion', type: 'string'},
+            { name: 'activated', type: 'boolean'}
+        ],
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PluginService.getInstalledPlugins", "id":"PluginService.getInstalledPlugins"}',
+        root: "result>data"
+    };
+    
+    var allPluginsSource = new $.jqx.dataAdapter(pluginsSource);
+    
+    $(document).ready(function () {
+        $("#plugins_showtable").jqxDataTable({ source: allPluginsSource, groups: ['typename'], filterable: true, filtermode: 'default', selectionMode: "none", height: 650, width: 998, sortable: true, pageable: false, theme: siteSettings.getTheme(),
+            columns: [
+                {text: 'id', dataField: 'id', hidden:true},
+                {text: 'typename', dataField: 'typename', hidden:true},
+                {text: 'Name', dataField: 'pluginname', width: 400},
+                {text: 'Package', dataField: 'packagename', width: 300},
+                {text: 'Version', dataField: 'packageversion', width: 150},
+                {text: 'Active', dataField: 'activated', width: 148,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return '<input type="radio" class="pluginactivedeactivator" name="installed_id_'+rowData.id+'" id="installed_id_'+rowData.id+'_true" value="true" '+(rowData.activated===true?"checked=\"checked\"":"")+'"/>Yes&nbsp;' + 
+                               '<input type="radio" class="pluginactivedeactivator" name="installed_id_'+rowData.id+'" id="installed_id_'+rowData.id+'_false" value="false" '+(rowData.activated!==true?"checked=\"checked\"":"")+'"/>No';
+                    }      
+                }
+            ],
+            rendered: function () {
+                $(".pluginactivedeactivator").on("click",function(){
+                    var pluginId = $(this).attr("id").split('_')[2];
+                    var yesno    = $(this).attr("id").split('_')[3];
+                    var activate = yesno==="true"?true:false;
+                    $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PluginService.setInstalledActive", "params":{"id": '+pluginId+', "active":'+activate+'},"id":"PluginService.setInstalledActive"}')
+                        .done(function(data) {
+                            
+                        })
+                        .fail(function() {
+                            showErrorMessage("Error","Could not set plugin status");
+                        });
+                });
+            }
+        });
+    });
+</script>

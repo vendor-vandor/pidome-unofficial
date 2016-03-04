@@ -1,0 +1,152 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script>
+$(document).ready(function () {    
+    setPageBreadcrumbs(2, "page_customdevices", "${page_title}", "/desktop/devices.html");
+});
+</script>
+<div id="pageinfotext" class="popup medium roundedcorners">
+    <p>Custom devices are devices you create your self or are not yet supported in the server.</p>
+    <p>Building a custom device can be as simple as it can be complex to do. If you are stuck in any means, ask a question on the forum!</p>
+    <p>Below is a list of custom devices created. Click Add to add, click Edit to edit and click delete to delete.</p>
+    <p>You can re-assign a device to another driver. Always check if your skeleton is still compatible with the new driver after assignment.</p>
+</div>
+<p class="bg-warning" style="padding: 9px; border-radius: 3px;"><strong>Please read this before continuing, make a backup of your database before you perform the below action. It is an incubating feature!</strong><br/>
+   <br/>
+   It is possible to re-assign custom devices to new driver. This means all devices you have added to the server and are based on the device skeleton will be using the newly assigned driver.<br/>
+   <br/>
+   Example:<br/>
+   A device skeleton assgigned to the mysensors serial driver needs to be moved to the mysensors mqtt driver. You click the device skeleton you created, select the new MQTT driver and re-assign the device skeleton.
+   If the MQTT driver is running the devices are restarted. After re-assignmend you must check if the device skeleton is still compatible. You can still edit the skeleton as you are used to do.
+</p>
+<div id="customdeviceedittable-toolbar" style="width:100%;">
+    <h2 style="margin-top:0px; margin-bottom: 0px; float:left;">Available custom devices</h2>
+    <button type="button" class="btn btn-info" style="float:left; margin-left: 25px;" id="mutationAddNewCustomDevice">Create a new device</button>
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <table id="customdeviceedittable" class="table table-striped table-hover"
+                       data-toolbar="#customdeviceedittable-toolbar"
+                       data-toggle="table" 
+                       data-show-refresh="true"    
+                       data-search="true"
+                       data-sort-name="friendlyname"
+                       data-sort-order="asc"
+                       data-pagination="true">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-width="75">ID</th>
+                            <th data-field="driver_friendlyname" data-width="400" data-sortable="true">Driver/Plugin</th>
+                            <th data-field="friendlyname" data-sortable="true">Name</th>
+                            <th data-field="created" data-width="150">Created</th>
+                            <th data-field="modified" data-width="150">Modified</th>
+                            <th data-field="action" data-width="295" data-formatter="actionFormatter">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    
+function actionFormatter(value, row, index){
+    var container = '<button class="btn btn-danger delete-device" id="deletedevice-'+row.id+'-'+index+'" style="float:right;">Delete</button>';
+    container += '<button class="btn btn-default reassign-device" id="reassign-'+row.id+'-'+index+'" style="float:right; margin-right:5px;">Re-assign</button>';
+    container += '<button class="btn btn-info edit-device" style="float:right; margin-right: 5px;" id="editdevice-'+row.id+'" value="'+row.id+'">Edit</button>';
+    container += '<button class="btn btn-success clone-device" style="float:right; margin-right: 5px;" id="clonedevice-'+row.id+'" value="'+row.id+'">Clone</button>';
+    return container;
+}
+    
+$('#customdeviceedittable').bootstrapTable({
+    url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getCustomDevices", "id":"DeviceService.getCustomDevices"}',
+    cache: false,
+    height: 575,
+    toolbarAlign: 'left',
+    responseHandler: function(data){
+        var workData = returnResultData(data);
+        return workData;
+    },
+    onLoadSuccess: function (data) {
+        setButtonHandlers();
+    },
+    onPostBody : function(){
+        setButtonHandlers();
+    }
+});
+
+function setButtonHandlers(){
+    $(".edit-device").off('click').on('click', function () {
+        var device = $(this).attr('id').split("-")[1];
+        window.location.href = ("/desktop/customdeviceedit.html?device=" + device);
+    });
+    $(".delete-device").off('click').on("click", function(){
+        var deviceId = $(this).attr('id').split("-")[1];
+        var deviceData = getTableRowData("#customdeviceedittable", $(this).attr('id').split("-")[2]);
+        yesnoConfirmation('Remove device', '<p>Are you sure you want to delete <strong>'+deviceData.friendlyname+'</strong>?<br/><br/>By deleting this skeleton you will also delete all devices based on it!</p>', 
+            function(){
+                getHttpJsonRPC('{"jsonrpc": "2.0", "method": "DeviceService.deleteCustomDevice", "params": {"id": '+deviceId+'}, "id":"DeviceService.deleteCustomDevice"}',function(data) {
+                    quickMessage("success", '<strong>' + deviceData.name + '</strong> has been deleted');
+                    $('#customdeviceedittable').bootstrapTable("refresh",{ silent: true });
+                });
+            },
+        "Remove", "Cancel");
+    });
+    $(".reassign-device").off('click').on("click", function(){
+        var deviceId = $(this).attr('id').split("-")[1];
+        var deviceData = getTableRowData("#customdeviceedittable", $(this).attr('id').split("-")[2]);
+        simpleDialog('Re-assign device skeleton', '<p>Are you sure you want to re-assign <strong>'+deviceData.friendlyname+'</strong>?<br/><br/>\n\
+                    When this device skeleton is re-assigned to another driver all devices based on this skeleton will be transfered to the new driver.</p>\n\
+<div class="form">\n\
+    <div class="form-group>\n\
+        <label for ="">Choose new driver</label>\n\
+        <select class="form-control" id="driver-reassign">\n\
+        </select>\n\
+    </div>\n\
+</div>', 
+            function(){
+                getHttpJsonRPC('{"jsonrpc": "2.0", "method": "DeviceService.assignCustomDevice", "params": {"id": '+deviceId+', "driver": '+$('#driver-reassign').val()+'}, "id":"DeviceService.assignCustomDevice"}',function(data) {
+                    quickMessage("success", '<strong>' + deviceData.name + '</strong> has been re-assigned, devices are restarted.<br/><br/>If these devices are not restarted check the logs or manually rewstart the driver');
+                    $('#customdeviceedittable').bootstrapTable("refresh",{ silent: true });
+                });
+            },
+        "Re-Assign");
+        
+        $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getDeclaredCustomDevices", "id":"DeviceService.getDeclaredCustomDevices"}', function(data){
+            var selectSet = $('#driver-reassign');
+            $.each(data.result.data, function(key, value) {
+                selectSet.append($("<option/>", {
+                    value: value.id,
+                    text: value.friendlyname
+                }));
+            });
+        });
+        
+    });
+    $(".clone-device").off('click').on('click', function () {
+        var device = $(this).attr('id').split("-")[1];
+        window.location.href = ("/desktop/customdeviceedit.html?cloneFrom=" + device);
+    });
+}
+
+$(document).ready(function () {
+    setPageTitleDescription("Listing of custom devices, here you can add, change, clonse or delete a custom device.");
+    preparePageInfo();
+    setPageBreadcrumbs(2, "page_customdevices", "${page_title}", "/desktop/customdeviceslist.html");
+
+    $("#mutationAddNewCustomDevice").off('click').on('click', function () {
+        window.location.href = ("/desktop/customdeviceedit.html");
+    });
+
+});
+
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

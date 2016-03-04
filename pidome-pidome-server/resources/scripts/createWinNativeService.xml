@@ -1,0 +1,27 @@
+<launch4jConfig>
+  <dontWrapJar>true</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>pidome-server.jar</jar>
+  <outfile>dist/pidome-server-service.exe</outfile>
+  <errTitle>PiDome Server launch error</errTitle>
+  <cmdLine>debug</cmdLine>
+  <chdir></chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>true</stayAlive>
+  <manifest></manifest>
+  <icon></icon>
+  <singleInstance>
+    <mutexName>PiDome Server Running Instance</mutexName>
+    <windowTitle>PiDome Server</windowTitle>
+  </singleInstance>
+  <jre>
+    <path></path>
+    <bundledJre64Bit>false</bundledJre64Bit>
+    <minVersion>1.7.0_25</minVersion>
+    <maxVersion></maxVersion>
+    <jdkPreference>jreOnly</jdkPreference>
+    <opt>-Dlog4j.configurationFile=config/log4j2.xml -Djava.net.preferIPv4Stack=true -Dcharva.color -Dgnu.io.rxtx.NoVersionOutput=true</opt>
+  </jre>
+</launch4jConfig>

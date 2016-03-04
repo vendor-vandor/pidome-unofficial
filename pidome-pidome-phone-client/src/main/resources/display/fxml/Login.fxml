@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox>
+         <children>
+            <HBox alignment="CENTER_LEFT" nodeOrientation="LEFT_TO_RIGHT">
+               <children>
+                  <Label styleClass="appTitle" text="PiDome" textFill="#cccccc">
+                  </Label>
+               </children>
+            </HBox>
+            <Label styleClass="appTitleDesc" text="Open source home automation" textFill="#cccccc" textOverrun="CLIP" wrapText="true">
+            </Label>
+         </children>
+      </VBox>
+      <VBox alignment="CENTER" prefHeight="200.0" StackPane.alignment="CENTER">
+         <children>
+            <ImageView id="loginLoaderIcon" fitHeight="96.0" fitWidth="96.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../images/app/loading.png" />
+               </image>
+            </ImageView>
+            <Label id="loaderText" text="Please wait, loading..." textAlignment="CENTER" textFill="#cccccc" wrapText="true" />
+         </children>
+      </VBox>
+      <HBox id="noconnectionbox" alignment="BOTTOM_CENTER" styleClass="bottom-button-bar" StackPane.alignment="BOTTOM_CENTER">
+         <children>
+            <StackPane id="automaticbutton" styleClass="button-field" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="Retry/Auto" />
+               </children>
+            </StackPane>
+            <StackPane id="manualbutton" styleClass="button-field" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label text="Manual" />
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
+   </children>
+   <stylesheets>
+      <URL value="@../css/default.css" />
+      <URL value="@../css/dark.css" />
+   </stylesheets>
+</StackPane>

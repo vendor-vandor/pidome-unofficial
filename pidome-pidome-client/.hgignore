@@ -1,0 +1,11 @@
+\.orig$
+\.orig\..*$
+\.chg\..*$
+\.rej$
+\.conflict\~$
+^resources/log$
+^log$
+^resources/properties/desktop\.properties$
+^resources/properties/system\.properties$
+^nightly$
+^resources/properties/applicationswidgetbar\.properties$

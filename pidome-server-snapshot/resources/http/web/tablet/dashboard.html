@@ -1,0 +1,76 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<div role="main" class="ui-content">
+    <div id="contentbody">
+        <div class="gridster">
+            <ul>
+            </ul>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="/shared/js/libs/gridster/jquery.gridster.min.css" />
+<script>
+    $(document).ready(function() {
+        setPage("dashboard", "Dashboard");
+    
+        $.when(
+            $.getScript( "/shared/js/libs/gridster/jquery.gridster.min.js" ),
+            $.getScript( "/shared/js/sitelibs/dashboard.js" ),
+            $.Deferred(function( deferred ){
+                $( deferred.resolve );
+            })
+        ).done(function(){
+            getHttpJsonRPC('{"jsonrpc": "2.0", "method": "DashboardService.getDashboard", "id":"DashboardService.getDashboard"}', function(data){
+                if(data.id!==0){
+                    var serialization = Gridster.sort_by_row_and_col_asc(data.data);
+                    var gridpane = $(".gridster ul");
+                    $.each(serialization, function() {
+                        var contentDiv = "<div ";
+                        for(var item in this.config){
+                            contentDiv += (item + '="'+this.config[item]+'" ');
+                        }
+                        contentDiv += "></div>"
+                        gridpane.append('<li data-row="'+this.row+'" data-col="'+this.col+'" data-sizex="'+this.size_x+'" data-sizey="'+this.size_y+'">' + contentDiv + '</li>');
+                    });
+                    var grid = $(".gridster ul").gridster({
+                        widget_margins: [5, 5],
+                        widget_base_dimensions: [90, 90],
+                        serialize_params: function($w, wgd) { 
+                            var tag = $($w).first().find('.dashboard-tile');
+                            var tagset = {};
+                            $(tag[0].attributes).each(function() {
+                                tagset[this.nodeName]=this.nodeValue;
+                            });
+                            return { 
+                                col: wgd.col, row: wgd.row, size_x: wgd.size_x, size_y: wgd.size_y, config: tagset 
+                            } 
+                        }
+                    }).data('gridster');
+                    grid.disable();
+                    var dashBuilder = new DashBoardBuilder(grid, $(".gridster ul"));
+                    dashBuilder.build();
+                } else {
+                    <#if _SERVER.userloginrole=="ADMIN">
+                        quickMessage("warning", "You have no dashboard, go to designers>Dashboards to create one.");
+                    <#else>
+                        quickMessage("warning", "You have no dashboard, ask an administrator to create one.");
+                    </#if>
+                }
+                pidomeRPCSocket.addCallback(function(thingy) {
+                    try {
+                        if(data.id===thingy.params.id){
+                            refreshPageContent("/desktop/index.html");
+                        }
+                    } catch(err){
+                        /// Not really that important, but nice if it works.
+                    }
+                }, "DashboardService.saveUserDashboard");
+                
+            });
+        });
+    });
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

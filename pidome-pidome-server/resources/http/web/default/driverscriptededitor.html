@@ -1,0 +1,173 @@
+<div id="pageinfotext" class="popup medium roundedcorners">
+    <p>Here you can edit your own driver. If looking at this page for the first time we have already implemented an example script which already runs out of the box.</p>
+    <p>We appologies for not having a manual yet explaining what you can do but if you have some javascript knowledge the example should get you started. There is a lot of documentation
+    in the code. If you have any questions please do not hesitate to ask them on the forum!</p>
+    <p>We will soon be adding a debugger window so you can exactly see what your script is doing in real time.</p>
+    <p>Some small details:</p>
+    <ul>
+        <li>It does not support the DOM model, so you can not call any browser related functions</li>
+        <li>Support is based on ECMAScript version 5.1 with the above exception.</li>
+    </ul>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="row">
+            <div class="col-lg-12 contentfield roundedcorners">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 style="padding:0px;margin:0px;float:left;">Driver editor</h2>
+                        <button type="button" class="btn btn-success" style="float:right;" id="mutateDriver">Save (and restart)</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="driver_name" class="col-lg-2 control-label">Driver name</label>
+                                <div class="col-lg-10">
+                                    <input type="text" class="form-control" id="driver_name" placeholder="Enter driver name" value="${scriptedDriver.name}" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="driver_description" class="col-lg-2 control-label">Description</label>
+                                <div class="col-lg-10">
+                                    <textarea id="driver_description" rows="3" cols="100" class="form-control">${scriptedDriver.description}</textarea>
+                                </div>
+                            </div>
+                            <input type="hidden" name="driver_id" id="driver_id" value="${scriptedDriver.id}" />
+                            <input type="hidden" name="driver_instancefor" id="driver_instancefor" value="${scriptedDriver.instancefor}" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="row">
+            <div class="col-lg-12 contentfield roundedcorners">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 style="padding:0px;margin:0px;">Debug output</h2>
+                    </div>
+                </div>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <div class="col-lg-12" style="margin-top:5px;">
+                            <textarea class="form-control" id="debug_output" style="height: 130px;">Not yet available, use the LOG variable for the time being with a "tail -f logs/system/appLog.txt" in a terminal</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" style="padding-top:15px;">
+    <div class="col-lg-12 contentfield roundedcorners">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 style="padding:0px;margin:0px;margin-bottom: 5px; float:left;">Editor</h2>
+                <div style=" float:right; vertical-align: middle; cursor:pointer;" id="apiopener"><h3 style="padding:0px;margin:0px;float:left;margin-top:4px;">API Manual&nbsp;</h3><img style="width: 32px; height:32px; float:right;" src="/shared/images/open_in_new_window_invert.png" alt="Open in new window" /></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12">
+                <textarea id="driver_code" rows="18" cols="150" style="height: 390px;">${scriptedDriver.script}</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="apicontentpopup"></div>
+<div id="innerscrollmargin"></div>
+<link rel="stylesheet" href="/shared/js/libs/codemirror/codemirror.css">
+<link rel="stylesheet" href="/shared/js/libs/highlight/styles/xcode.css" />
+<link rel="stylesheet" href="/shared/js/libs/msgbox/themes/bootstrap/css/jquery.msgbox.css" />
+<script>
+    
+    var codeEditor;
+    
+    $.getScript( "/shared/js/libs/msgbox/jquery.msgbox.min.js", function( data, textStatus, jqxhr ) {
+        $("#apicontentpopup").msgbox({
+            type: 'ajax',
+            content: 'driversscriptedapi.html',
+            overlay: false,
+            resize: false,
+            width: 800,
+            height: 513,
+            title: 'API manual',
+            onLoad : function () { 
+                $(".nav.nav-tabs a").click(function (e) {
+                    e.preventDefault()
+                    $(this).tab('show')
+                });
+                $.getScript( "/shared/js/libs/highlight/highlight.pack.js", function( data, textStatus, jqxhr ) {
+                    hljs.configure({languages: ["javascript"]});
+                    $('pre code').each(function(i, block) {
+                        hljs.highlightBlock(block);
+                    });
+                });
+            },
+        });
+
+        $("#apiopener").click(function(){
+            $("#apicontentpopup").msgbox().open();
+        });
+    });
+    
+    $("#mutateDriver").off("click").on("click", function(){
+        var postData = {};
+        postData["instanceFor"] = $("#driver_instancefor").val();
+        postData["id"] = $("#driver_id").val();
+        postData["name"] = $("#driver_name").val();
+        postData["description"] = $("#driver_description").val();
+        postData["script"] = codeEditor.getValue();
+        
+        $.post("/scriptedDriverProxy.xhtml", postData)
+            .done(function(data) {
+                var obj = jQuery.parseJSON( data );
+                if (obj.result.exec !== true) {
+                    showErrorMessage("Driver save error", "Could not update/save driver: " + obj.result.reason);
+                } else {
+                    showInfoMessage("Driver added/modified", "Driver " + postData["name"] + " has been added/modified");
+                }
+            }, "json").fail(function( jqXHR, textStatus, errorThrown ) {
+                showErrorMessage("Driver save error", "Could not add/modify driver: Request error - " + textStatus + ", " + errorThrown);
+            });
+
+    });
+    
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_driverscriptededitor", "Custom drivers", "/driversscripted.html", "Add/Edit custom driver");
+        setPageTitleDescription("Create your own driver using ECMAScript (Javascript)");
+        preparePageInfo();
+        
+        $.when($.getScript( "/shared/js/libs/codemirror/codemirror.js" ),
+            $.Deferred(function( deferred ){
+                $( deferred.resolve );
+            })
+        ).done(function(){
+            $.when(
+                $.getScript( "/shared/js/libs/codemirror/addon/edit/matchbrackets.js" ),
+                $.getScript( "/shared/js/libs/codemirror/addon/comment/continuecomment.js" ),
+                $.getScript( "/shared/js/libs/codemirror/addon/comment/comment.js" ),
+                $.getScript( "/shared/js/libs/codemirror/addon/selection/active-line.js" ),
+                $.getScript( "/shared/js/libs/codemirror/mode/javascript/javascript.js" ),
+                $.getScript( "/shared/js/libs/codemirror/addon/display/fullscreen.js"),
+                $.Deferred(function( deferred ){
+                    $( deferred.resolve );
+                })
+            ).done(function(){
+                codeEditor = CodeMirror.fromTextArea(document.getElementById("driver_code"), {
+                    lineNumbers: true,
+                    matchBrackets: true,
+                    continueComments: "Enter",
+                    mode: "text/javascript",
+                    styleActiveLine: true,
+                    cursorHeight: 0.85,
+                    extraKeys: {"Ctrl-Q": "toggleComment"}
+                });
+            }).fail(function( req, status, err ) {
+                console.log( 'something went wrong while loading codemirror', status, err );
+            }); 
+        });
+    });
+</script>

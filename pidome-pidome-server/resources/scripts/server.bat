@@ -1,0 +1,1 @@
+java -cp ./*;./lib/*;./lib/native/*;./packages/system/*;./packages/system/dep/*;./packages/system/dep/native/* -Xms24m -Xmx64m -Dlog4j.configurationFile=config/log4j2.xml -Dfile.encoding="UTF-8" -Djava.awt.headless=true Main

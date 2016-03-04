@@ -1,0 +1,3 @@
+CREATE TABLE [clients] ([id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, [clientname] TEXT NOT NULL, [clientpass] TEXT, [firstname] TEXT, [lastname] TEXT, [lastlogin] DATETIME, [clienttype] TEXT NOT NULL, [created] DATETIME NOT NULL DEFAULT (datetime('now')), [modified] DATETIME NOT NULL DEFAULT (datetime('now')));
+INSERT INTO clients ('clientname', 'firstname', 'lastname', 'clienttype')  VALUES ('admin', 'admin', 'user', 'USER');
+PRAGMA user_version=3;

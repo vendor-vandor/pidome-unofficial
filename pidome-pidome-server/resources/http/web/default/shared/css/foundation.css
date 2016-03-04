@@ -1,0 +1,279 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : May 29, 2015, 1:40:11 PM
+    Author     : John
+*/
+body {
+    margin: 0; 
+    padding: 0;
+    min-height:100%;
+    font-family: 'segoe ui', arial, sans-serif;
+}
+.clearfloat {
+    clear:left;
+    clear:right;
+    clear:both;
+}
+.verticaltext {
+   width: 1px;
+   word-break: break-all;
+}
+/*
+Top header and menu
+*/
+#fullheader {
+    height: 66px;
+    width: 100%;
+    box-shadow: 0px 4px 5px #444;
+    z-index: 1001;
+    position: relative;
+}
+#topheader {
+    width: 100%;
+    min-width: 1240px;
+    height: 34px;
+    z-index: 1005;
+}
+#topheaderleft {
+    float: left;
+}
+#topheader .menulogo {
+    width : 24px; 
+    float:left;
+    margin-top: 3px;
+    margin-left: 2px;
+}
+#topheader .menulogoappname {
+    float:left; 
+    margin-top: 5px;
+    margin-left: 5px;
+    font-size: 16px;
+}
+#topheaderright {
+    float: right;
+    padding-top: 7px;
+    padding-right: 7px;
+    line-height: 1.3 !important;
+}
+#topheaderright img {
+    float:left; 
+    height: 16px;
+    margin-top: 0px;
+    margin-right: 5px;
+    margin-left: 5px;
+}
+#topheaderright span#currentstatenotif {
+    float:left; 
+    margin-top: 1px;
+    margin-left: 1px;
+    margin-right: 7px;
+}
+
+#pagemenu {
+    margin-left: 53px;
+    float:left;
+}
+#mainmenubar {
+    width: 100%;
+    clear:left;
+    height: 33px;
+    z-index: 10;
+    position: relative;
+}
+
+#mainmenu {
+    width: calc(100% - 267px);
+}
+
+.jqx-menu {
+    float: left;
+}
+
+#menusubset {
+    float:right;
+    width: 250px;
+    height: 34px; 
+    line-height: 34px; 
+}
+#systemicons {
+    float:right;
+    margin-top: -20px;
+    margin-right: 10px;
+    width: 100px;
+}
+#message_notifications {
+    width: 23px;
+    height: 18px;
+    line-height: 18px;
+    position: relative;
+    display:inline-block;
+    float:right;
+    margin-right: 10px;
+}
+#message_notifications:hover {
+    cursor: pointer;
+}
+#message_notifications #unread_notifications {
+    border-radius: 7px;
+    background: #de494e;
+    min-width: 18px;
+    min-height: 15px;
+    position: absolute;
+    left: 12px;
+    top: -8px;
+    line-height: 10px;
+    font-weight: bold;
+    display:none;
+    text-align: center;
+    padding: 4px;
+}
+#ws_enabled {
+    width: 23px;
+    height: 18px;
+    line-height: 18px;
+    position: relative;
+    display:inline-block;
+    float:right;
+}
+#loggedinas {
+    float:right;
+    width: 210px;
+    height: 34px; 
+    line-height: 34px; 
+    vertical-align:middle;
+    padding-left: 5px;
+}
+/*
+Breadcrumbs markup
+*/
+.breadcrumbs { 
+    list-style: none; 
+    overflow: hidden; 
+    height: 25px;
+    margin: 5px 0px 0px 0px;
+    padding: 2px 0px 5px 10px;
+    float:left;
+    z-index: 1;
+    width: 100%;
+}
+
+.breadcrumbs li { 
+    float: left;
+    height: 20px;
+    vertical-align:middle;
+    line-height: normal;
+}
+.breadcrumbs li a,
+.breadcrumbs li span,
+.breadcrumbs li img {
+    color: #f2f3f3;
+    text-decoration: none;
+    height: 14px;
+    font-size: 14px;
+}
+.breadcrumbs li img {
+    margin-top: -4px;
+}
+.breadcrumbsarrow {
+    padding-left: 5px; padding-right: 5px;
+}
+/*
+Body styles markup
+*/
+
+/* page title header */
+#pageheadertitle {
+    z-index: 1000;
+    padding-left: 10px;
+    height: 70px;
+    margin-top: -21px;
+}
+
+#pageheadertitle h1 {
+    line-height: 40px;
+    display:none;
+    font-size: 2.5em;
+    padding-bottom: 0px;
+    margin-bottom: 0px;
+    padding-top: 4px;
+}
+#pageheadertitle #simpleheaderdescription {
+    margin-left:3px;
+    float:left;
+}
+#pageheadertitle #pageinfoicon {
+    width: 27px;
+    height: 28px;
+    float: right;
+    margin: -33px 5px 0px 0px;
+    cursor:pointer;
+}
+
+#pageinfoicon {
+    display:none;
+}
+
+#pageinfotext {
+    display:none;
+}
+
+/* Body markup */
+#contentbody {
+    margin-top: 20px;
+}
+
+#fullallcontentcontainer {
+    position:relative;
+    height:auto !important;
+    min-height:100%;
+}
+
+#mainbodycontentpart {
+    min-width:1232px;
+    margin-left: 10px;
+}
+
+.contentfield {
+    width: 100%;
+    padding: 10px;
+}
+
+/* Elements markup */
+.roundedcorners {
+    border-radius: 7px;
+}
+
+/*
+Bootstrap overrides
+*/
+.modal-footer {
+  padding: 7px;
+}
+.modal-header {
+  padding: 11px;
+}
+
+#dashboardbuildmenu {
+    width: 290px;
+    top:185px;
+    position:fixed;
+    right: -245px;
+    box-shadow: 0 0 2px rgba(0,0,0,.6);
+}
+#dashboardbuildmenu ul {
+    list-style-type: none;
+    padding: 6px;
+    width: 100%;
+}
+#dashboardbuildmenu li.header {
+    font-size: 1.6em;
+    padding:6px;
+}
+#dashboardbuildmenu li.header span {
+    border-bottom: 1px solid #fff;
+    width: 100%;
+}

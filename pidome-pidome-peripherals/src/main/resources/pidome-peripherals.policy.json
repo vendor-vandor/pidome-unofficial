@@ -1,0 +1,5 @@
+{"permissions": [
+        {"type":"java.io.FilePermission", "name":"/opt/vc/bin/vcgencmd", "action":"execute", "reason":"To be able to read the raspberry pi usages"},
+        {"type":"java.io.FilePermission", "name":"/dev/-", "action":"read, write, execute, readlink", "reason":"To be able to communicate with peripherals"}
+    ]
+}

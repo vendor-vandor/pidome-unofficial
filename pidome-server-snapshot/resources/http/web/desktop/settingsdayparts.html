@@ -1,0 +1,269 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_editdayparts", "${page_title}", "/desktop/settingsdayparts.html");
+    });
+</script>
+<div class="defaultcontent" id="settingslocationeditor" style="max-width:976px;">
+    <fieldset>
+        <legend>Edit dayparts</legend>
+        <p>All though a small settings screen, day parts have a huge impact in the server. A day part is a server wide setting to let the system know what the current part of the day is of the environment. This day part can be used and set in triggers where actions can be taken based on this part of day</p>
+        <p>By default some default day parts can not be deleted, but it is always possible to add/edit/delete user defined ones.</p>
+        <div style="float:left;">
+            <h3>Add new day part</h3>
+            <section class="itemeditor">
+                <div class="nvp">
+                    <div class="n">
+                        <label for="newDayPartName">Name</label>
+                    </div>
+                    <div class="v">
+                        <input data-inputtype="string" type="text" name="newDayPartName" id="newDayPartName" value="" />
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        <label for="newDayPartDescription">Description</label>
+                    </div>
+                    <div class="v">
+                        <input data-inputtype="string" type="text" name="newDayPartDescription" id="newDayPartDescription" value=""/>
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        &nbsp;
+                    </div>
+                    <div class="v">
+                        <button id="newDayPart" name="newDayPart" value="">Add</button>
+                        <button id="cancelNewDayPart" name="cancelNewDayPart" value="cancelNewDayPart" style="margin-left: 10px;">Cancel</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div style="float:left; margin-left:15px;">
+            <h3>Edit/Delete day parts</h3>
+            <section class="itemeditor">
+                <div style="float:left; width:220px;">
+                    <div id="daypartList"></div>
+                </div>
+                <div style="float:left;">
+                    <div class="nvp">
+                        <div class="n">
+                            <label for="editDayPartName">Name</label>
+                        </div>
+                        <div class="v">
+                            <input data-inputtype="string" type="text" name="editDayPartName" id="editDayPartName" value="" />
+                        </div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            <label for="editDayPartDescription">Description</label>
+                        </div>
+                        <div class="v">
+                            <input data-inputtype="string" type="text" name="editDayPartDescription" id="editDayPartDescription" value=""/>
+                        </div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            &nbsp;
+                        </div>
+                        <div class="v">
+                            <button id="updateDayPart" name="updateDayPart" value="">Update</button>
+                            <button id="cancelUpdateDayPart" name="cancelUpdateDayPart" value="cancelUpdateDayPart" style="margin-left: 10px;">Cancel</button>
+                            <button id="deleteUpdateDayPart" name="deleteUpdateDayPart" value="deleteUpdateDayPart" style="margin-left: 10px;">Delete</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="updateDayPartId" id="updateDayPartId" value="" />
+                </div>
+            </section>
+        </div>
+    </fieldset>
+</div>
+<h2>Last day part statuses</h2>
+<table id="dayparttable">
+    <thead>
+        <tr>
+            <th align="left">Name</th>
+            <th align="left">Description</th>
+            <th align="left">Last activated</th>
+            <th align="left">Editable</th>
+            <th align="left">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function () {
+
+        var allDayPartsSource = {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int'},
+                { name: 'name', type: 'string'},
+                { name: 'fixed', type: 'boolean'},
+                { name: 'lastactivated', type: 'string'},
+                { name: 'description', type: 'string'}
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DayPartService.getDayParts", "id":"DayPartService.getDayParts"}',
+            root: "result>data"
+        };
+        var allDayPartsSourceData = new $.jqx.dataAdapter(allDayPartsSource);
+        
+        $("#dayparttable").jqxDataTable({ source: allDayPartsSourceData, filterable: true, filtermode: 'simple', selectionMode: "none", height: 360, width: 1000, sortable: true, pageable: true, pageSize: 9, pagerButtonsCount: 10, theme: siteSettings.getTheme(),
+            columns: [
+                {text: 'id', dataField: 'id', hidden:true},
+                {text: 'Name', dataField: 'name', width: 200},
+                {text: 'Description', dataField: 'description', width: 500},
+                {text: 'Last activated', dataField: 'lastactivated', width: 175},
+                {text: 'Deletable', dataField: 'fixed', width: 50,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return value===true?"No":"Yes";
+                    }      
+                },
+                {text: 'Action', width: 75,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return '<button class="setDayPartActive" name="setDayPartActive" id="setDayPartActive-'+rowData.id+'" value="'+rowData.id+'">Active</button>'
+                    }      
+                }
+            ],
+            rendering: function(){
+                    // destroys all buttons.
+                    if ($(".setDayPartActive").length > 0) {
+                        $(".setDayPartActive").jqxButton('destroy');
+                    }
+            },
+            rendered: function () {
+                try {
+                    $(".setDayPartActive").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".setDayPartActive").on('click', function () {
+                        var daypart = $(this).attr('id').split("-")[1];
+                        $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DayPartService.setDayPart", "params":{"id": '+daypart+'},"id":"DayPartService.setDayPart"}')
+                            .done(function(data) {
+                                allDayPartsSourceData.dataBind();
+                            })
+                            .fail(function() {
+                                showErrorMessage("Error","Could not activate daypart");
+                            });
+                    });
+                } catch(error){
+                    /// Nothing to edit.
+                }
+            }
+        });
+        
+        $("#daypartList").jqxComboBox({
+            placeHolder: "Select daypart", source: allDayPartsSourceData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme()
+        });
+        
+        $("#daypartList").on('select', function (event) {
+            if (event.args) {
+                var item = event.args.item;
+                if (item) {
+                    $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DayPartService.getDayPart", "params":{"id": '+item.value+'},"id":"DayPartService.getDayPart"}')
+                            .done(function(data) {
+                                setDayPartEditEnabled(data.result.data.name,data.result.data.description,data.result.data.fixed);
+                                $("#updateDayPartId").val(data.result.data.id);
+                            })
+                            .fail(function() {
+                                showErrorMessage("Error","Could not retrieve daypart " + item.label);
+                            });
+                }
+            }
+        });
+        
+        $("#cancelUpdateDayPart").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelUpdateDayPart").on('click', function (event) {
+            setDayPartEditDisabled();
+        });
+        $("#updateDayPart").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#updateDayPart").on('click', function (event) {
+            if(inputFieldValid($("#editDayPartName")) && inputFieldValid($("#editDayPartDescription"))){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DayPartService.updateDayPart", "params":{"id": '+$("#updateDayPartId").val()+', "name":"'+$("#editDayPartName").val()+'","description":"'+$("#editDayPartDescription").val()+'"},"id":"DayPartService.updateDayPart"}')
+                    .done(function(data) {
+                        showInfoMessage("Updated","DayPart has been udated");
+                        setDayPartEditDisabled();
+                        allDayPartsSourceData.dataBind();
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not update daypart");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct daypart data.");
+            }
+        });
+        $("#deleteUpdateDayPart").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#deleteUpdateDayPart").on('click', function (event) {
+            $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DayPartService.deleteDayPart", "params":{"id": '+$("#updateDayPartId").val()+'},"id":"DayPartService.deleteDayPart"}')
+                .done(function(data) {
+                    showInfoMessage("Updated","DayPart has been deleted");
+                    setDayPartEditDisabled();
+                    allDayPartsSourceData.dataBind();
+                })
+                .fail(function() {
+                    showErrorMessage("Error","Could not delete daypart");
+                });
+        });
+        setDayPartEditDisabled();
+        
+        function setDayPartEditEnabled(name, description, fixed){
+            $("#updateDayPart").jqxButton({disabled: false });
+            $("#cancelUpdateDayPart").jqxButton({disabled: false });
+            if(fixed===false){
+                $("#deleteUpdateDayPart").jqxButton({disabled: false });
+            }
+            resetDayPartEditInputs(name,description);
+        }
+        
+        function setDayPartEditDisabled(){
+            $("#updateDayPart").jqxButton({disabled: true });
+            $("#cancelUpdateDayPart").jqxButton({disabled: true });
+            $("#deleteUpdateDayPart").jqxButton({disabled: true });
+            resetDayPartEditInputs("","");
+        }
+        
+        function resetDayPartEditInputs(name, description){
+            $("#editDayPartName").val(name);
+            $("#editDayPartDescription").val(description);
+            createSizedWebInputField($("#editDayPartName"), 250);
+            createSizedWebInputField($("#editDayPartDescription"), 250);
+        }
+        
+        $("#cancelNewDayPart").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelNewDayPart").on('click', function (event) {
+            resetDayPartNewInputs();
+        });
+        $("#newDayPart").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#newDayPart").on('click', function (event) {
+            if(inputFieldValid($("#newDayPartName")) && inputFieldValid($("#newDayPartDescription"))){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DayPartService.addDayPart", "params":{"name":"'+$("#newDayPartName").val()+'","description":"'+$("#newDayPartDescription").val()+'"},"id":"DayPartService.addDayPart"}')
+                    .done(function(data) {
+                        showInfoMessage("Updated","DayPart has been added");
+                        resetDayPartNewInputs("","");
+                        allDayPartsSourceData.dataBind();
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not add daypart");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct daypart data.");
+            }
+        });        
+        
+        function resetDayPartNewInputs(name, description){
+            $("#newDayPartName").val(name);
+            $("#newDayPartDescription").val(description);
+            createSizedWebInputField($("#newDayPartName"), 250);
+            createSizedWebInputField($("#newDayPartDescription"), 250);
+        }
+        
+        resetDayPartNewInputs("","");
+        
+    });
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

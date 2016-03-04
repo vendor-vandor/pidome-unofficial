@@ -1,0 +1,38 @@
+.blocklyToolboxDiv {
+    background-color: #252526;
+    border-right: 2px solid #007acc;
+    box-shadow: 3px 0px 3px #111;
+    margin-top: 10px;
+}
+.blocklyTreeRow,.blocklyTreeLabel {
+    font-size: 14px;
+    line-height: 17px;
+    font-family: 'segoe ui';
+    max-width:200px;
+}
+
+.blocklyTreeRow:hover {
+    background-color: #d56909;
+}
+.blocklyTreeSelected {
+    background-color: #007acc !important;
+}
+.blocklyTreeIconOpen {
+    background-position: -16px -16px!important;
+}
+.blocklyTreeIconClosedLtr {
+    background-position: -32px -16px!important;
+}
+.blocklySvg {
+    background-color: #292929;
+    margin-top: 10px;
+}
+.blocklyText {
+    font-size: 12px;
+}
+.blocklyFlyoutBackground {
+    fill: #252526;
+    fill-opacity: 0.9;
+    stroke:rgb(0,122,204);
+    stroke-width: 2px;
+}

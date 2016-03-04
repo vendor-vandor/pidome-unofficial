@@ -1,0 +1,318 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_editpresences", "${page_title}", "/desktop/settingspresences.html");
+    });
+</script>
+<div class="defaultcontent" id="settingslocationeditor" style="max-width:976px;">
+    <fieldset>
+        <legend>Edit presences</legend>
+        <p>All though a small settings screen, presences have a huge impact in the server. A presence is a server wide setting to let the system know what the current presence is of the environment. This presence can be used and set in triggers where actions can be taken based on this presence</p>
+        <p>By default some default presences can not be deleted, but it is always possible to add/edit/delete user defined presences</p>
+        <p>A presence can have a macro defined, this is optional and NOT required. The attached macro is only ran when a user explicit sets a presence state. Macro's are NOT ran when a presence is being activated by or an other macro or via a trigger. An example would be if you get home, you would activate the at home presence, which runs the macro (if set) "Getting home". If a trigger would set your presence at home, this macro then would not be executed.</p>
+        <div style="float:left;">
+            <h3>Add new presence</h3>
+            <section class="itemeditor">
+                <div class="nvp">
+                    <div class="n">
+                        <label for="newPresenceName">Name</label>
+                    </div>
+                    <div class="v">
+                        <input data-inputtype="string" type="text" name="newPresenceName" id="newPresenceName" value="" />
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        <label for="newPresenceDescription">Description</label>
+                    </div>
+                    <div class="v">
+                        <input data-inputtype="string" type="text" name="newPresenceDescription" id="newPresenceDescription" value=""/>
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        <label for="newPresenceMacro">Runs macro</label>
+                    </div>
+                    <div class="v">
+                        <div id="newPresenceMacro"></div>
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        &nbsp;
+                    </div>
+                    <div class="v">
+                        <button id="newPresence" name="newPresence" value="">Add</button>
+                        <button id="cancelNewPresence" name="cancelNewPresence" value="cancelNewPresence" style="margin-left: 10px;">Cancel</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div style="float:left; margin-left:15px;">
+            <h3>Edit/Delete presences</h3>
+            <section class="itemeditor">
+                <div style="float:left; width:220px;">
+                    <div id="presenceList"></div>
+                </div>
+                <div style="float:left;">
+                    <div class="nvp">
+                        <div class="n">
+                            <label for="editPresenceName">Name</label>
+                        </div>
+                        <div class="v">
+                            <input data-inputtype="string" type="text" name="editPresenceName" id="editPresenceName" value="" />
+                        </div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            <label for="editPresenceDescription">Description</label>
+                        </div>
+                        <div class="v">
+                            <input data-inputtype="string" type="text" name="editPresenceDescription" id="editPresenceDescription" value=""/>
+                        </div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            <label for="editPresenceMacro">Runs macro</label>
+                        </div>
+                        <div class="v">
+                            <div id="editPresenceMacro"></div>
+                        </div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            &nbsp;
+                        </div>
+                        <div class="v">
+                            <button id="updatePresence" name="updatePresence" value="">Update</button>
+                            <button id="cancelUpdatePresence" name="cancelUpdatePresence" value="cancelUpdatePresence" style="margin-left: 10px;">Cancel</button>
+                            <button id="deleteUpdatePresence" name="deleteUpdatePresence" value="deleteUpdatePresence" style="margin-left: 10px;">Delete</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="updatePresenceId" id="updatePresenceId" value="" />
+                </div>
+            </section>
+        </div>
+    </fieldset>
+</div>
+<h2>Last presence statuses</h2>
+<table id="presencetable">
+    <thead>
+        <tr>
+            <th align="left">Name</th>
+            <th align="left">Description</th>
+            <th align="left">Last activated</th>
+            <th align="left">Editable</th>
+            <th align="left">Action</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function () {
+
+        var allPresencesSource = {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int'},
+                { name: 'name', type: 'string'},
+                { name: 'fixed', type: 'boolean'},
+                { name: 'lastactivated', type: 'string'},
+                { name: 'macroid', type: 'int'},
+                { name: 'description', type: 'string'}
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PresenceService.getPresences", "id":"PresenceService.getPresences"}',
+            root: "result>data"
+        };
+        var allPresencesSourceData = new $.jqx.dataAdapter(allPresencesSource);
+        
+        var macrosData = {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int'},
+                { name: 'name', type: 'string'}
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MacroService.getMacros","id":"MacroService.getMacros"}',
+            root: "result>data"
+        };
+        var allMacrosData = new $.jqx.dataAdapter(macrosData);
+        
+        $("#presencetable").jqxDataTable({ source: allPresencesSourceData, filterable: true, filtermode: 'simple', selectionMode: "none", height: 360, width: 1000, sortable: true, pageable: true, pageSize: 9, pagerButtonsCount: 10, theme: siteSettings.getTheme(),
+            columns: [
+                {text: 'id', dataField: 'id', hidden:true},
+                {text: 'Name', dataField: 'name', width: 200},
+                {text: 'Description', dataField: 'description'},
+                {text: 'Last activated', dataField: 'lastactivated', width: 150},
+                {text: 'Macro', dataField: 'macroid', width: 50,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return (value===null||value===0||value==="")?"No":"Yes";
+                    }      
+                },
+                {text: 'Deletable', dataField: 'fixed', width: 60,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return value===true?"No":"Yes";
+                    }      
+                },
+                {text: 'Action', width: 75,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return '<button class="setPresenceActive" name="setPresenceActive" id="setPresenceActive-'+rowData.id+'" value="'+rowData.id+'">Set</button>'
+                    }      
+                }
+            ],
+            rendering: function(){
+                    // destroys all buttons.
+                    if ($(".setPresenceActive").length > 0) {
+                        $(".setPresenceActive").jqxButton('destroy');
+                    }
+            },
+            rendered: function () {
+                try {
+                    $(".setPresenceActive").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".setPresenceActive").on('click', function () {
+                        var presence = $(this).attr('id').split("-")[1];
+                        $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PresenceService.activateGlobalPresence", "params":{"id": '+presence+'},"id":"PresenceService.activateGlobalPresence"}')
+                            .done(function(data) {
+                                allPresencesSourceData.dataBind();
+                            })
+                            .fail(function() {
+                                showErrorMessage("Error","Could not activate presence");
+                            });
+                    });
+                } catch(error){
+                    /// Nothing to edit.
+                }
+            }
+        });
+        
+        $("#presenceList").jqxComboBox({
+            placeHolder: "Select presence", source: allPresencesSourceData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme()
+        });
+        
+        $("#newPresenceMacro").jqxDropDownList({
+            placeHolder: "Select macro", source: allMacrosData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme()
+        });
+
+        $("#editPresenceMacro").jqxDropDownList({
+            placeHolder: "Select macro", source: allMacrosData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme()
+        });
+        
+        $("#presenceList").on('select', function (event) {
+            if (event.args) {
+                var item = event.args.item;
+                if (item) {
+                    $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PresenceService.getPresence", "params":{"id": '+item.value+'},"id":"PresenceService.getPresence"}')
+                            .done(function(data) {
+                                $("#editPresenceMacro").jqxDropDownList('clearSelection'); 
+                                setPresenceEditEnabled(data.result.data.name,data.result.data.description,data.result.data.macroid,data.result.data.fixed);
+                                $("#updatePresenceId").val(data.result.data.id);
+                            })
+                            .fail(function() {
+                                showErrorMessage("Error","Could not retrieve presence " + item.label);
+                            });
+                }
+            }
+        });
+        
+        $("#cancelUpdatePresence").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelUpdatePresence").on('click', function (event) {
+            setPresenceEditDisabled();
+        });
+        $("#updatePresence").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#updatePresence").on('click', function (event) {
+            if(inputFieldValid($("#editPresenceName")) && inputFieldValid($("#editPresenceDescription"))){
+                var macroid = $("#editPresenceMacro").jqxDropDownList('getSelectedIndex')===-1?0:$("#editPresenceMacro").jqxDropDownList('getSelectedItem').value;
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PresenceService.updatePresence", "params":{"id": '+$("#updatePresenceId").val()+', "name":"'+$("#editPresenceName").val()+'","description":"'+$("#editPresenceDescription").val()+'","macro":'+macroid+'},"id":"PresenceService.updatePresence"}')
+                    .done(function(data) {
+                        showInfoMessage("Updated","Presence has been udated");
+                        setPresenceEditDisabled();
+                        allPresencesSourceData.dataBind();
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not update presence");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct presence data.");
+            }
+        });
+        $("#deleteUpdatePresence").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#deleteUpdatePresence").on('click', function (event) {
+            $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PresenceService.deletePresence", "params":{"id": '+$("#updatePresenceId").val()+'},"id":"PresenceService.deletePresence"}')
+                .done(function(data) {
+                    showInfoMessage("Updated","Presence has been deleted");
+                    setPresenceEditDisabled();
+                    allPresencesSourceData.dataBind();
+                })
+                .fail(function() {
+                    showErrorMessage("Error","Could not delete presence");
+                });
+        });
+        setPresenceEditDisabled();
+        
+        function setPresenceEditEnabled(name, description, macroid, fixed){
+            $("#updatePresence").jqxButton({disabled: false });
+            $("#cancelUpdatePresence").jqxButton({disabled: false });
+            $("#editPresenceMacro").jqxDropDownList('selectItem', $("#editPresenceMacro").jqxDropDownList('getItemByValue', macroid) );
+            if(fixed===false){
+                $("#deleteUpdatePresence").jqxButton({disabled: false });
+            }
+            resetEditInputs(name,description);
+        }
+        
+        function setPresenceEditDisabled(){
+            $("#updatePresence").jqxButton({disabled: true });
+            $("#cancelUpdatePresence").jqxButton({disabled: true });
+            $("#deleteUpdatePresence").jqxButton({disabled: true });
+            $("#editPresenceMacro").jqxDropDownList('clearSelection');
+            resetEditInputs("","");
+        }
+        
+        function resetEditInputs(name, description){
+            $("#editPresenceName").val(name);
+            $("#editPresenceDescription").val(description);
+            createSizedWebInputField($("#editPresenceName"), 250);
+            createSizedWebInputField($("#editPresenceDescription"), 250);
+        }
+        
+        $("#cancelNewPresence").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelNewPresence").on('click', function (event) {
+            resetPresenceNewInputs();
+            $("#newPresenceMacro").jqxDropDownList('clearSelection');
+        });
+        $("#newPresence").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#newPresence").on('click', function (event) {
+            if(inputFieldValid($("#newPresenceName")) && inputFieldValid($("#newPresenceDescription"))){
+                var macroid = $("#newPresenceMacro").jqxDropDownList('getSelectedIndex')===-1?0:$("#newPresenceMacro").jqxDropDownList('getSelectedItem').value;
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PresenceService.addPresence", "params":{"name":"'+$("#newPresenceName").val()+'","description":"'+$("#newPresenceDescription").val()+'","macro":'+macroid+'},"id":"PresenceService.addPresence"}')
+                    .done(function(data) {
+                        showInfoMessage("Updated","Presence has been added");
+                        resetPresenceNewInputs("","");
+                        $("#newPresenceMacro").jqxDropDownList('clearSelection');
+                        allPresencesSourceData.dataBind();
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not add presence");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct presence data.");
+            }
+        });        
+        
+        function resetPresenceNewInputs(name, description){
+            $("#newPresenceName").val(name);
+            $("#newPresenceDescription").val(description);
+            createSizedWebInputField($("#newPresenceName"), 250);
+            createSizedWebInputField($("#newPresenceDescription"), 250);
+        }
+        
+        resetPresenceNewInputs("","");
+        
+    });
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

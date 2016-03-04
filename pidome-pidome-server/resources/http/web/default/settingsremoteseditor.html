@@ -1,0 +1,739 @@
+<p class="defaultcontent">
+    To create a remote you will need to add sections and within these sections you can add button rows. A row can have three or four buttons. When added you will see
+    the locations where you can add them. You do not need to fill all the possible button slots. Slots not used will be used for spacing.<br/>
+    On the right side you will see a list of buttons. These buttons are not bound to specific functions but are helpers so you will know which signal is under which button.<br/>
+    There are two special button types. These are located under the default buttons section. These are the empty button and a button with a bucket. You can use the empty button
+    to define your own text on a button. The button with the bucket is used to create a color button.<br/>
+    <!-- You can set press pauses, these are handy in macro's or universal remotes. An example would be when turning on the tv, you have to wait [number] of seconds before changing a channel. -->
+</p>
+<div id="remoteeditor" style="width:1000px;">
+    <div id="editorcontainer" class="editorblock">
+        <h3>Remote details</h3>
+        <div class="assignrow"><span class="name">Name</span><span><span>: </span><span id="remotename"></span></div>
+        <div class="assignrow"><span class="name">Description</span><span>: </span><span id="remotedesc"></span></div>
+        <div class="assignrow"><span class="name">Remote type</span><span>: </span><span>Default</span></div>
+        <div class="assignrow"><span class="name">Recorder device</span><span>: </span><span id="remotedevicerec"></span></div>
+        <div class="assignrow"><span class="name">Sender/Test device</span><span>: </span><span id="remotedevicesend"></span></div>
+        <div id="designcontainer">
+            <h3>Remote design</h3>
+            <div class="assignrow"><span class="name">Orientation</span><span>: </span><span>Portrait</span></div>
+            <div class="assignrow"><span class="name">Target</span><span>: </span><span>PiDome Mobile / Desktop</span></div>
+            <div class="assignrow"><span class="name">&nbsp;</span><span>&nbsp;</span><span><button id="saveremote">Save remote</button></span></div>
+            <h3>Design parts</h3>
+            <div class="designpart"><div id="design_section"><div>Section</div></div></div>
+            <div class="designpart"><div id="design_buttonrow4" class="setbuttonrow"><div>Buttons row with 4 buttons</div></div></div>
+            <div class="designpart"><div id="design_buttonrow3" class="setbuttonrow"><div>Buttons row with 3 buttons</div></div></div>
+            <div style="clear:both; height:5px;"></div>
+        </div>
+    </div>
+    <div id="remotecontainer">
+        <div id="remote">
+            <div id="titlerow">
+                <div id="remotetitle"></div><div id="remoteredled" class=""></div>
+                <div style="clear:both"></div>
+            </div>
+        </div>
+    </div>
+    <div id="actionscontainer" class="editorblock">
+        <h3>Button assignments</h3>
+        <div class="assignrow"><span class="name">Selected button</span><span>: </span><span id="currentselectedbutton">None</span></div>
+        <div class="assignrow"><span class="name">Record status</span><span>: </span><span id="currentrecordstatus">None</span></div>
+        <div class="assignrow"><span class="name">Signal assigned</span><span>: </span><span id="signalassignednotif">No</span></div>
+        <div class="assignrow"><span class="name">Pause after press</span><span>: </span><span><input type="text" size="4" name="buttonpause" id="buttonpause" value="0.5" /></span><span>Seconds</span></div>
+        <div class="assignrow">
+            <span style="width:25%;">
+                <button id="button_startrecord">Record</button>
+            </span>
+            <span style="width:25%;">
+                <button id="button_testrecord">Test</Button>
+            </span>
+            <span style="width:25%;">
+                <button id="button_confirmrecord">Confirm</Button>
+            </span>
+            <span style="width:25%;">
+                <button id="button_remove">Remove</Button>
+            </span>
+        </div>
+        <div id="buttonscontainer">
+            <h3>Remote buttons</h3>
+            <div style="vertical-align: middle; padding: 2px; border-bottom: 2px solid #007acc;">
+                <label for="buttontypes" style="padding-top:2px; font-size:1.2em; width:120px; display:block; float:left; ">Select buttons set</label>
+                <select name="buttontypes" style="width:170px; float:left;" id="buttontypes">
+                    <option value="tv-pvr">TV-PVR</option>
+                </select>
+                <div style="clear:both;"></div>
+            </div>
+            <div id="buttontypescontent">
+                <h4>TV-PVR</h4>
+                <div id="button_channelup" class="editorbutton"><img class="drag_btn" id="btn_chup" src="/shared/images/remotes/tv-pvr/btn_chup.png" alt="Channel up"/></div>
+                <div id="button_channeldown" class="editorbutton"><img class="drag_btn" id="btn_chdwn" src="/shared/images/remotes/tv-pvr/btn_chdwn.png" alt="Channel down"/></div>
+                <div id="button_volup" class="editorbutton"><img class="drag_btn" id="btn_volup" src="/shared/images/remotes/tv-pvr/btn_volup.png" alt="Volume up"/></div>
+                <div id="button_voldown" class="editorbutton"><img class="drag_btn" id="btn_voldwn" src="/shared/images/remotes/tv-pvr/btn_voldwn.png" alt="Volume down"/></div>
+                <div id="button_guid" class="editorbutton"><img class="drag_btn" id="btn_guide" src="/shared/images/remotes/tv-pvr/btn_guide.png" alt="Guide"/></div>
+                <div id="button_nfo" class="editorbutton"><img class="drag_btn" id="btn_nfo" src="/shared/images/remotes/tv-pvr/btn_nfo.png" alt="Info"/></div>
+                <div id="button_rcn" class="editorbutton"><img class="drag_btn" id="btn_rcn" src="/shared/images/remotes/tv-pvr/btn_rcn.png" alt="Record on"/></div>
+                <div id="button_rcf" class="editorbutton"><img class="drag_btn" id="btn_rcf" src="/shared/images/remotes/tv-pvr/btn_rcf.png" alt="Record off"/></div>
+                <div id="button_src" class="editorbutton"><img class="drag_btn" id="btn_src" src="/shared/images/remotes/tv-pvr/btn_src.png" alt="Input source"/></div>
+                <div id="button_seekb" class="editorbutton"><img class="drag_btn" id="btn_seekb" src="/shared/images/remotes/tv-pvr/btn_seekb.png" alt="Seek back"/></div>
+                <div id="button_stop" class="editorbutton"><img class="drag_btn" id="btn_stop" src="/shared/images/remotes/tv-pvr/btn_stop.png" alt="Stop"/></div>
+                <div id="button_pause" class="editorbutton"><img class="drag_btn" id="btn_pause" src="/shared/images/remotes/tv-pvr/btn_pause.png" alt="Pause"/></div>
+                <div id="button_play" class="editorbutton"><img class="drag_btn" id="btn_play" src="/shared/images/remotes/tv-pvr/btn_play.png" alt="Play"/></div>
+                <div id="button_seekf" class="editorbutton"><img class="drag_btn" id="btn_seekf" src="/shared/images/remotes/tv-pvr/btn_seekf.png" alt="Seek forward"/></div>
+                <div style="clear:both"></div>
+                <h4>Default buttons</h4>
+                <div id="button_on" class="editorbutton"><img class="drag_btn" id="btn_on" src="/shared/images/remotes/default/btn_on.png" alt="On"/></div>
+                <div id="button_off" class="editorbutton"><img class="drag_btn" id="btn_off" src="/shared/images/remotes/default/btn_off.png" alt="Off"/></div>
+                <div id="button_default" class="editorbutton"><img class="drag_btn" id="btn_def" src="/shared/images/remotes/default/btn_def.png" alt="Default button"/></div>
+                <div id="button_col" class="editorbutton"><img class="drag_btn" id="btn_col" src="/shared/images/remotes/default/btn_col.png" alt="Colored button"/></div>
+                <div style="clear:both"></div>
+                <h4>Navigation</h4>
+                <div id="button_up" class="editorbutton"><img class="drag_btn" id="btn_navup" src="/shared/images/remotes/navigation/btn_navup.png" alt="Go up"/></div>
+                <div id="button_down" class="editorbutton"><img class="drag_btn" id="btn_navdown" src="/shared/images/remotes/navigation/btn_navdown.png" alt="Go down"/></div>
+                <div id="button_left" class="editorbutton"><img class="drag_btn" id="btn_navleft" src="/shared/images/remotes/navigation/btn_navleft.png" alt="Go left"/></div>
+                <div id="button_right" class="editorbutton"><img class="drag_btn" id="btn_navright" src="/shared/images/remotes/navigation/btn_navright.png" alt="Go right"/></div>
+                <div id="button_confirm" class="editorbutton"><img class="drag_btn" id="btn_navcnf" src="/shared/images/remotes/navigation/btn_navcnf.png" alt="Go/Confirm"/></div>
+                <div id="button_back" class="editorbutton"><img class="drag_btn" id="btn_navbck" src="/shared/images/remotes/navigation/btn_navbck.png" alt="Go back"/></div>
+                <div style="clear:both"></div>
+                <h4>Menu's</h4>
+                <div id="button_menu" class="editorbutton"><img class="drag_btn" id="btn_menu" src="/shared/images/remotes/menus/btn_menu.png" alt="Menu"/></div>
+                <div id="button_stngs" class="editorbutton"><img class="drag_btn" id="btn_settings" src="/shared/images/remotes/menus/btn_settings.png" alt="Settings"/></div>
+                <div style="clear:both"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="clrbuttonselect">
+    <div>Select button color</div>
+    <div>
+        <div id="btncolorselection"></div>
+        <div style="height: 5px;"></div>
+        <button id="btncolorconfirm">Confirm</button>
+        <button id="btncolorcancel">Cancel</button>
+        <input type="hidden" name="curcolorselected" id="curcolorselected" value="" />
+    </div>
+</div>
+
+<link rel="stylesheet" href="../shared/css/remoteseditor.css" />
+<script>
+    $(document).ready(function() {
+        
+        var currentButtonItem = "";
+        var currentColorDiv   = "";
+        var buttonActive = false;
+        
+        var recordLedLooper=null;
+        var notifyLedLooper;
+        var notifyLedReceivedLooper;
+        
+        var recorderdevice;
+        var senderdevice;
+        
+        $("#remotecontainer").css("height", $("#contentbody").height()-145);
+        
+        $('#clrbuttonselect').jqxWindow({ height: 290, width: 250,autoOpen: false, theme: siteSettings.getTheme() });
+        $('#clrbuttonselect').on('close', function (event) {
+            $('#btncolorselection').off('colorchange');
+        });
+        
+        $('#btncolorselection').jqxColorPicker({ color: "000000", colorMode: 'hue', width: 220, height: 220, theme: siteSettings.getTheme() });
+
+        
+        $("#btncolorconfirm").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+        $("#btncolorconfirm").on('click', function () {
+            $(currentColorDiv).css('background-color', $("#curcolorselected").val());
+            $('#clrbuttonselect').jqxWindow('close');
+        });
+        
+        $("#btncolorcancel").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+        $("#btncolorcancel").on('click', function () {
+            $('#clrbuttonselect').jqxWindow('close');
+        });
+        
+        $("#saveremote").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+        $("#saveremote").on('click', function () {
+            saveremote();
+        });
+        
+        function rgbToHex(srgb) {
+            if(srgb!==undefined){
+                var rgbregex = /rgb\((.+),(.+),(.+)\)/i;
+                if(rgbregex.test(srgb)) {
+                    var rgbvals = rgbregex.exec(srgb);
+                    var rval = parseInt(rgbvals[1]);
+                    var gval = parseInt(rgbvals[2]);
+                    var bval = parseInt(rgbvals[3]);
+
+                    var rReturn;
+                    var gReturn;
+                    var bReturn;
+
+                    if(rval===0){
+                        rReturn = '00';
+                    } else {
+                        rReturn = rval.toString(16);
+                        if(rReturn.length===1){
+                            rReturn = '0' + rReturn;
+                        }
+                    }
+                    if(gval===0){
+                        gReturn = '00';
+                    } else {
+                        gReturn = gval.toString(16);
+                        if(gReturn.length===1){
+                            gReturn = '0' + gReturn;
+                        }
+                    }
+                    if(bval===0){
+                        bReturn = '00';
+                    } else {
+                        bReturn = bval.toString(16);
+                        if(bReturn.length===1){
+                            bReturn = '0' + bReturn;
+                        }
+                    }
+
+                    return '#' + (
+                      rReturn +
+                      gReturn +
+                      bReturn
+                    ).toUpperCase();
+                } else {
+                    return srgb;
+                }
+            } else {
+                return "";
+            }
+        }
+        
+        function editButtonColor(buttonId, colorSourceId){
+            setWorkItem(buttonId, $("#"+buttonId).attr("alt"));
+            currentColorDiv = colorSourceId;
+            $("#curcolorselected").val(rgbToHex($(currentColorDiv).css( "background-color" )));
+            $('#btncolorselection').jqxColorPicker('setColor', $("#curcolorselected").val());
+            $('#btncolorselection').on('colorchange', function (event) {
+                $("#curcolorselected").val("#" + event.args.color.hex);
+            });
+        }
+        
+        $("#button_startrecord").jqxButton({ width: '70', theme: siteSettings.getTheme()});
+        $("#button_startrecord").on('click', function () {
+            if((buttonActive===true)){
+                $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.sendDevice\", \"params\": ["+recorderdevice+", \"ACTIONDATA\", \"RECONOFF\", {\"value\" :true}] \"id\": \"DeviceService.sendDevice\"}");
+            } else {
+                $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.sendDevice\", \"params\": ["+recorderdevice+", \"ACTIONDATA\", \"RECONOFF\", {\"value\" :false}] \"id\": \"DeviceService.sendDevice\"}");
+            }
+        });
+
+        $("#button_testrecord").jqxButton({ width: '70', theme: siteSettings.getTheme()});
+        $("#button_testrecord").on('click', function () {
+            notifyLedColor();
+            if(recordLedLooper!==null){
+                $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.sendDevice\", \"params\": ["+recorderdevice+", \"ACTIONDATA\", \"TSTSIGNAL\", {\"value\" :\"TST\"} ] \"id\": \"DeviceService.sendDevice\"}");
+            } else {
+                $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.sendDevice\", \"params\": ["+recorderdevice+", \"ACTIONDATA\", \"SENDDATA\", {\"value\" :\""+$("#" + currentButtonItem + "-signal").val()+"\"}] \"id\": \"DeviceService.sendDevice\"}");
+            }
+        });
+        
+        $("#button_confirmrecord").jqxButton({ width: '70', theme: siteSettings.getTheme()});
+        $("#button_confirmrecord").on('click', function () {
+            $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.sendDevice\", \"params\": ["+recorderdevice+", \"ACTIONDATA\", \"CNFSIGNAL\", {\"value\" :\"CNF\"}] \"id\": \"DeviceService.sendDevice\"}");
+        });
+        
+        $("#button_remove").jqxButton({ width: '70', theme: siteSettings.getTheme()});
+        $("#button_remove").on('click', function () {
+            deleteWorkItem();
+        });
+        
+        function disableAllButtons(){
+            $("#button_startrecord").jqxButton({ disabled: true });
+            $("#button_testrecord").jqxButton({ disabled: true });
+            $("#button_confirmrecord").jqxButton({ disabled: true });
+            $("#button_remove").jqxButton({ disabled: true });
+            buttonActive = false;
+        }
+        
+        function enableModifyButtons(){
+            if(buttonActive === false){
+                $("#button_startrecord").jqxButton({ disabled: false });
+                $("#button_remove").jqxButton({ disabled: false });
+                buttonActive = true;
+            }
+        }
+        
+        function enableSignalButtons(){
+            if(buttonActive === true){
+                $("#button_testrecord").jqxButton({ disabled: false });
+                $("#button_confirmrecord").jqxButton({ disabled: false });
+            }
+        }
+        
+        disableAllButtons();
+        
+        $("#design_section").draggable({ appendTo: "body",cursor: "move", helper: "clone",revert: "invalid" });
+        $(".setbuttonrow").draggable({ appendTo: "body",cursor: "move", helper: "clone",revert: "invalid" });
+        $("#remote").droppable({
+            accept: '#design_section',
+            drop: function (event, ui){
+                var sectionId = $('.remotesection').length;
+                $('<div id="section_'+sectionId+'" class="remotesection">'+
+                   '<h4 id="section_'+sectionId+'_title"><span><input type="text" name="section_'+sectionId+'_title_content" id="section_'+sectionId+'_title_content" value="Section" /></span> <img id="del-section_'+sectionId+'" class="sectiondelete" src="/shared/images/remotes/editor/delete_red.png" alt="Delete section" /></h4>'+
+                '<div style="clear:both;"></div></div>').appendTo(this);
+                setSectionDroppableEvent(sectionId);
+            }
+        });
+        
+        $(".editorbutton").draggable({ cursor: "move", cursorAt: { top: 19, left: 23 },helper: "clone",revert: "invalid" });
+        
+        function setSectionDroppableEvent(sectionId){
+            $('#section_'+sectionId).droppable({
+                accept: '.setbuttonrow',
+                drop: function (event, ui){
+                    var rowId = $('#section_'+sectionId+' .remoterow').length;
+                    var typeId = ui.draggable.attr("id");
+                    switch(typeId){
+                        case 'design_buttonrow3':
+                            $('<div class="remoterow buttons3" id="row_'+sectionId+'_'+rowId+'"><div style="width:194px; margin-left:auto; margin-right:auto;"><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_0" style="margin-left:13px;"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_1"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_2"> </div></div>' + 
+                                    '</div><div style="clear:both;"></div>').appendTo($(this));
+                        break;
+                        default:
+                            $('<div class="remoterow buttons4" id="row_'+sectionId+'_'+rowId+'"><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_0"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_1"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_2"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_3"> </div></div>' + 
+                                    '<div style="clear:both;"></div>').appendTo($(this));
+                        break;
+                    }
+                    $('#section_'+sectionId+' #row_'+sectionId+'_'+rowId+' .remotecell').each(function(index){
+                        attachDroppableEvent($(this).attr("id"));
+                    });
+                }
+            });
+            $('#del-section_'+sectionId).off("click").on("click", function(){
+                alert("Remove: " + sectionId);
+                $('#section_'+sectionId).remove();
+            });
+        }
+        
+        function attachDroppableEvent(cellId){
+            $("#" + cellId).droppable({
+                hoverClass: 'remotecellhover',
+                accept: '.editorbutton',
+                greedy: true,
+                drop: function( event, ui ) {
+                    if($(this).children().length===0){
+                        var droppedItem = $(ui.helper).clone();
+                        var itemId = $(this).attr("id") + "-" + ui.draggable.find("img").attr("id");
+                        var itemName = ui.draggable.find("img").attr("alt");
+
+                        droppedItem.detach().css({top: -2,left: -2, position:"relative"}).appendTo($(this));
+                        /// Assign the correct id to this item.
+                        $(this).find("img").attr("id", itemId);
+                        $(this).find("img").attr("alt", ui.draggable.find("img").attr("alt"));
+
+
+                        var workItem = $(this).find("img");
+
+                        workItem.css({cursor:"default"});
+
+                        $("#currentselectedbutton").html(itemName);
+                        $(this).addClass("remotecellnotassigned");
+                        $(".remotecell").each( function( index ) {
+                            $(this).removeClass("remotecellselected");
+                        });
+                        $(this).addClass("remotecellselected");
+
+                        if(ui.draggable.find("img").attr("id")==="btn_def"){
+                            $('<input id="'+itemId+'-label" name="'+itemId+'-label" type="text" maxlength="3" style="text-align:center; position:absolute; font-weight: bold; color: #bad2df; top:7px; left: 7px; width:30px; border: 0px solid #000; background-color: transparent;" value="" placeholder="DEF" />').appendTo($(this));
+                        } else if (ui.draggable.find("img").attr("id")==="btn_col"){
+                            $('<div id="'+itemId+'-color" style="width:31px; height:24px; background-color: #000; top:7px; left:7px; position:absolute; cursor:pointer;">&nbsp;</div>').appendTo($(this));
+                            $('#'+itemId+'-color').on("click", function(){
+                                editButtonColor(itemId, '#'+itemId+'-color');
+                                $('#clrbuttonselect').jqxWindow('open');
+                            });
+                        }
+                        $('<input id="'+itemId+'-signal" name="'+itemId+'-signal" type="hidden" value="" /><input id="'+itemId+'-pause" name="'+itemId+'-pause" type="hidden" value="" />').appendTo($(this));
+                        workItem.on("click", function(){
+                            setWorkItem($(this).attr("id"), itemName);
+                        });
+                        setWorkItem(workItem.attr("id"), itemName);
+                    }
+                }
+              });
+        }
+        
+        function buildRemote(remoteData){
+            $("#remotetitle").html(remoteData.name);
+            $("#remotename").html(remoteData.name);
+            $("#remotedesc").html(remoteData.description);
+            recorderdevice = remoteData.recorddevice;
+            senderdevice = remoteData.sendtestdevice;
+            $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.getDeclaredDevice\", \"params\":{\"id\":"+recorderdevice+"},\"id\":\"DeviceService.getDeclaredDevice\"}")
+                .done(function(data) {
+                try {
+                    if(data.result.success !== true){
+                        showErrorMessage("Triggers", data.result.message);
+                    } else {
+                        $("#remotedevicerec").html(data.result.data.name);
+                    }
+                } catch(err){
+                    var message = "<strong>Message</strong>:<br/>";
+                    if(data.error.data.trace!==undefined){
+                        message += data.error.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                    } else {
+                        message += data.error.data.message;
+                    }
+                    showErrorMessage("Server error: " + data.error.message, message);
+                }
+            }, "json");
+            $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.getDeclaredDevice\", \"params\":{\"id\":"+senderdevice+"},\"id\":\"DeviceService.getDeclaredDevice\"}")
+                .done(function(data) {
+                try {
+                    if(data.result.success !== true){
+                        showErrorMessage("Remotes", data.result.message);
+                    } else {
+                        $("#remotedevicesend").html(data.result.data.name);
+                    }
+                } catch(err){
+                    var message = "<strong>Message</strong>:<br/>";
+                    if(data.error.data.trace!==undefined){
+                        message += data.error.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                    } else {
+                        message += data.error.data.message;
+                    }
+                    showErrorMessage("Server error: " + data.error.message, message);
+                }
+            }, "json");
+
+            var remote = remoteData.remotevisuals;
+            try {
+                for (var i = 0; i < remote.sections.length; i++) {
+                    var section = remote.sections[i].section;
+                    var sectionId = section.id;
+                    $('<div id="section_'+sectionId+'" class="remotesection">'+
+                       '<h4 id="section_'+sectionId+'_title"><span><input type="text" name="section_'+sectionId+'_title_content" id="section_'+sectionId+'_title_content" value="'+section.name+'" /></span> <img id="del-section_'+sectionId+'" class="sectiondelete" src="/shared/images/remotes/editor/delete_red.png" alt="Delete section" /></h4>'+
+                       '<div style="clear:both;"></div></div>').appendTo("#remote");
+                    setSectionDroppableEvent(sectionId);
+                    for (var j = 0; j < section.rows.length; j++) {
+                        var buttonRow = section.rows[j].row;
+                        var rowId = buttonRow.id;
+                        if(buttonRow.cells===4){
+                            $('<div class="remoterow buttons4" id="row_'+sectionId+'_'+rowId+'"><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_0"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_1"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_2"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_3"> </div></div>' + 
+                              '<div style="clear:both;"></div>').appendTo('#section_'+sectionId);
+                        } else {          
+                            $('<div class="remoterow buttons3" id="row_'+sectionId+'_'+rowId+'"><div style="width:194px; margin-left:auto; margin-right:auto;"><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_0" style="margin-left:13px;"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_1"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_2"> </div></div>' + 
+                              '</div><div style="clear:both;"></div>').appendTo('#section_'+sectionId);
+                        }
+                        for (var k = 0; k < buttonRow.buttons.length; k++) {
+                            var button = buttonRow.buttons[k];
+                            if(button.type!=="btn_none"){
+                                var workItemId = '#cell_'+sectionId+'_'+rowId+'_' + button.pos;
+                                $('<img src="/shared/images/remotes/'+button.cat+'/'+button.type+'.png" id="'+button.id+'" class="imgworkitem" alt="'+button.sdesc+'" />').appendTo(workItemId);
+                                $('<input id="'+button.id+'-signal" name="'+button.id+'-signal" type="hidden" value="'+button.signal+'" />').appendTo(workItemId);
+                                $('<input id="'+button.id+'-pause" name="'+button.id+'-pause" type="hidden" value="'+((button.pause!==undefined)?button.pause:"0.5")+'" />').appendTo(workItemId);
+                                if($('#'+button.id+'-signal').val()===""){
+                                    $(workItemId).addClass("remotecellnotassigned");
+                                } else {
+                                    $(workItemId).addClass("remotecellassigned");
+                                }
+                                switch(button.type){
+                                    case "btn_def":
+                                        $('<input id="'+button.id+'-label" name="'+button.id+'-label" type="text" maxlength="3" style="text-align:center; position:absolute; font-weight: bold; color: #bad2df; top:7px; left: 7px; width:30px; border: 0px solid #000; background-color: transparent;" value="'+button.label+'" placeholder="DEF" />').appendTo(workItemId);
+                                    break;
+                                    case "btn_col":
+                                        $('<div id="'+button.id+'-color" class="coloreditbutton" style="width:31px; height:24px; background-color: '+button.color+'; top:7px; left:7px; position:absolute; cursor:pointer;">&nbsp;</div>').appendTo(workItemId);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                $(".remotecell").each(function(index){
+                    attachDroppableEvent($(this).attr("id"));
+                });
+                $(".imgworkitem").on("click", function(){
+                    var itemName = $(this).attr("alt");
+                    setWorkItem($(this).attr("id"), itemName);
+                });
+                $(".coloreditbutton").on("click", function(){
+                    editButtonColor($(this).parent().find("img").attr("id"), "#" + $(this).attr("id"));
+                    $('#clrbuttonselect').jqxWindow('open');
+                });
+            } catch (err){  }
+        }
+        
+        function setWorkItem(workItemId, workItemName){
+            $(".remotecell").each( function( index ) {
+                if($(this).find("img").attr("id")!==workItemId){
+                    $(this).removeClass("remotecellselected");
+                } else if ($(this).find("img").attr("id")===workItemId && !$(this).hasClass("remotecellselected")) {
+                    $(this).addClass("remotecellselected");
+                }
+            });
+            $("#currentselectedbutton").html(workItemName);
+            enableModifyButtons();
+            currentButtonItem = workItemId;
+            if($("#" + workItemId + "-signal").val()!==""){
+                $("#button_testrecord").jqxButton({ disabled: false });
+                $("#signalassignednotif").html("Yes");
+            } else {
+                $("#button_testrecord").jqxButton({ disabled: true });
+                $("#signalassignednotif").html("No");
+            }
+            if($("#" + workItemId + "-pause").val()!==""){
+                $("#buttonpause").val($("#" + workItemId + "-pause").val());
+            } else {
+                $("#buttonpause").val("0.5");
+            }
+            $("#currentrecordstatus").html("None");
+        }
+        
+        function listenForWorkItemRecord(listen){
+            if(listen){
+                $("#currentrecordstatus").html("Listening");
+                if(recordLedLooper === null || recordLedLooper === undefined){
+                    recordLedLooper = setInterval(function(){
+                        if($("#remoteredled").hasClass("remoteredledon")){
+                            $("#remoteredled").removeClass("remoteredledon");
+                        } else {
+                            $("#remoteredled").addClass("remoteredledon");
+                        }
+                    },1000);
+                }
+            } else {
+                $("#currentrecordstatus").html("Idle");
+                if(recordLedLooper !== null){
+                    clearInterval(recordLedLooper);
+                    recordLedLooper = null;
+                }
+                if($("#remoteredled").hasClass("remoteredledon")){
+                    $("#remoteredled").removeClass("remoteredledon");
+                }
+            }
+        }
+        
+        function notifyLedColor(){
+            if(notifyLedLooper === null || notifyLedLooper === undefined){
+                notifyLedLooper = setInterval(function(){
+                    if($("#remoteredled").hasClass("remotelednotify")){
+                        clearInterval(notifyLedLooper);
+                        notifyLedLooper = null;
+                        $("#remoteredled").removeClass("remotelednotify");
+                    } else {
+                        $("#remoteredled").addClass("remotelednotify");
+                    }
+                },100);
+            }
+        }
+        
+        function notifyLedReceivedColor(){
+            $("#currentrecordstatus").html("Signal received");
+            enableSignalButtons();
+            if(notifyLedReceivedLooper === null || notifyLedReceivedLooper === undefined){
+                notifyLedReceivedLooper = setInterval(function(){
+                    if($("#remoteredled").hasClass("remoteledreceivednotify")){
+                        clearInterval(notifyLedReceivedLooper);
+                        notifyLedReceivedLooper = null;
+                        $("#remoteredled").removeClass("remoteledreceivednotify");
+                    } else {
+                        $("#remoteredled").addClass("remoteledreceivednotify");
+                    }
+                },100);
+            }
+        }
+        
+        function deleteWorkItem(){
+            if(recordLedLooper!==undefined && recordLedLooper !== null){
+                $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.sendDevice\", \"params\": ["+recorderdevice+", \"ACTIONDATA\", \"RECONOFF\", {\"value\" :\"RECOFF\"}] \"id\": \"DeviceService.sendDevice\"}");
+            }
+            var parent;
+            if($("#"+currentButtonItem).parent().parent().attr("id").lastIndexOf("cell", 0) === 0){
+                parent = $("#"+currentButtonItem).parent().parent();
+            } else {
+                parent = $("#"+currentButtonItem).parent();
+            }
+            parent.removeClass("remotecellselected");
+            parent.removeClass("remotecellnotassigned");
+            parent.removeClass("remotecellassigned");
+            parent.empty();
+            disableAllButtons();
+            $("#currentselectedbutton").html("None");
+        }
+        
+        function signalConfirmed(data){
+            var parent;
+            if ($('#'+currentButtonItem).parent().attr("id")!==undefined){
+                parent = $('#'+currentButtonItem).parent();
+            } else {
+                parent = $('#'+currentButtonItem).parent().parent();
+            }
+            $("#" + currentButtonItem + "-signal").val(data);
+            $("#" + currentButtonItem + "-pause").val($("#buttonpause").val());
+            $("#signalassignednotif").html("Yes");
+            parent.removeClass("remotecellnotassigned");
+            if(!parent.hasClass("remotecellassigned")){
+                parent.addClass("remotecellassigned");
+            }
+            $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.sendDevice\", \"params\": ["+recorderdevice+", \"ACTIONDATA\", \"RECONOFF\", {\"value\" :\"RECOFF\"}] \"id\": \"DeviceService.sendDevice\"}");
+        }
+        
+        function saveremote(){
+            disableAllButtons();
+            listenForWorkItemRecord(false);
+            var sections = { "sections": new Array() };
+            $(".remotesection").each(function (indexSections){
+                var sectionId = parseInt($(this).attr("id").split("_")[1]);
+                
+                var rows = new Array() ;
+                
+                $("#" +  $(this).attr("id") + " .remoterow").each(function (indexRows){
+                    
+                    var rowId = parseInt($(this).attr("id").split("_")[2]);
+                    
+                    var buttons = new Array();
+                    
+                    $("#" +  $(this).attr("id") + " .remotecell").each(function (indexCells){
+                        var cellId = parseInt($(this).attr("id").split("_")[3]);
+                        var contentId = $(this).find("img").attr("id");
+                        var cellType;
+                        try {
+                            cellType = $(this).find("img").attr("id").split("-")[1];
+                        } catch (err){
+                            cellType = "btn_none";
+                        }
+                        var cellLabel;
+                        try {
+                            cellLabel = $("#" + contentId + "-label").val();
+                        } catch (err){
+                            cellLabel = "";
+                        }
+                        var cellSignal;
+                        try {
+                            cellSignal = $("#" + contentId + "-signal").val();
+                        } catch (err){
+                            cellSignal = "";
+                        }
+                        var cellPause;
+                        try {
+                            cellPause = $("#" + contentId + "-pause").val();
+                        } catch (err){
+                            cellPause = "0.5";
+                        }
+                        var cellColor;
+                        try {
+                            cellColor = rgbToHex($("#" + contentId + "-color").css("background-color"));
+                        } catch (err){
+                            cellColor = "";
+                        }
+                        var cellCat;
+                        try {
+                            cellCat = $(this).find("img").attr("src").split("/")[4]
+                        } catch (err){
+                            cellCat = "";
+                        }
+                        var cell = { "type"  : cellType,
+                                     "func"  : "default",
+                                     "pos"   : cellId,
+                                     "id"    : contentId,
+                                     "cat"   : (cellCat===undefined)?"":cellCat,
+                                     "color" : (cellColor===undefined)?"":cellColor,
+                                     "pause" : (cellPause===undefined)?"0.5":cellPause,
+                                     "signal": (cellSignal===undefined)?"":cellSignal,
+                                     "sdesc" : $(this).find("img").attr("alt"),
+                                     "label" : (cellLabel===undefined)?"":cellLabel};
+                        
+                        buttons[cellId] = cell;
+                        
+                    });
+                    var cellsSize = 4;
+                    if($(this).hasClass("buttons3")){
+                        cellsSize = 3;
+                    }
+                    var row = { "row": { "buttons" : buttons, "cells": cellsSize, "id": rowId } };
+                    rows[rowId] = row;
+                });
+                var section = { "section": { "rows":rows,"name": $('#section_'+sectionId+'_title_content').val(),"id":sectionId }};
+                sections.sections[sectionId] = section;
+            });
+            var paramsVars = {};
+            paramsVars["id"] = ${_GET.remote};
+            paramsVars["data"] = sections;
+            var rpcCommand = { "jsonrpc"     : "2.0",
+                               "method"      : "RemotesService.updateRemoteVisual",
+                               "params"      : paramsVars,
+                               "id"          : "RemotesService.updateRemoteVisual"};
+            var postField = {};
+            postField["rpc"] = JSON.stringify(rpcCommand);
+            $.post("/jsonrpc.json",postField)
+                .done(function(data) {
+                    if(data.result.success !== true){
+                        showErrorMessage("Could not save", data.error.data.message);
+                    } else {
+                        showInfoMessage("Saved", "Remote saved");
+                    }
+                }, "json");
+        }
+        
+        $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"RemotesService.getRemote\", \"params\":{\"id\":${_GET.remote}},\"id\":\"RemotesService.getRemote\"}")
+            .done(function(data) {
+                try {
+                    if(data.result.success !== true){
+                        showErrorMessage("Triggers", data.result.message);
+                    } else {
+                        buildRemote(data.result.data);
+                    }
+                } catch(err){
+                        var message = "<strong>Message</strong>:<br/>";
+                        if(data.result.data.trace!==undefined){
+                            message += data.result.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                            showErrorMessage("Server error: " + data.error.message, message);
+                        } else if (data.result.data.message!==undefined){
+                            message += data.result.data.message;
+                            showErrorMessage("Server error: " + data.error.message, message);
+                        } else {
+                            showErrorMessage("Interface error: ", err);
+                        }
+                }
+            }, "json");
+        
+        
+        pidomeRPCSocket.addCallback(function(thingy) {
+            try {
+                
+                var groupId;
+                var controlSetId;
+                var value;
+                for(var i=0;i<thingy.params.groups.length;i++){
+                    groupId = thingy.params.groups[i].groupid;
+                    for(controlSetId in thingy.params.groups[i].controls){
+                         value = thingy.params.groups[i].controls[controlSetId];
+                    }
+                }
+                
+                if(thingy.params.id === recorderdevice && controlSetId==="RECONOFF" && value===true){
+                    listenForWorkItemRecord(true);
+                } else if (thingy.params.id === recorderdevice && controlSetId==="RECONOFF" && value===false){
+                    listenForWorkItemRecord(false);
+                } else if (thingy.params.id === recorderdevice && value==="RECOK"){
+                    notifyLedReceivedColor();
+                } else if (thingy.params.id === recorderdevice && value==="TST"){
+                    /// Do nothing, just a test signal;
+                } else if (thingy.params.id === recorderdevice && value==="CNF"){
+                    disableAllButtons();
+                } else if (thingy.params.id === recorderdevice && value!==""){
+                    if(recordLedLooper!==null){
+                        signalConfirmed(value);
+                        listenForWorkItemRecord(false);
+                    }
+                }
+            } catch (error){
+                ///showErrorMessage("Remotes error", error);
+            }
+        }, "DeviceService.sendDevice");
+        
+    });
+    
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_remotecontrol", "Remotes", "/settingsremotes.html", "Create/edit remote");
+    });
+    
+    
+</script>
+
+<div id="innerscrollmargin"></div>

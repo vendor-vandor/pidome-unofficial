@@ -1,0 +1,45 @@
+                    <#list triggerSetup as rule>
+                        <tr id="triggerRow_${rule.ruleUID}" style="border-bottom: 1px solid #c2c2c2;">
+                            <input type="hidden" name="ruleid_${rule.ruleUID}" value="${rule.ruleUID}" />
+                            <td>
+                                <button value="triggerRow_${rule.ruleUID}" class="removeRule" id="triggerRow_${rule.ruleUID}_remove" name="removeRule">Remove rule</button>
+                            </td>
+                            <td>
+                                <select name="ruletype_${rule.ruleUID}" id="ruletype_${rule.ruleUID}">
+                                    <option value="simple"<#if rule.type='simple'> selected="selected"</#if>>A single subject</option>
+                                    <option value="or"<#if rule.type='or'> selected="selected"</#if>>One of the subjects</option>
+                                    <option value="and"<#if rule.type='and'> selected="selected"</#if>>All the subjects</option>
+                                </select>
+                            </td>
+                            <td>
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th class="device" colspan="5">Match against</th>
+                                            <th class="device">Value must be</th>
+                                            <th class="device">Value</th>
+                                            <th class="action">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <#list rule.rulelist as subject>
+                                           ${subject.deviceGroupSetSelection}
+                                        </#list>
+                                    </tbody>
+                                </table>
+                                <button value="${rule.ruleUID}" class="addSubject" id="addSubject_${rule.ruleUID}" name="addSubject_${rule.ruleUID}">Add new subject</button>
+                            </td>
+                        </tr>
+                        <script>
+                            $( "#triggerRow_${rule.ruleUID}_remove" ).button({icons: { primary: "ui-icon-cancel" }}).click(function() {
+                                    $( "table#ruleActionsTable tbody tr#" + $(this).val() ).remove();
+                                    return false;
+                                });
+                            $( "button#addSubject_${rule.ruleUID}" ).button({icons: { primary: "ui-icon-document" }})
+                                .click(function() {
+                                    $("#addSubjectCurRuleId").val($(this).val());
+                                    $("#allDevicesTriggerModal").dialog( "open" );
+                                    return false;
+                                });
+                        </script>
+                    </#list>

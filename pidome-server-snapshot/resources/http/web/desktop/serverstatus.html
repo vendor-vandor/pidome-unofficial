@@ -1,0 +1,278 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script>
+    $(document).ready(function () {
+        setPageBreadcrumbs(7, "page_serverstatus", "${page_title}", "/desktop/serverstatus.html");
+    });
+</script>
+<div class="defaultcontent" style="max-width:1000px;">
+    <h2>Basic</h2>
+    <p>Displaying the server's basic information</p>
+
+    <div id="serverdock">
+        <div>
+            <div class="systemitemdock" id="systemdock">
+                <div>System info</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td>Date</td><td id="serverdatetd">: ${date}</td></tr>
+                            <tr><td>Time</td><td id="servertimetd">: ${time}</td></tr>
+                            <tr><td>Release</td><td>: ${serviceDetails.release}</td></tr>
+                            <tr><td>Build</td><td>: ${serviceDetails.build}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="systemitemdock" id="coreservicedock">
+                <div>Awareness</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td>Day part</td><td>: ${daypart}</td></tr>
+                            <tr><td>Presence</td><td>: ${presence}</td></tr>
+                            <tr><td>User status</td><td>: ${userstatus}</td></tr>
+                            <tr><td>Scene</td><td>: N/A</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="systemitemdock" id="serverfeaturedock">
+                <div>Server features</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td><#if serviceDetails.BroadcastServiceAvailable=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>Broadcast</td><td>: ${serviceDetails.BroadcastService}</td></tr>
+                            <tr><td><#if serviceDetails.dataLeds=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>Data leds</td><td>: <#if serviceDetails.dataLeds=="true">Enabled<#else>Disabled (Enable)</#if></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="systemitemdock" id="hardwaredock">
+                <div>Hardware info</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td>CPU load</td><td>: <span id="cpuusage_1">${serviceDetails.cpuLoad}</span></td></tr>
+                            <tr><td>CPU Temp</td><td>: <span id="procheat_1">${serviceDetails.cpuHeatLoad}</span></td></tr>
+                            <tr><td>RAM used</td><td>: <span id="memusage_1">${serviceDetails.memLoad}</span></td></tr>
+                            <tr><td>Space</td><td>: <span id="diskspace_1">${serviceDetails.sizeLoad}</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2>Services</h2>
+    <p>If there are any problems with one of the server's default services take a look here to identify if one of the services has problems</p>
+    <div id="coreservicesdock">
+        <div>
+            <div class="systemitemdock" id="hardwareservicedock">
+                <div>Hardware services</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td><#if serviceDetails.hardwareOnline=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>Hardware service</td><td>: ${serviceDetails.peripheralsCount} peripherals</td></tr>
+                            <tr><td><#if serviceDetails.HardwareUSBWatchdog=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>USB Watchdog</td><td>: <#if serviceDetails.HardwareUSBWatchdog=="true">USB hotplug<#else>USB disabled</#if></td></tr>
+                            <tr><td><#if serviceDetails.devicesOnline=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>Device service</td><td>: ${serviceDetails.activeDevicesCount} devices</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="systemitemdock" id="triggerservicedock">
+                <div>Trigger service</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td><#if serviceDetails.TriggerServiceAvail=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>Service</td><td>: <#if serviceDetails.TriggerServiceAvail=="true">Running<#else>Stopped</#if></td></tr>
+                            <tr><td>&nbsp;</td><td>Triggers</td><td>: ${serviceDetails.TriggerServiceAmount}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="systemitemdock" id="sceneservicedock">
+                <div>Scene service</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td><img src="../shared/images/stop.png" alt="Not running" /></td><td>Service</td><td>: N/A</td></tr>
+                            <tr><td>&nbsp;</td><td>Scenes</td><td>: N/A</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="systemitemdock" id="pluginservicedock">
+                <div>Plugin service</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td><#if serviceDetails.MediaServiceAvail=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>Media</td><td>: ${serviceDetails.MediaServiceAmount} plugins</td></tr>
+                            <tr><td><#if serviceDetails.UtilityServiceAvail=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>Utility measurement</td><td>: <#if serviceDetails.TriggerServiceAvail=="true">Running<#else>Stopped</#if></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <h2>Availability</h2>
+    <p>Below are the connection availability services used to communicate with the server. These communications are with Fixed Displays, The Web interface and with mobile clients.</p>
+    <div id="connectservicesdock">
+        <div>
+            <div class="systemitemdock" id="socketservicedock">
+                <div>Socket services (Fixed Displays)</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td><#if serviceDetails.ClientDisplayServiceAvailable=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>Default</td><td>: ${serviceDetails.ClientDisplayService}</td></tr>
+                            <tr><td><#if serviceDetails.ClientDisplayServiceAvailable=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>SSL/TLS</td><td>: ${serviceDetails.ClientDisplayServiceSSL}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="systemitemdock" id="httpservicedock">
+                <div>Http services (Displays/Mobile/Web)</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td><#if serviceDetails.WebHttpServiceAvailable=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>Default</td><td>: ${serviceDetails.WebHttpService}</td></tr>
+                            <tr><td><#if serviceDetails.WebHttpServiceSSLAvailable=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>SSL/TLS</td><td>: ${serviceDetails.WebHttpServiceSSL}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="systemitemdock" id="jsonservicedock">
+                <div>JSON RPC services (Displays/Mobile/Web)</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td><#if serviceDetails.WebHttpServiceAvailable=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>Default</td><td>: ${serviceDetails.WebHttpService}</td></tr>
+                            <tr><td><#if serviceDetails.WebHttpServiceSSLAvailable=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>SSL/TLS</td><td>: ${serviceDetails.WebHttpServiceSSL}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="systemitemdock" id="wsservicedock">
+                <div>Websocket services (Mobile)</div>
+                <div>
+                    <table>
+                        <tbody>
+                            <tr><td><#if serviceDetails.WebHttpWSServiceAvailable=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>Default</td><td>: ${serviceDetails.WebHttpWSService}</td></tr>
+                            <tr><td><#if serviceDetails.WebHttpWSServiceAvailableSSL=="true"><img src="../shared/images/tick.png" alt="Running" /><#else><img src="../shared/images/stop.png" alt="Not running" /></#if></td><td>TLS/SSL</td><td>: ${serviceDetails.WebHttpWSServiceSSL}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="margin-left: 5px;">
+        <h2>Status Graphs</h2>
+        <div>
+            <div>
+                <div style="float: left;" id="cpuload"></div>
+                <div style="float: left; margin-left:3px;" id="cpuheat"></div>
+            </div>
+            <div style="float:left; margin-top: 5px;">
+                <div style="float: left;" id="memused"></div>
+                <div style="float: left; margin-left:3px;" id="diskspace"></div>
+            </div>
+        </div>
+    </div>
+    <div style="clear:both"></div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function () {
+        new Graphing("cpuload", "${_SERVER.hostname}:${_SERVER.hostport?c}", 1, "values", "cpuusage", "Server", "PERC", "DEVICE", "time-series",2,"CPU usage").createGraph(480, 250);
+        new Graphing("cpuheat", "${_SERVER.hostname}:${_SERVER.hostport?c}", 1, "values", "procheat", "Server", "TEMP", "DEVICE", "time-series",2,"CPU temperature").createGraph(480, 250);
+        new Graphing("memused", "${_SERVER.hostname}:${_SERVER.hostport?c}", 1, "values", "memusage", "Server", "MB", "DEVICE", "time-series",2,"Memory usage").createGraph(480, 250);
+        new Graphing("diskspace", "${_SERVER.hostname}:${_SERVER.hostport?c}", 1, "values", "diskspace", "Server", "MB", "DEVICE", "time-series",2,"Free disk space").createGraph(480, 250);
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $("#serverdock").jqxDocking({orientation: 'horizontal', width: 990, height: 140, mode: 'docked', theme: siteSettings.getTheme()});
+        $('#serverdock').jqxDocking('disableWindowResize', 'systemdock');
+        $('#serverdock').jqxDocking('disableWindowResize', 'coreservicedock');
+        $('#serverdock').jqxDocking('disableWindowResize', 'serverfeaturedock');
+        $('#serverdock').jqxDocking('disableWindowResize', 'hardwaredock');
+        $('#serverdock').jqxDocking('pinWindow', 'systemdock');
+        $('#serverdock').jqxDocking('pinWindow', 'coreservicedock');
+        $('#serverdock').jqxDocking('pinWindow', 'serverfeaturedock');
+        $('#serverdock').jqxDocking('pinWindow', 'hardwaredock');
+        $('#serverdock').jqxDocking('hideAllCloseButtons');
+        
+        $("#coreservicesdock").jqxDocking({orientation: 'horizontal', width: 990, height: 120, mode: 'docked', theme: siteSettings.getTheme()});
+        $('#coreservicesdock').jqxDocking('disableWindowResize', 'hardwareservicedock');
+        $('#coreservicesdock').jqxDocking('disableWindowResize', 'triggerservicedock');
+        $('#coreservicesdock').jqxDocking('disableWindowResize', 'sceneservicedock');
+        $('#coreservicesdock').jqxDocking('disableWindowResize', 'pluginservicedock');
+        $('#coreservicesdock').jqxDocking('pinWindow', 'hardwareservicedock');
+        $('#coreservicesdock').jqxDocking('pinWindow', 'triggerservicedock');
+        $('#coreservicesdock').jqxDocking('pinWindow', 'sceneservicedock');
+        $('#coreservicesdock').jqxDocking('pinWindow', 'pluginservicedock');
+        $('#coreservicesdock').jqxDocking('hideAllCloseButtons');
+        
+        $("#connectservicesdock").jqxDocking({orientation: 'horizontal', width: 990, height: 95, mode: 'docked', theme: siteSettings.getTheme()});
+        $('#connectservicesdock').jqxDocking('disableWindowResize', 'socketservicedock');
+        $('#connectservicesdock').jqxDocking('disableWindowResize', 'httpservicedock');
+        $('#connectservicesdock').jqxDocking('disableWindowResize', 'jsonservicedock');
+        $('#connectservicesdock').jqxDocking('disableWindowResize', 'wsservicedock');
+        $('#connectservicesdock').jqxDocking('pinWindow', 'socketservicedock');
+        $('#connectservicesdock').jqxDocking('pinWindow', 'httpservicedock');
+        $('#connectservicesdock').jqxDocking('pinWindow', 'jsonservicedock');
+        $('#connectservicesdock').jqxDocking('pinWindow', 'wsservicedock');
+        $('#connectservicesdock').jqxDocking('hideAllCloseButtons');
+
+        pidomeRPCSocket.addCallback(function(thingy) {
+            $("#servertimetd").html(": " + thingy.params.time);
+            $("#serverdatetd").html(": " + thingy.params.date);
+        }, "SystemService.time");
+        pidomeRPCSocket.addCallback(function(thingy) {
+            if (thingy.params.id !== undefined && thingy.params.id === 1 && thingy.params.control !== undefined && thingy.params.value !== undefined) {
+                switch (thingy.params.control) {
+                    case "diskspace":
+                        $("#diskspace_1").html(thingy.params.value + "MB");
+                        break;
+                    case "memusage":
+                        $("#memusage_1").html(thingy.params.value + "MB");
+                        break;
+                    case "cpuusage":
+                        $("#cpuusage_1").html(thingy.params.value + "%");
+                        break;
+                    case "procheat":
+                        $("#procheat_1").html(thingy.params.value + "°C");
+                        break;
+                }
+            }
+        }, "DeviceService.sendDevice");
+
+    });
+    
+    function clearHandlers(){
+        $(".graphdataselect").jqxDropDownList('destroy');
+        $(".devicechart").jqxChart('destroy');
+    }
+    
+    </script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

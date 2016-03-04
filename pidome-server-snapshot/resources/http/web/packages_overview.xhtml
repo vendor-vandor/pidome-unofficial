@@ -1,0 +1,252 @@
+<#include "html_includes/header.xhtml">
+<h1>Packages overview</h1>
+<p>Packages are collections of drivers, devices and plugins. On this page you can review which packages are installed and what drivers, devices and plugins are coupled with it</p>
+<h2>Package delivers listing</h2>
+<div id="packageContainer">
+    <div class="packageListPartContainer">
+        <h3>Installed packages</h3>
+        <ol id="packageList">
+            <#list packageCollection?keys as collectionItem>
+                <li class="ui-widget-content" id="${collectionItem}">${collectionItem}</li>
+            </#list>
+        </ol>
+    </div>
+     <div class="packageListPartContainer">
+         <h3>Delivers drivers</h3>
+         <ol id="driverList">
+
+         </ol>
+    </div>
+     <div class="packageListPartContainer">
+         <h3>Delivers devices</h3>
+         <ol id="deviceList">
+
+         </ol>
+    </div>
+     <div class="packageListPartContainer">
+         <h3>Delivers plugins</h3>
+         <ol id="pluginList">
+
+         </ol>
+    </div>
+</div>
+<h2>Details:</h2>
+<div>
+    <div class="packageListPartContainer">
+        <h3>Package details</h3>
+        <div id="packageDetailsList" class="nvp">
+            
+        </div>
+    </div>
+    <div id="" class="packageListPartContainer">
+        <h3>Driver details</h3>
+        <div id="driverDetailsList" class="nvp">
+            
+        </div>
+    </div>
+    <div id="" class="packageListPartContainer">
+        <h3>Device details</h3>
+        <div id="deviceDetailsList" class="nvp">
+            
+        </div>
+    </div>
+    <div id="" class="packageListPartContainer">
+        <h3>Plugin details</h3>
+        <div id="pluginDetailsList" class="nvp">
+            
+        </div>
+    </div>
+</div>
+<script>
+$(function() {
+      
+  $( "#packageList" ).selectable({
+      selecting: function(evt, ui) {
+          var that = this;
+            
+          // Remove all other selected elements
+          $(this).find('.ui-selected').each(function() {
+              var selectee = $.data(this, "selectable-item");
+              if (!event.metaKey) {
+                  selectee.$element.removeClass('ui-selected');
+                  selectee.selected = false;
+                  selectee.$element.addClass('ui-unselecting');
+                  selectee.unselecting = true;
+                  // selectable UNSELECTING callback
+                  $(that).data("selectable")._trigger("unselecting", evt, { unselecting: selectee.element});
+              }
+          });
+            
+          $(this).find('.ui-selecting').each(function() {
+              var selectee = $.data(this, "selectable-item");
+              if ($(this).is(ui.selecting)) {
+                        return;
+                    } else {
+                        if ((event.metaKey) && selectee.startselected) {
+                            selectee.$element.removeClass('ui-selecting');
+                            selectee.selecting = false;
+                            selectee.$element.addClass('ui-selected');
+                            selectee.selected = true;
+                        } else {
+                            selectee.$element.removeClass('ui-selecting');
+                            selectee.selecting = false;
+                            if (selectee.startselected) {
+                                selectee.$element.addClass('ui-unselecting');
+                                selectee.unselecting = true;
+                            }
+                            // selectable UNSELECTING callback
+                            $(that).data("selectable")._trigger("unselecting", event, {
+                                unselecting: selectee.element
+                            });
+                        }
+                    }
+                });
+            },
+            selected: function(event, ui) {
+                loadPackageDelivers($(ui.selected).attr('id'));
+            }
+        });
+        
+    $("#driverList").selectable({
+      selecting: function(evt, ui) {
+          var that = this;
+            
+          // Remove all other selected elements
+          $(this).find('.ui-selected').each(function() {
+              var selectee = $.data(this, "selectable-item");
+              if (!event.metaKey) {
+                  selectee.$element.removeClass('ui-selected');
+                  selectee.selected = false;
+                  selectee.$element.addClass('ui-unselecting');
+                  selectee.unselecting = true;
+                  // selectable UNSELECTING callback
+                  $(that).data("selectable")._trigger("unselecting", evt, { unselecting: selectee.element});
+              }
+          });
+            
+          $(this).find('.ui-selecting').each(function() {
+              var selectee = $.data(this, "selectable-item");
+              if ($(this).is(ui.selecting)) {
+                        return;
+                    } else {
+                        if ((event.metaKey) && selectee.startselected) {
+                            selectee.$element.removeClass('ui-selecting');
+                            selectee.selecting = false;
+                            selectee.$element.addClass('ui-selected');
+                            selectee.selected = true;
+                        } else {
+                            selectee.$element.removeClass('ui-selecting');
+                            selectee.selecting = false;
+                            if (selectee.startselected) {
+                                selectee.$element.addClass('ui-unselecting');
+                                selectee.unselecting = true;
+                            }
+                            // selectable UNSELECTING callback
+                            $(that).data("selectable")._trigger("unselecting", event, {
+                                unselecting: selectee.element
+                            });
+                        }
+                    }
+                });
+            },
+            selected: function(event, ui) {
+                loadDriverDetails($(ui.selected).attr('id'));
+            }
+        });
+        
+    $("#deviceList").selectable({
+      selecting: function(evt, ui) {
+          var that = this;
+            
+          // Remove all other selected elements
+          $(this).find('.ui-selected').each(function() {
+              var selectee = $.data(this, "selectable-item");
+              if (!event.metaKey) {
+                  selectee.$element.removeClass('ui-selected');
+                  selectee.selected = false;
+                  selectee.$element.addClass('ui-unselecting');
+                  selectee.unselecting = true;
+                  // selectable UNSELECTING callback
+                  $(that).data("selectable")._trigger("unselecting", evt, { unselecting: selectee.element});
+              }
+          });
+            
+          $(this).find('.ui-selecting').each(function() {
+              var selectee = $.data(this, "selectable-item");
+              if ($(this).is(ui.selecting)) {
+                        return;
+                    } else {
+                        if ((event.metaKey) && selectee.startselected) {
+                            selectee.$element.removeClass('ui-selecting');
+                            selectee.selecting = false;
+                            selectee.$element.addClass('ui-selected');
+                            selectee.selected = true;
+                        } else {
+                            selectee.$element.removeClass('ui-selecting');
+                            selectee.selecting = false;
+                            if (selectee.startselected) {
+                                selectee.$element.addClass('ui-unselecting');
+                                selectee.unselecting = true;
+                            }
+                            // selectable UNSELECTING callback
+                            $(that).data("selectable")._trigger("unselecting", event, {
+                                unselecting: selectee.element
+                            });
+                        }
+                    }
+                });
+            },
+            selected: function(event, ui) {
+                loadDeviceDetails($(ui.selected).attr('id'));
+            }
+        });
+        
+    $("#pluginList").selectable({
+      selecting: function(evt, ui) {
+          var that = this;
+            
+          // Remove all other selected elements
+          $(this).find('.ui-selected').each(function() {
+              var selectee = $.data(this, "selectable-item");
+              if (!event.metaKey) {
+                  selectee.$element.removeClass('ui-selected');
+                  selectee.selected = false;
+                  selectee.$element.addClass('ui-unselecting');
+                  selectee.unselecting = true;
+                  // selectable UNSELECTING callback
+                  $(that).data("selectable")._trigger("unselecting", evt, { unselecting: selectee.element});
+              }
+          });
+            
+          $(this).find('.ui-selecting').each(function() {
+              var selectee = $.data(this, "selectable-item");
+              if ($(this).is(ui.selecting)) {
+                        return;
+                    } else {
+                        if ((event.metaKey) && selectee.startselected) {
+                            selectee.$element.removeClass('ui-selecting');
+                            selectee.selecting = false;
+                            selectee.$element.addClass('ui-selected');
+                            selectee.selected = true;
+                        } else {
+                            selectee.$element.removeClass('ui-selecting');
+                            selectee.selecting = false;
+                            if (selectee.startselected) {
+                                selectee.$element.addClass('ui-unselecting');
+                                selectee.unselecting = true;
+                            }
+                            // selectable UNSELECTING callback
+                            $(that).data("selectable")._trigger("unselecting", event, {
+                                unselecting: selectee.element
+                            });
+                        }
+                    }
+                });
+            },
+            selected: function(event, ui) {
+                loadPluginDetails($(ui.selected).attr('id'));
+            }
+        });
+    });
+</script>
+<#include "html_includes/footer.xhtml">

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>PiDome - Redirecting device</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <script src="shared/js/libs/jquery/jquery.min.js"></script>
+        <script src="shared/js/jq/jqxcore.js"></script>
+        <script src="shared/js/jq/jqxresponse.js"></script>
+        <script>
+                function setCorrectRedirect(){
+                    var response = new $.jqx.response();
+                    //// "Desktop", "Tablet", "Phone"
+                    if(response.device.type==="Tablet"){
+                        window.location.href = "tablet/index.html";
+                    } else if(response.device.type==="Phone"){
+                        window.location.href = "mobile/index.html";
+                    } else {
+                        window.location.href = "desktop/index.html";
+                    }
+                }
+        </script>
+    </head>
+    <body>
+        <script>
+            $(function () {
+                setCorrectRedirect();
+            });
+        </script>
+    </body>
+</html>

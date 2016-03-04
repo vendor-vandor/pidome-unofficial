@@ -1,0 +1,91 @@
+<#include "html_includes/header.xhtml">
+<h1>Simple devices</h1>
+<p>Below is a list of simple devices created. Click Add to add, click Edit to edit and click delete to delete.</p>
+<p>If you want to use a simple device, go to <a href="/settings_devices.xhtml">device settings</a> to add and start using.</p>
+<button class="mutationAddNewDevice" id="mutationAddNewDevice" name="mutationAddNewDevice" style="margin-top: 10px;">Add a new device</button>
+<div class="sortableDataTable" style="margin-top:10px;">
+    <table cellpadding="0" cellspacing="0" border="0" class="display" id="devicetable" width="100%">
+        <thead>
+            <tr>
+                <th>Identification</th>
+                <th>Name</th>
+                <th>Interface</th>
+                <th>Driver</th>
+                <th>Created</th>
+                <th>Modified</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <#list deviceListing as currentDevice>
+                    <tr>
+                        <td>${currentDevice.name}</td>
+                        <td>${currentDevice.friendlyname}</td>
+                        <td>${currentDevice.driver}</td>
+                        <td>${currentDevice.driver_driver}</td>
+                        <td>${currentDevice.created}</td>
+                        <td>${currentDevice.modified}</td>
+                        <td>
+                            <button class="mutationEditDevice" name="mutationEditDevice" id="mutationEditDevice" value="${currentDevice.id}">Edit</button>
+                            <button class="mutationDeleteDevice" name="mutationDeleteDevice" id="mutationDeleteDevice" value="${currentDevice.id}||${currentDevice.friendlyname}">Delete</button>
+                        </td>
+                    </tr>
+            </#list>
+        </tbody>
+    </table>
+</div>
+<button class="mutationAddNewDevice" id="mutationAddNewDevice" name="mutationAddNewDevice" style="margin-top: 10px;">Add a new device</button>
+<div id="dialog-confirm" title="Delete device">
+    <p></p>
+</div>
+<script>
+$(document).ready(function() {
+    $('#devicetable').dataTable({
+        "bJQueryUI": true,
+        "sPaginationType": "full_numbers",
+        "aLengthMenu": [[25, 50, 100, -1], [25, 50, 100, "All"]]
+    });
+    
+    
+    $("#devicetable tbody tr").click( function( e ) {
+        displayDeviceModal($(this).attr("id"));
+    });
+} );
+    $( "button.mutationEditDevice" )
+    .button({icons: { primary: "ui-icon-document" }})
+    .click(function() {
+        window.location.href="/edit_simpledevice.xhtml?device=" + $(this).attr("value");
+    });
+    $( "button.mutationDeleteDevice" )
+    .button({icons: { primary: "ui-icon-trash" },text: false})
+    .click(function() {
+    var arrDeviceData = $(this).attr("value").split("||");
+        $("#dialog-confirm p").html("Ar you shure you want to delete the simple device <strong>"+arrDeviceData[1]+"</strong>? All devices created by this entry will also be deleted.<br/><br/>This action can <strong>NOT</strong> be <strong>UNDONE</strong>!");
+        $( "#dialog-confirm" ).dialog({
+          resizable: false,
+          height:180,
+          modal: true,
+          buttons: {
+            "Yes": function() {
+                window.location.href="/simpledevices.xhtml?delete=" + arrDeviceData[0];
+            },
+            Cancel: function() {
+              $( this ).dialog( "close" );
+            }
+          }
+        });
+    });
+    
+    $( ".mutationAddNewDevice" )
+    .button({icons: { primary: "ui-icon-plus" }})
+    .click(function() {
+        window.location.href="/edit_simpledevice.xhtml";
+    });
+$("#deviceModal").dialog({
+    autoOpen: false,
+    resizable: false,
+    modal: true,
+    width:'auto'
+});
+</script>
+<#include "html_includes/footer.xhtml">

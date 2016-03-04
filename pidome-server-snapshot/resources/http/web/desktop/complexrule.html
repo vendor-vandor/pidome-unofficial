@@ -1,0 +1,783 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script>
+$(document).ready(function () {    
+    setPageBreadcrumbs(3, "page_complexrules", "Automation rules", "/desktop/complexrules.html", "Add/Edit rule");
+});
+</script>
+<div class="dashboardmain" style="position: relative;">
+    <div id="complexrulestoolbar" style="min-width: 1000px; width:100%;">
+        <span style="margin-left:7px; font-size: 17px;">New/Edit automation rule</span>
+        <div style="clear:both; margin-left:7px;">
+            <div class="nvp" style="width:250px; float:left;">
+                <div class="n" style="width:50px;">Name:</div>
+                <div class="v" style="width:200px;"><input type="text" name="rulename" id="rulename" value="<#if rule??>${rule.name!""}</#if>" /></div>
+            </div>
+            <div class="nvp" style="width:450px; float:left;">
+                <div class="n" style="width:75px;">Description:</div>
+                <div class="v"><input style="width:350px;" type="text" name="ruledesc" id="ruledesc" value="<#if rule??>${rule.description!""}</#if>" /></div>
+            </div>
+            <div style="float:left; margin-right:15px; line-height: 30px; vertical-align: middle;">Active:&nbsp;<input type="checkbox" name="ruleactive" id="ruleactive" value="true"<#if rule??>${rule.active?string('checked="checked"', '')!""}</#if>></div>
+            <span style="float:right; margin-right:15px;"><button id="saverule">Save rule</button></span>
+        </div>
+    </div>
+    <textarea id="rulecontent" style="display:none;"><#if rule??>${rule.rule!""}</#if></textarea>
+    <input type="hidden" name="ruleid" id="ruleid" value="<#if rule??>${rule.id!"0"}</#if>" />
+    <xml id="toolbox" style="display: none;">
+        <category name="Rules logic" id="ruleslogic">
+            <block type="controls_if"></block>
+            <block type="control_time_if"></block>
+            <block type="controls_whileUntil"></block>
+        </category>
+        <category name="Logic control" id="logiccontrol">
+            <block type="logic_compare"></block>
+            <block type="logic_operation"></block>
+            <!-- <block type="if_and_or_custom"></block> -->
+            <!-- <block type="lists_create_with"></block> -->
+        </category>
+        <category name="Variables" id="varcontrol">
+            <block type="math_number"></block>
+            <block type="variables_set"></block>
+            <block type="variables_get"></block>
+            <block type="logic_boolean"></block>
+            <block type="text"></block>
+            <block type="text_join"></block>
+        </category>
+
+            <category name="Devices" id="deviceslist">
+
+            </category>
+            <category name="Macro's" id="macroslist">
+
+            </category>
+            <category name="Messaging" id="messagelist">
+                <block type="send_notification"></block>
+                <block type="send_pushbullet"></block>
+                <block type="send_sms"></block>
+                <!-- <block type="send_email"></block> -->
+            </category>
+            <category name="Media" id="mediaList">
+
+            </category>
+            <category name="User status" id="userstatuslist">
+                <block type="current_userstatus"></block>
+                <block type="if_userstatus"></block>
+                <block type="set_userstatus"></block>
+            </category>
+            <category name="User presence" id="presencelist">
+                <block type="current_userpresence"></block>
+                <block type="if_userpresence"></block>
+                <block type="set_userpresence"></block>
+            </category>
+            <category name="Remotes" id="remoteslist">
+                
+            </category>
+            <category name="Miscellaneous" id="misc">
+                <block type="send_wol"></block>
+                <block type="if_customevent"></block>
+                <block type="if_weatherstate"></block>
+                <category name="URL hits" id="misc_url">
+                    <block type="send_url"></block>
+                    <block type="text_join"></block>
+                    <block type="send_url_parameter"></block>
+                </category>
+            </category>
+            <category name="Time/Date/Day" id="timedatelist">
+                <block type="day_of_week"></block>
+                <block type="current_daypart"></block>
+                <block type="if_daypart"></block>
+                <block type="sunrise"></block>
+                <block type="sunset"></block>
+                <block type="timeset"></block>
+            </category>
+    </xml>
+    <div id="blocklyDiv" style="height: 705px; min-width: 1000px; width:100%; margin-top: 64px;"></div>
+</div>
+<div id="innerscrollmargin"></div>
+<script type="text/javascript" src="/shared/js/libs/blockly/blockly_compressed.js"></script>
+<script type="text/javascript" src="/shared/js/libs/blockly/blocks_compressed.js"></script>
+<script type="text/javascript" src="/shared/js/libs/blockly/msg/js/en.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function () {
+            
+    $("#saverule").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+    $("#saverule").on('click', function (event) {
+        saveXml();
+    });
+
+    Blockly.inject(document.getElementById('blocklyDiv'), {path: '/shared/js/libs/blockly/', toolbox: document.getElementById('toolbox'), sound: false });
+
+    var totalLoaded = 0;
+
+    function saveXml(){
+        
+         $("#pleaseWaitProgress").dialog( "open" );
+        
+        var params = {};
+        
+        <#if rule?? && rule.id??>
+            if($("#ruleid").val()!=="0"){
+                params["id"] = $("#ruleid").val();
+            }
+        </#if>
+        params["name"] = $("#rulename").val();
+        params["description"] = $("#ruledesc").val();
+        params["active"] = $('#ruleactive').prop('checked')?"true":"false";
+        params["rule"] = Blockly.Xml.domToPrettyText(Blockly.Xml.workspaceToDom(Blockly.mainWorkspace));
+        
+        $.post("/complexrulesproxy.json", params)
+            .done(function(data) {
+                $("#pleaseWaitProgress").dialog( "close" );
+                if(data.result===true){
+                    showInfoMessage("Rule", "Rule added/modified");
+                    refreshPageContent("/desktop/complexrules.html");
+                } else {
+                    showErrorMessage("Rule", "Error: " + data.message);
+                }
+            }, "json");
+        return false;
+        
+    }
+
+    Blockly.Blocks['day_of_week'] = {
+        init: function() {
+            this.setColour(120);
+            this.setOutput(true, "Boolean");
+            this.appendDummyInput()
+                .appendField("day of week is ")
+                .appendField(new Blockly.FieldDropdown([["Every Day", "ALL"],["Weekdays", "WEEKDAY"],["Weekends", "WEEKEND"],
+                                                        ["Monday", "MON"],["Tuesday", "TUE"],["Wednesday", "WED"],["Thursday", "THU"],["Friday", "FRI"],["Saturday", "SAT"],["Sunday", "SUN"]]), "weekday_type");
+        }
+    };
+
+    Blockly.Blocks['send_wol'] = {
+         init: function() {
+            this.setColour(330);
+            this.appendDummyInput()
+                .appendField("Send WOL to MAC address")
+                .appendField(new Blockly.FieldTextInput("00:00:00:00:00:00"), "macaddress")
+                .appendField("to port")
+                .appendField(new Blockly.FieldTextInput("9"), "macport");
+            this.setPreviousStatement(true);
+            this.setNextStatement(true);
+            this.setTooltip('');
+        }
+    }
+
+    Blockly.Blocks['sunrise'] = {
+        init: function() {
+            this.setColour(120);
+            this.setOutput(true,"Boolean");
+            this.appendDummyInput()
+                .appendField("Time is sunrise")
+                .appendField(new Blockly.FieldDropdown([["plus", "PLUS"],["min", "MIN"]]), "calc_type")
+                .appendField(new Blockly.FieldTextInput("00"), "hour_length")
+                .appendField(":")
+                .appendField(new Blockly.FieldTextInput("00"), "minute_length")
+                .appendField("(Hours:minutes)");
+        }
+    };
+
+    Blockly.Blocks['sunset'] = {
+        init: function() {
+            this.setColour(120);
+            this.setOutput(true,"Boolean");
+            this.appendDummyInput()
+                .appendField("Time is sunset")
+                .appendField(new Blockly.FieldDropdown([["plus", "PLUS"],["min", "MIN"]]), "calc_type")
+                .appendField(new Blockly.FieldTextInput("00"), "hour_length")
+                .appendField(":")
+                .appendField(new Blockly.FieldTextInput("00"), "minute_length")
+                .appendField("(Hours:minutes)");
+        }
+    };
+
+    Blockly.Blocks['timeset'] = {
+        init: function() {
+            this.setColour(120);
+            this.setOutput(true,"Boolean");
+            this.appendDummyInput()
+                .appendField("Time ")
+                .appendField(new Blockly.FieldDropdown([["is", "IS"], ["later", "LATER"],["earlier", "EARLIER"]]), "calc_type")
+                .appendField(new Blockly.FieldTextInput("00"), "hour_length")
+                .appendField(":")
+                .appendField(new Blockly.FieldTextInput("00"), "minute_length")
+                .appendField("(Hours:minutes military)");
+        }
+    };
+
+    Blockly.Blocks['rule_container'] = {
+      init: function() {
+        this.setColour(20);
+        this.appendDummyInput()
+            .appendField("Rules container");
+        this.appendStatementInput("dev_var_assign")
+            .setCheck('variables_set')
+            .appendField("Variables list");
+        this.appendStatementInput("rulelist")
+            .setCheck(["control_time_if","controls_if","controls_whileUntil"])
+            .appendField("Rules");
+        this.setTooltip('');
+      }
+    };
+
+    Blockly.Blocks['control_time_if'] = {
+      init: function() {
+        this.setColour(210);
+        this.appendValueInput("IF0")
+            .appendField("if status of")
+            .setCheck("Boolean");
+        this.appendDummyInput()
+            .appendField("for the last")
+            .appendField(new Blockly.FieldTextInput("1"), "time_length")
+            .appendField(new Blockly.FieldDropdown([["Seconds", "SECONDS"],["Minutes", "MINUTES"], ["Hours", "HOURS"], ["Days", "DAYS"]]), "time_type");
+        this.appendStatementInput("DO0")
+            .appendField("do:");
+        this.setInputsInline(true);
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setTooltip('');
+      }
+    };
+
+    Blockly.Blocks['if_and_or_custom'] = {
+      init: function() {
+        this.setColour(230);
+        this.appendValueInput("if_and_or")
+            .setCheck("Array")
+            .appendField(new Blockly.FieldDropdown([["And list", "and"], ["Or list", "or"]]), "and_or");
+        this.setOutput(true, "Boolean");
+        this.setTooltip('');
+      }
+    };
+
+    Blockly.Blocks['send_email'] = {
+      init: function() {
+        this.setColour(330);
+        this.appendDummyInput()
+            .appendField("Send Email to")
+            .appendField(new Blockly.FieldTextInput("email@address"), "address")
+            .appendField("with subject")
+            .appendField(new Blockly.FieldTextInput("Subject"), "subject");
+        this.appendValueInput("Message")
+            .setCheck(["Array", "String"])
+            .appendField("containing");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setTooltip('');
+      }
+    };
+
+    Blockly.Blocks['send_sms'] = {
+      init: function() {
+        this.setColour(330);
+        this.appendValueInput("Message")
+            .setCheck(["Array", "String"])
+            .appendField("Send SMS");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setTooltip('');
+      }
+    };
+
+    Blockly.Blocks['send_pushbullet'] = {
+      init: function() {
+        this.setColour(330);
+        this.appendValueInput("Message")
+            .setCheck(["Array", "String"])
+            .appendField("Send Pushbullet note");
+        this.setPreviousStatement(true);
+        this.setNextStatement(true);
+        this.setTooltip('Send a pushbullet note');
+      }
+    };
+
+    Blockly.Blocks['send_notification'] = {
+        init: function() {
+          this.setColour(290);
+          this.appendDummyInput()
+              .appendField("Send notification");
+          this.appendDummyInput()
+              .appendField("Type")
+              .appendField(new Blockly.FieldDropdown([["INFO", "INFO"], ["OK", "OK"], ["WARNING", "WARNING"], ["ERROR", "ERROR"]]), "message_type");
+          this.appendDummyInput()
+              .appendField("Subject")
+              .appendField(new Blockly.FieldTextInput("default"), "message_subject");
+          this.appendValueInput("Message")
+              .setCheck(["String", "Array"])
+              .appendField("message");
+          this.setPreviousStatement(true);
+          this.setNextStatement(true);
+          this.setTooltip('Used to send messages to the web interface or clients');
+        }
+    };
+
+    Blockly.Blocks['send_url'] = {
+        init: function() {
+          this.setColour(290);
+          this.appendDummyInput()
+              .appendField("Send data to an url");
+          this.appendDummyInput()
+              .appendField("Type")
+              .appendField(new Blockly.FieldDropdown([["GET", "GET"], ["POST", "POST"]]), "method_type");
+          this.appendDummyInput()
+              .appendField("Url")
+              .appendField(new Blockly.FieldTextInput("http://"), "url");
+          this.appendValueInput("Parameters")
+              .setCheck(["String", "Array"])
+              .setAlign(Blockly.ALIGN_RIGHT)
+              .appendField("parameters");
+          this.setPreviousStatement(true);
+          this.setNextStatement(true);
+          this.setTooltip('Used to send or post data to an url');
+        }
+    };
+
+    Blockly.Blocks['send_url_parameter'] = {
+        init: function() {
+          this.setColour(290);
+          this.appendDummyInput()
+              .appendField("Name")
+              .appendField(new Blockly.FieldTextInput(""), "name");
+          this.appendValueInput("Value")
+              .appendField("value");
+          this.setOutput(true, "String");
+          this.setInputsInline(true);
+          this.setTooltip('Add a name and value to send');
+        }
+    };
+
+    Blockly.Blocks['current_userstatus'] = {
+      init: function() {
+        this.setColour(120);
+        this.appendDummyInput()
+            .appendField("Current user status");
+        this.setOutput(true, "String");
+        this.setTooltip('');
+      }
+    };
+
+    Blockly.Blocks['current_userpresence'] = {
+      init: function() {
+        this.setColour(120);
+        this.appendDummyInput()
+            .appendField("Current user presence");
+        this.setOutput(true, "String");
+        this.setTooltip('');
+      }
+    };
+
+    Blockly.Blocks['current_daypart'] = {
+      init: function() {
+        this.setColour(120);
+        this.appendDummyInput()
+            .appendField("Current day part");
+        this.setOutput(true, "String");
+        this.setTooltip('');
+      }
+    };
+
+    function addDeviceBlock(id, groupid, controlid, groupName, friendlyname, typedetails, commandType, readonly){
+        switch(commandType){
+            case "data":
+                var xml = "";
+                Blockly.Blocks['device_eq:'+id+':'+groupid+':'+controlid] = {
+                    init: function() {
+                        this.setColour(120);
+                        this.appendDummyInput()
+                            .appendField(friendlyname);
+                        this.appendDummyInput()
+                            .appendField(groupName + " " + typedetails.label);
+                        this.setOutput(true);
+                    }
+                };
+                xml += '<block type="device_eq:'+id+':'+groupid+':'+controlid+'"></block>';
+                if(readonly===false){
+                    Blockly.Blocks['device_exec:'+id+':'+groupid+':'+controlid] = {
+                        init: function() {
+                            this.setColour(330);
+                            this.appendDummyInput()
+                                .appendField(friendlyname);
+                            this.appendDummyInput()
+                                .appendField(groupName + " " + typedetails.label);
+                            this.appendDummyInput()
+                                .appendField("Set value")
+                                .appendField(new Blockly.FieldTextInput(""), "value");
+                            this.setPreviousStatement(true);
+                            this.setNextStatement(true);
+                        }
+                    };
+                    xml += '<block type="device_exec:'+id+':'+groupid+':'+controlid+'"></block>';
+                }
+                return xml;
+            break;
+            case "toggle":
+                var xml = "";
+                Blockly.Blocks['device_exec:'+id+':'+groupid+':'+controlid] = {
+                  init: function() {
+                    this.setColour(330);
+                    this.appendDummyInput()
+                        .appendField(friendlyname);
+                    this.appendDummyInput()
+                        .appendField(groupName + " set "+ typedetails.label + " to")
+                        .appendField(new Blockly.FieldDropdown([[typedetails.commandset.on.label, "true"], [typedetails.commandset.off.label, "false"]]), "exec");
+                    this.setPreviousStatement(true);
+                    this.setNextStatement(true);
+                    this.setTooltip('');
+                  }
+                };
+                xml += '<block type="device_exec:'+id+':'+groupid+':'+controlid+'"></block>';
+                Blockly.Blocks['device_eq:'+id+':'+groupid+':'+controlid] = {
+                  init: function() {
+                    this.setColour(120);
+                    this.appendDummyInput()
+                        .appendField(friendlyname);
+                    this.appendDummyInput()
+                        .appendField(groupName + " " + typedetails.label + " equals")
+                        .appendField(new Blockly.FieldDropdown([[typedetails.commandset.on.label, "true"], [typedetails.commandset.off.label, "false"]]), "if_equals");
+                    this.setOutput(true,"Boolean");
+                    this.setTooltip('');
+                  }
+                };
+                xml += '<block type="device_eq:'+id+':'+groupid+':'+controlid+'"></block>';
+                return xml;
+            break;
+        }
+        return "";
+    }
+
+    function addMacroBlock(macroId, macroName){
+        Blockly.Blocks['runMacro:'+macroId] = {
+          init: function() {
+            this.setColour(330);
+            this.appendDummyInput()
+                .appendField("Run macro " + macroName);
+            this.setPreviousStatement(true);
+            this.setNextStatement(true);
+            this.setTooltip('');
+          }
+        };
+        return '<block type="runMacro:'+macroId+'"></block>';
+    }
+
+    function addUserstatusBlock(userstatuslist){
+        var statusList = [];
+        for(var i=0;i<userstatuslist.length;i++){
+            statusList.push([userstatuslist[i].name,""+userstatuslist[i].id+""]);
+        }
+        Blockly.Blocks['set_userstatus'] = {
+          init: function() {
+            this.setColour(330);
+            this.setPreviousStatement(true);
+            this.setNextStatement(true);
+            this.appendDummyInput()
+                .appendField("Set user status to ");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown(statusList), "userstatus");
+            this.setInputsInline(true);
+            this.setTooltip('');
+          }
+        };
+        Blockly.Blocks['if_userstatus'] = {
+          init: function() {
+            this.setColour(120);
+            this.appendDummyInput()
+                .appendField("Current user status");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown([["equals", "equals"], ["else then", "else"]]), "if_equals");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown(statusList), "userstatus");
+            this.setInputsInline(true);
+            this.setOutput(true,"Boolean");
+            this.setTooltip('');
+          }
+        };
+        return '';
+    }
+
+    function addWeatherStatesBlock(weatherStates){
+        var weatherstateslist = [];
+        for(var i=0;i<weatherStates.length;i++){
+            weatherstateslist.push([weatherStates[i],""+weatherStates[i]+""]);
+        }
+        Blockly.Blocks['if_weatherstate'] = {
+          init: function() {
+            this.setColour(120);
+            this.appendDummyInput()
+                .appendField("Current weather");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown([["equals", "equals"], ["else then", "else"]]), "if_equals");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown(weatherstateslist), "customevent");
+            this.setInputsInline(true);
+            this.setOutput(true,"Boolean");
+            this.setTooltip('');
+          }
+        };
+        return '';
+    }
+
+    function addCustomEventsBlock(customevents){
+        var customeventslist = [];
+        if(customevents.length>0){
+            for(var i=0;i<customevents.length;i++){
+                customeventslist.push([customevents[i].name,""+customevents[i].id+""]);
+            }
+        } else {
+            customeventslist.push(["Create custom event first","0"]);
+        }
+        Blockly.Blocks['if_customevent'] = {
+          init: function() {
+            this.setColour(120);
+            this.appendDummyInput()
+                .appendField("Custom event");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown([["equals", "equals"], ["else then", "else"]]), "if_equals");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown(customeventslist), "customevent");
+            this.setInputsInline(true);
+            this.setOutput(true,"Boolean");
+            this.setTooltip('');
+          }
+        };
+        return '';
+    }
+
+    function addDaypartsBlock(dayparts){
+        var daypartlist = [];
+        for(var i=0;i<dayparts.length;i++){
+            daypartlist.push([dayparts[i].name,""+dayparts[i].id+""]);
+        }
+        Blockly.Blocks['if_daypart'] = {
+          init: function() {
+            this.setColour(120);
+            this.appendDummyInput()
+                .appendField("Current daypart");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown([["equals", "equals"], ["else then", "else"]]), "if_equals");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown(daypartlist), "daypart");
+            this.setInputsInline(true);
+            this.setOutput(true,"Boolean");
+            this.setTooltip('');
+          }
+        };
+        return '';
+    }
+
+    function addUserpresenceBlock(userPresenceList){
+        var statusList = [];
+        for(var i=0;i<userPresenceList.length;i++){
+            statusList.push([userPresenceList[i].name,""+userPresenceList[i].id+""]);
+        }
+        Blockly.Blocks['set_userpresence'] = {
+          init: function() {
+            this.setColour(330);
+            this.setPreviousStatement(true);
+            this.setNextStatement(true);
+            this.appendDummyInput()
+                .appendField("Set user presence to ");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown(statusList), "userpresence");
+            this.setInputsInline(true);
+            this.setTooltip('');
+          }
+        };
+        Blockly.Blocks['if_userpresence'] = {
+          init: function() {
+            this.setColour(120);
+            this.appendDummyInput()
+                .appendField("Current user presence");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown([["equals", "equals"], ["else then", "else"]]), "if_equals");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown(statusList), "userpresence");
+            this.setInputsInline(true);
+            this.setOutput(true,"Boolean");
+            this.setTooltip('');
+          }
+        };
+        return '';
+    }
+
+    function addMediaBlock(media){
+        Blockly.Blocks['if_media:' + media.id] = {
+          init: function() {
+            this.setColour(120);
+            this.appendDummyInput()
+                .appendField(media.name);
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown([["equals", "equals"], ["else then", "else"]]), "if_equals");
+            this.appendDummyInput()
+                .appendField(new Blockly.FieldDropdown([["Play", "PLAY"], ["Pause", "PAUSE"], ["Stop", "STOP"]]), "mediaplay");
+            this.setInputsInline(true);
+            this.setOutput(true,"Boolean");
+            this.setTooltip('');
+          }
+        };
+        return '<block type="if_media:'+media.id+'"></block>';
+    }
+
+    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getDeclaredDevicesWithFullDetails","id":"DeviceService.getDeclaredDevicesWithFullDetails"}').done(function(data) {
+        try {
+            for(var i=0;i<data.result.data.length;i++){
+                var xml = "";
+                var device = data.result.data[i];
+                var friendlyName = device.name;
+                xml += '<category name="'+friendlyName+'" id="device:'+device.id+'">';
+                var groupData = device.commandgroups;
+                for(var j=0;j<groupData.length;j++){
+                    var commandGroup = groupData[j];
+                    for(var k=0;k<commandGroup.commands.length;k++){
+                        var curCommand = commandGroup.commands[k];
+                        xml += addDeviceBlock(device.id, commandGroup.id, curCommand.typedetails.id, commandGroup.name, friendlyName, curCommand.typedetails, curCommand.commandtype, curCommand.typedetails.readonly);
+                    }
+                }
+                xml += '</category>';
+                $('#deviceslist').append(xml);
+            }
+            loadIfLoaded();
+        } catch(err){ alert(err); }
+    });
+
+    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "RemotesService.getRemotes", "id":"RemotesServiceService.getRemotes"}').done(function(data) {
+        try {
+            for(var i=0;i<data.result.data.length;i++){
+                var remote = data.result.data[i];
+                var remoteId = remote.id;
+                $.ajax({
+                    type: 'GET',
+                    url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "RemotesService.getRemote", "params":{"id":'+remoteId+'},"id":"RemotesService.getRemote"}',
+                    dataType: 'json',
+                    success: function(remoteFetchData) { 
+                        var buttonList = [];
+                        var remoteButtons = remoteFetchData.result.data.remotevisuals;
+                        try {
+                            for (var i = 0; i < remoteButtons.sections.length; i++) {
+                                var section = remoteButtons.sections[i].section;
+                                for (var j = 0; j < section.rows.length; j++) {
+                                    var buttonRow = section.rows[j].row;
+                                    for (var k = 0; k < buttonRow.buttons.length; k++) {
+                                        var button = buttonRow.buttons[k];
+                                        if(button.type!=="btn_none"){
+                                            if(button.label!==undefined && button.label!==""){
+                                                buttonList.push([button.label,""+button.id+""]);
+                                            } else {
+                                                buttonList.push([button.sdesc,""+button.id+""]);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            Blockly.Blocks['runRemote:' + remoteId] = {
+                              init: function() {
+                                this.setColour(330);
+                                this.setPreviousStatement(true);
+                                this.setNextStatement(true);
+                                this.appendDummyInput()
+                                    .appendField("On " + remoteFetchData.result.data.name + " press ");
+                                this.appendDummyInput()
+                                    .appendField(new Blockly.FieldDropdown(buttonList), "button");
+                                this.setInputsInline(true);
+                                this.setTooltip('');
+                              }
+                            };
+                            $("#remoteslist").append('<block type="runRemote:' + remoteId + '"></block>');
+                        } catch (err){ alert(err); }
+
+                    },
+                    data: {},
+                    async: false
+                });
+            }
+            loadIfLoaded();
+        } catch(err){ alert(err); }
+    });
+
+    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MediaService.getPlugins","id":"MediaService.getPlugins"}').done(function(data) {
+        try {
+            for(var i=0; i<data.result.data.length;i++){
+                $('#mediaList').append(addMediaBlock(data.result.data[i]));
+            }
+            loadIfLoaded();
+        } catch(err){ alert(err); }
+    });
+
+    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserStatusService.getUserStatuses","id":"UserStatusService.getUserStatuses"}').done(function(data) {
+        try {
+            $('#userstatuslist').append(addUserstatusBlock(data.result.data));
+            loadIfLoaded();
+        } catch(err){ alert(err); }
+    });
+
+    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PresenceService.getPresences","id":"PresenceService.getPresences"}').done(function(data) {
+        try {
+            $('#userstatuslist').append(addUserpresenceBlock(data.result.data));
+            loadIfLoaded();
+        } catch(err){ alert(err); }
+    });
+
+    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DayPartService.getDayParts", "id":"DayPartService.getDayParts"}').done(function(data) {
+        try {
+            try {
+                $('#userstatuslist').append(addDaypartsBlock(data.result.data));
+            } catch (err){
+                
+            }
+            loadIfLoaded();
+        } catch(err){ alert(err); }
+    });
+
+    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "EventService.getCustomEvents", "id":"EventService.getCustomEvents"}').done(function(data) {
+        try {
+            $('#misc').append(addCustomEventsBlock(data.result.data));
+            loadIfLoaded();
+        } catch(err){ alert(err); }
+    });
+
+    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "WeatherService.getKnownWeatherStates", "id":"WeatherService.getKnownWeatherStates"}').done(function(data) {
+        try {
+            $('#misc').append(addWeatherStatesBlock(data.result.data));
+            loadIfLoaded();
+        } catch(err){ alert(err); }
+    });
+
+    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MacroService.getMacros","id":"MacroService.getMacros"}').done(function(data) {
+        try {
+            for(var i=0;i<data.result.data.length;i++){
+                var macro = data.result.data[i];
+                $('#macroslist').append(addMacroBlock(macro.id, macro.name));
+            }
+            loadIfLoaded();
+        } catch(err){ alert(err); }
+    });
+
+    function loadIfLoaded() {
+        totalLoaded++;
+        if(totalLoaded===9){
+            Blockly.updateToolbox(document.getElementById('toolbox'));
+        /// Revert back:
+        <#if rule?? && rule.id??>
+            Blockly.Xml.domToWorkspace( Blockly.mainWorkspace, Blockly.Xml.textToDom($("#rulecontent").val()) );
+        <#else>
+            var rootBlock = Blockly.Block.obtain(Blockly.mainWorkspace, 'rule_container');
+            rootBlock.initSvg();
+            rootBlock.render();
+            rootBlock.setDeletable(false);
+        </#if>
+        }
+    }
+
+    ///$(".blocklyFlyoutBackground").parent().attr("filter", "url(#blocklyTrashcanShadowFilter)");
+
+});
+
+
+
+</script>
+<link rel="stylesheet" href="../shared/css/blockly.css" />
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

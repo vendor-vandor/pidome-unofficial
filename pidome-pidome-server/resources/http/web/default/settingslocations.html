@@ -1,0 +1,450 @@
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_editlocations", "Locations", "/settingslocations.html");
+    });
+</script>
+<div class="defaultcontent" id="settingslocationeditor" style="max-width:1000px;">
+    <fieldset>
+        <legend>House Plan</legend>
+        <p>Create your house plan here. A house plan indicate the floors in your house. On every floor you can add a location which assembles a space like a room or closet etc. To visualize these floors and rooms, add them here and go to the <a href="/flooreditor.html">Visual floor plan</a> page to draw them.</p>
+        <div style="float:left;">
+            <h3>Add new floor</h3>
+            <section class="itemeditor">
+                <div class="nvp">
+                    <div class="n">
+                        <label for="newFloorName">Floor name</label>
+                    </div>
+                    <div class="v">
+                        <input data-inputtype="string" type="text" name="newFloorName" id="newFloorName" value="" />
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        <label for="editFloorLevel">Floor level</label>
+                    </div>
+                    <div class="v">
+                        <input data-inputtype="int" type="text" name="newFloorLevel" id="newFloorLevel" value=""/>
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        &nbsp;
+                    </div>
+                    <div class="v">
+                        <button id="newFloor" name="newFloor" value="">Add</button>
+                        <button id="cancelNewFloor" name="cancelNewFloor" value="cancelNewFloor" style="margin-left: 10px;">Cancel</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div style="float:left; margin-left:15px;">
+            <h3>Edit/Delete Floors</h3>
+            <section class="itemeditor">
+                <div style="float:left; width:220px;">
+                    <div id="floorslist"></div>
+                </div>
+                <div style="float:left;">
+                    <div class="nvp">
+                        <div class="n">
+                            <label for="editFloorName">Floor name</label>
+                        </div>
+                        <div class="v">
+                            <input data-inputtype="string" type="text" name="editFloorName" id="editFloorName" value="" />
+                        </div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            <label for="editFloorLevel">Floor level</label>
+                        </div>
+                        <div class="v">
+                            <input data-inputtype="int" type="text" name="editFloorLevel" id="editFloorLevel" value=""/>
+                        </div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            &nbsp;
+                        </div>
+                        <div class="v">
+                            <button id="updateFloor" name="updateFloor" value="">Update</button>
+                            <button id="cancelUpdateFloor" name="cancelUpdateFloor" value="cancelUpdateFloor" style="margin-left: 10px;">Cancel</button>
+                            <button id="deleteUpdateFloor" name="deleteUpdateFloor" value="deleteUpdateFloor" style="margin-left: 10px;">Delete</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="updateFloorId" id="updateFloorId" value="" />
+                </div>
+            </section>
+        </div>
+    </fieldset>
+    <fieldset style="margin-top: 15px;">
+        <legend>Floor Plan</legend>
+        <p>Create your floor plan here. A floor plan exists out of locations where every location is a space like a room or even a cabinet if you want.</p>
+        <div style="float:left;">
+            <h3>Add new location</h3>
+            <section class="itemeditor">
+                <div class="nvp">
+                    <div class="n">
+                        <label for="newLocationName">Space name</label>
+                    </div>
+                    <div class="v">
+                        <input data-inputtype="string" type="text" name="newLocationName" id="newLocationName" value="" />
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        <label for="locationfloorslist">Floor</label>
+                    </div>
+                    <div class="v">
+                        <div id="locationfloorslist"></div>
+                    </div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        &nbsp;
+                    </div>
+                    <div class="v">
+                        <button id="newLocation" name="newLocation" value="">Add</button>
+                        <button id="cancelNewLocation" name="cancelNewLocation" value="cancelNewLocation" style="margin-left: 10px;">Cancel</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div style="float:left; margin-left:15px;">
+            <h3>Edit/Delete locations</h3>
+            <section class="itemeditor">
+                <div style="float:left; width:220px;">
+                    <div id="editlocationslist"></div>
+                </div>
+                <div style="float:left;">
+                    <div class="nvp">
+                        <div class="n">
+                            <label for="editLocationName">Location name</label>
+                        </div>
+                        <div class="v">
+                            <input data-inputtype="string" type="text" name="editLocationName" id="editLocationName" value="" />
+                        </div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            <label for="locationfloorseditlist">Floor</label>
+                        </div>
+                        <div class="v">
+                            <div id="locationfloorseditlist"></div>
+                        </div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            &nbsp;
+                        </div>
+                        <div class="v">
+                            <button id="updateLocation" name="updateLocation" value="">Update</button>
+                            <button id="cancelUpdateLocation" name="cancelUpdateLocation" value="cancelUpdateLocation" style="margin-left: 10px;">Cancel</button>
+                            <button id="deleteUpdateLocation" name="deleteUpdateLocation" value="deleteUpdateLocation" style="margin-left: 10px;">Delete</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="updateLocationId" id="updateLocationId" value="" />
+                </div>
+            </section>
+        </div>
+    </fieldset>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function () {
+
+        var allFloorsSource = {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int'},
+                { name: 'name', type: 'string'},
+                { name: 'level', type: 'int'}
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "LocationService.getFloors", "id":"LocationService.getFloors"}',
+            root: "result>data"
+        };
+        var allFloorsData = new $.jqx.dataAdapter(allFloorsSource);
+
+        var allLocationsSource = {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int'},
+                { name: 'name', type: 'string'},
+                { name: 'floorname', type: 'string'},
+                { group: 'floorname', type: 'string'}
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "LocationService.getLocations", "id":"LocationService.getLocations"}',
+            root: "result>data"
+        };
+        var allLocationsData = new $.jqx.dataAdapter(allLocationsSource);
+
+        $("#cancelNewFloor").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelNewFloor").on('click', function (event) {
+            resetFloorNewInputs('','');
+        });
+        $("#newFloor").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#newFloor").on('click', function (event) {
+            if(inputFieldValid($("#newFloorName")) && inputFieldValid($("#newFloorLevel"))){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "LocationService.addFloor", "params":{"name":"'+$("#newFloorName").val()+'","level":'+$("#newFloorLevel").val()+'},"id":"LocationService.addFloor"}')
+                    .done(function(data) {
+                        try {
+                            if(data.result.success===true){
+                                showInfoMessage("Updated",$("#newFloorName").val()+" has been Added");
+                                resetFloorNewInputs('','');
+                                allFloorsData.dataBind();
+                            } else {
+                                showErrorMessage("Error","Could not add floor: " + data.result.message);
+                            }
+                        } catch(err){
+                            showErrorMessage("Error","Could not add floor: " + data.message);
+                        }
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not add floor");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct floor data.");
+            }
+        });
+
+        function resetFloorNewInputs(name, level){
+            $("#newFloorName").val(name);
+            $("#newFloorLevel").val(level);
+            createSizedWebInputField($("#newFloorName"), 250);
+            createSizedWebInputField($("#newFloorLevel"), 50);
+        }
+
+        $("#cancelUpdateFloor").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelUpdateFloor").on('click', function (event) {
+            setFloorEditCleared();
+        });
+        $("#updateFloor").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#updateFloor").on('click', function (event) {
+            if(inputFieldValid($("#editFloorName")) && inputFieldValid($("#editFloorLevel"))){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "LocationService.editFloor", "params":{"id": '+$("#updateFloorId").val()+', "name":"'+$("#editFloorName").val()+'","level":'+$("#editFloorLevel").val()+'},"id":"LocationService.editFloor"}')
+                    .done(function(data) {
+                        showInfoMessage("Updated","Floor has been udated");
+                        setFloorEditCleared();
+                        allFloorsData.dataBind();
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not update floor");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct floor data.");
+            }
+        });
+        $("#deleteUpdateFloor").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#deleteUpdateFloor").on('click', function (event) {
+            $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "LocationService.deleteFloor", "params":{"id": '+$("#updateFloorId").val()+'},"id":"LocationService.deleteFloor"}')
+                .done(function(data) {
+                    showInfoMessage("Updated","Floor has been deleted");
+                    setFloorEditCleared();
+                    setLocationEditCleared();
+                    allFloorsData.dataBind();
+                    allLocationsData.dataBind();
+                })
+                .fail(function() {
+                    showErrorMessage("Error","Could not delete floor");
+                });
+        });
+
+        function setFloorEditCleared(){
+            $("#updateFloor").jqxButton({disabled: true });
+            $("#cancelUpdateFloor").jqxButton({disabled: true });
+            $("#deleteUpdateFloor").jqxButton({disabled: true });
+            resetFloorEditInputs('','');
+            try {
+                $("#floorslist").jqxComboBox('clearSelection');
+                $("#floorslist").jqxComboBox('unselectIndex',$("#floorslist").jqxComboBox('getSelectedItem').index);
+            } catch(err){
+                //// nothing selected.
+            }
+        }
+        
+        function setFloorEditEnabled(name, level){
+            $("#updateFloor").jqxButton({disabled: false });
+            $("#cancelUpdateFloor").jqxButton({disabled: false });
+            $("#deleteUpdateFloor").jqxButton({disabled: false });
+            resetFloorEditInputs(name,level);
+        }
+        
+        function resetFloorEditInputs(name, level){
+            $("#editFloorName").val(name);
+            $("#editFloorLevel").val(level);
+            createSizedWebInputField($("#editFloorName"), 250);
+            createSizedWebInputField($("#editFloorLevel"), 50);
+        }
+
+        $("#floorslist").jqxComboBox({
+            placeHolder: "Select floor", source: allFloorsData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme()
+        });
+        $("#floorslist").on('select', function (event) {
+            if (event.args) {
+                var item = event.args.item;
+                if (item) {
+                    $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "LocationService.getFloor", "params":{"id": '+item.value+'},"id":"LocationService.getFloor"}')
+                        .done(function(data) {
+                            setFloorEditEnabled(data.result.data.name,data.result.data.level);
+                            $("#updateFloorId").val(data.result.data.id);
+                        })
+                        .fail(function() {
+                            showErrorMessage("Error","Could not retrieve floor " + item.label);
+                        });
+                }
+            }
+        });
+        
+        ///////////////////////// location stuff
+        
+        $("#locationfloorslist").jqxComboBox({
+            placeHolder: "Select floor", source: allFloorsData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme()
+        });
+        $("#locationfloorseditlist").jqxComboBox({
+            placeHolder: "Select floor", source: allFloorsData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme()
+        });
+        
+        $("#editlocationslist").jqxComboBox({
+            placeHolder: "Select location", source: allLocationsData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme()
+        });
+        $("#editlocationslist").on('select', function (event) {
+            if (event.args) {
+                var item = event.args.item;
+                if (item) {
+                    $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "LocationService.getLocation", "params":{"id": '+item.value+'},"id":"LocationService.getFloor"}')
+                        .done(function(data) {
+                            if(data.result.data.fixed===true){
+                                showErrorMessage("Error","The location '"+data.result.data.name+"' can not be edited");
+                                setLocationEditCleared();
+                            } else {
+                                setLocationEditEnabled(data.result.data.name,data.result.data.floor);
+                                $("#updateLocationId").val(data.result.data.id);
+                            }
+                        })
+                        .fail(function() {
+                            showErrorMessage("Error","Could not retrieve floor " + item.label);
+                        });
+                }
+            }
+        });
+        
+        $("#cancelNewLocation").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelNewLocation").on('click', function (event) {
+            setNewLocationCleared();
+        });
+        $("#cancelUpdateLocation").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelUpdateLocation").on('click', function (event) {
+            setLocationEditCleared();
+        });
+        
+        $("#newLocation").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#newLocation").on('click', function (event) {
+            if(inputFieldValid($("#newLocationName"))){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "LocationService.addLocation", "params":{"name":"'+$("#newLocationName").val()+'","floor":'+$("#locationfloorslist").val()+'},"id":"LocationService.addFloor"}')
+                    .done(function(data) {
+                        try {
+                            if(data.result.success===true){
+                                showInfoMessage("Added",$("#newLocationName").val()+" has been Added");
+                                setNewLocationCleared();
+                                allLocationsData.dataBind();
+                            } else {
+                                showErrorMessage("Error","Could not add location: " + data.result.message);
+                            }
+                        } catch(err){
+                            showErrorMessage("Error","Could not add location: " + data.message);
+                        }
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not add location");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct location (space/room) data.");
+            }
+        });
+        
+        
+        $("#updateLocation").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#updateLocation").on('click', function (event) {
+            if(inputFieldValid($("#editLocationName"))){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "LocationService.editLocation", "params":{"id": '+$("#updateLocationId").val()+', "name":"'+$("#editLocationName").val()+'","floor":'+$("#locationfloorseditlist").val()+'},"id":"LocationService.editLocation"}')
+                    .done(function(data) {
+                        try {
+                            if(data.result.success===true){
+                                showInfoMessage("Updated","Location has been udated");
+                                setLocationEditCleared();
+                                allLocationsData.dataBind();
+                            } else {
+                                showErrorMessage("Error","Could not update location: " + data.result.message);
+                            }
+                        } catch (err){
+                            showErrorMessage("Error","Could not update location: " + data.message);
+                        }
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not update location");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct location data.");
+            }
+        });
+        $("#deleteUpdateLocation").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#deleteUpdateLocation").on('click', function (event) {
+            $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "LocationService.deleteLocation", "params":{"id": '+$("#updateLocationId").val()+'},"id":"LocationService.deleteLocation"}')
+                .done(function(data) {
+                    showInfoMessage("Updated","Location has been deleted");
+                    setLocationEditCleared();
+                    allLocationsData.dataBind();
+                })
+                .fail(function() {
+                    showErrorMessage("Error","Could not delete location");
+                });
+        });
+        
+        
+        function setNewLocationCleared(){
+            $("#newLocationName").val('');
+            createSizedWebInputField($("#newLocationName"), 250);
+            try {
+                $("#locationfloorslist").jqxComboBox('clearSelection');
+                $("#locationfloorslist").jqxComboBox('unselectIndex',$("#locationfloorslist").jqxComboBox('getSelectedItem').index);
+            } catch(err){
+                //// nothing selected.
+            }
+        }
+        
+        function setLocationEditEnabled(name,floor){
+            $("#editLocationName").val(name);
+            createSizedWebInputField($("#editLocationName"), 250);
+            $("#locationfloorseditlist").jqxComboBox('selectIndex',$("#locationfloorseditlist").jqxComboBox('getItemByValue', floor).index);
+            $("#updateLocation").jqxButton({disabled: false });
+            $("#cancelUpdateLocation").jqxButton({disabled: false });
+            $("#deleteUpdateLocation").jqxButton({disabled: false });
+        }
+        
+        function setLocationEditCleared(){
+            $("#updateLocation").jqxButton({disabled: true });
+            $("#cancelUpdateLocation").jqxButton({disabled: true });
+            $("#deleteUpdateLocation").jqxButton({disabled: true });
+            $("#editLocationName").val('');
+            createSizedWebInputField($("#editLocationName"), 250);
+            try {
+                $("#locationfloorseditlist").jqxComboBox('clearSelection');
+                $("#locationfloorseditlist").jqxComboBox('unselectIndex',$("#locationfloorseditlist").jqxComboBox('getSelectedItem').index);
+            } catch(err){
+                //// nothing selected.
+            }
+        }
+        
+        setLocationEditCleared();
+        setNewLocationCleared();
+        resetFloorNewInputs();
+        setFloorEditCleared();
+        
+    });
+    
+    function clearHandlers(){
+        $("#floorslist").jqxComboBox('destroy');
+        $("#editlocationslist").jqxComboBox('destroy');
+        $("#locationfloorslist").jqxComboBox('destroy');
+        $("#locationfloorseditlist").jqxComboBox('destroy');
+    }
+    
+</script>

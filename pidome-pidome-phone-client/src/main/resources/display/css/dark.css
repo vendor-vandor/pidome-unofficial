@@ -1,0 +1,486 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Mar 11, 2015, 1:10:03 PM
+    Author     : John
+    purpose    : Dark theme.
+*/
+.root {
+    -soft-white: #F5F5F5;
+    -fx-text-fill: -soft-white;
+    -default-background-color: #101010;
+    -icons-color: -soft-white;
+    -icons-color-active: #007acc;
+    -white-gradient: linear-gradient(-soft-white, #d0d0d0);
+    -basic-text-color: -soft-white;
+    
+    -field-header-background-color: #3e3e42;
+    -default-field-color: #353535;
+    -default-field-border-color: #404040;
+    
+    -fx-background: -default-background-color;
+    -menu-background: #303030;
+    
+    -border-white: -soft-white;
+    -border-menu: #000000;
+    -border-menu-item: #474747;
+    
+    -color-active: #007acc;
+    -color-mark: #d56909;
+    
+    -default-box-shadow: dropshadow(three-pass-box, #000000, 10, 0, 0, 0);
+    
+    -control-color-off: #a75c5c;
+    -control-color-off-border: #7e4545;
+    -control-color-on: #5ca76d;
+    -control-color-on-border: #457e52;
+    -control-color-pressed: -color-active;
+    -control-color-pressed-border: -color-active;
+    
+    -native-control-active-color: #35b8e2;
+    -native-control-active-color-transparent: #35b8e288;
+    -native-control-inactive-color: #959595;
+    -native-control-inactive-color-transparent: #95959588;
+    -native-control-default-color: #404040;
+    -native-control-default-color-border: #606060;
+}
+
+/*
+Global app styles
+*/
+.label {
+    -fx-text-fill: -basic-text-color;
+}
+
+.text {
+    -fx-fill: -basic-text-color;
+    -fx-text-fill: -basic-text-color;
+}
+
+.button {
+    -fx-background-color: -default-field-color;
+}
+
+.button:hover {
+    -fx-background-color: -default-field-color;
+}
+
+.button:pressed, .button:default:hover:pressed {
+    -fx-background-color:-color-active;
+}
+
+.text-field {
+    -fx-background-color: -default-field-color;
+    -fx-text-fill: -soft-white;
+    -fx-prompt-text-fill: derive(-fx-text-fill,-40%);
+    -fx-highlight-fill: -fx-text-fill;
+    -fx-highlight-text-fill: #000;
+    -fx-border-color: transparent 
+                      linear-gradient(transparent 70%, -color-active 71%) 
+                      -color-active
+                      linear-gradient(transparent 70%, -color-active 71%);
+}
+ 
+.text-field *.selection {
+    -fx-fill: -color-active;
+}
+
+.check-box *.box {
+    -fx-background-color: -fx-shadow-highlight-color, -fx-outer-border, -fx-inner-border, -fx-body-color;
+}
+
+.check-box:disabled {
+    -fx-opacity: .6;
+}
+
+.check-box>.box {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.check-box>.box>.mark {
+    -fx-background-image: url("../../images/app/unchecked.png");
+    -fx-shape: null;
+}
+
+.check-box:selected>.box>.mark{
+    -fx-background-color: transparent;
+    -fx-background-image: url("../../images/app/checked.png");
+}
+
+.radio-button .radio {
+    -fx-border-color: -native-control-default-color, transparent;
+    -fx-background-color: transparent;
+    -fx-background-image: null;
+}
+
+.radio-button .radio:selected {
+    -fx-background-color: transparent;
+    -fx-background-image: null;
+}
+.radio-button -radio:armed {
+    -fx-background-color: transparent;
+    -fx-background-image: null;
+}
+.radio-button -radio:determinate {
+    -fx-background-color: transparent;
+    -fx-background-image: null;
+}
+.radio-button -radio:indeterminate {
+    -fx-background-color: transparent;
+    -fx-background-image: null;
+}
+
+.radio-button:selected .dot {
+    -fx-background-color: #33b5e5;
+    -fx-effect: dropshadow(three-pass-box, #33b5e5, 2, 0, 0, 0);
+}
+
+.radio-button:pressed .radio {
+    -fx-border-color: -native-control-default-color, -native-control-active-color;
+}
+
+/*
+Lets mimic a slider with a track
+*/
+
+.tracked-slider .slider *.thumb {
+    -fx-background-color: radial-gradient(center 50% 50%, radius 100%, -native-control-active-color 17%, -native-control-active-color-transparent 18%);
+}
+ 
+.tracked-slider .slider:pressed *.thumb {
+    -fx-background-color: radial-gradient(center 50% 50%, radius 100%, -native-control-active-color 17%, -native-control-active-color-transparent 18%),
+                          radial-gradient(center 50% 50%, radius 100%, transparent 43%, -native-control-active-color 44%);
+}
+ 
+.tracked-slider .slider *.track {
+    -fx-background-color: none;
+}
+
+.progress-bar {
+    -fx-background-color: -native-control-inactive-color;
+}
+
+.progress-bar>*.track {
+    -fx-background-color: -native-control-inactive-color;
+    -fx-text-box-border: none;
+}
+
+.progress-bar *.bar {
+    -fx-background-color: -native-control-active-color;
+}
+
+.combo-box {
+    -fx-border-color: transparent transparent #007acc transparent;
+}
+
+.combo-box > .list-cell {
+    -fx-background: transparent;
+    -fx-background-color: transparent;
+    -fx-text-fill: -soft-white;
+    -fx-effect: dropshadow(three-pass-box, #000000, 2, 0, 0, 0);
+}
+
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-background-color: -default-field-color;
+    -fx-text-fill: -soft-white;
+}
+
+.combo-box-popup > .list-view {
+    -fx-border-color: #000000;
+}
+
+.combo-box-popup  > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:hover {
+    -fx-background-color: -default-field-color;
+    -fx-text-fill: -soft-white;
+}
+
+.combo-box-base > .arrow-button {
+    -fx-background-color: transparent; 
+    -fx-text-fill: -fx-text-base-color;
+}
+
+/*
+Body styles
+*/
+.custom-list-view {
+    -fx-background-color: transparent;
+} 
+
+.custom-list-view .list-item {
+    -fx-border-color: transparent transparent -border-menu-item transparent;
+} 
+
+.custom-list-view .list-item-pressable:pressed {
+    -fx-background-color: -color-active;
+} 
+
+.custom-list-view .list-item-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent transparent -border-white;
+}
+
+.custom-list-view .list-item-button:pressed {
+    -fx-background-color: -color-active;
+}
+
+.progress-bar:disabled {
+    -fx-opacity: .4;
+}
+
+.appTitle {
+    -fx-fill: -white-gradient;
+}
+
+.appTitleDesc {
+    -fx-fill: -white-gradient;
+}
+
+.top-left-menu {
+    -fx-background-color: -default-background-color;
+    -fx-border-color: #1c97ea transparent transparent transparent,
+                      #1c97ea -color-mark transparent transparent;
+}
+
+.top-left-menu .header {
+    -fx-border-color: transparent transparent -border-white transparent;
+    -fx-background-color: linear-gradient(#32383d, #292d31);
+}
+
+.top-left-menu .header.sub {
+    -fx-background-color: transparent;
+}
+
+.top-left-menu .header .close-icon {
+    -fx-border-color: transparent transparent transparent -border-white;
+    -fx-background-color: transparent;
+}
+
+.top-left-menu .header .close-icon:pressed {
+    -fx-background-color: transparent;
+}
+
+.top-left-menu .button.presence {
+    -fx-background-color: transparent;
+}
+
+.top-left-menu .visual-user-icon .present {
+    -fx-fill: -color-mark;
+}
+
+.top-left-menu .visual-user-icon .away {
+    -fx-fill: -soft-white;
+}
+
+.top-left-menu .visual-scene-icon {
+    -fx-fill: -soft-white;
+}
+
+.top-left-menu .visual-scene-icon.active {
+    -fx-fill: -color-active;
+}
+
+.top-left-menu .visual-scene:pressed {
+    -fx-background-color: -color-active;
+}
+
+.bottom-button-bar { ///Application style buttons
+    -fx-background-color: -default-field-color;
+}
+
+.bottom-button-bar .button-field {
+    -fx-border-color: -default-field-border-color;
+}
+
+.bottom-button-bar .button-field .button {
+    -fx-background-color: transparent;
+}
+
+.bottom-button-bar .button-field:pressed {
+    -fx-background-color: -color-active;
+} 
+
+.scene-header {
+    -fx-border-color: transparent transparent -border-white transparent;
+}
+
+.popup {
+    -fx-background-color: -default-field-color;
+    -fx-border-color: -default-field-border-color;
+    -fx-effect: -default-box-shadow;
+}
+
+.popup .header {
+    -fx-text-fill: -color-active;
+    -fx-border-color: transparent transparent -color-active transparent;
+}
+
+.popup .header .text {
+    -fx-fill: -color-active;
+}
+
+.popup-content {
+    -fx-background-color: -default-field-color;
+}
+
+.popup-content>* {
+    -fx-background-color: -default-field-color;
+}
+
+.glyph-icon {
+    -fx-fill: -icons-color;
+}
+
+.popup-menu {
+    -fx-border-color: -border-menu;
+    -fx-background-color: -menu-background;
+    -fx-effect: -default-box-shadow;
+}
+
+.popup-menu .menu-item {
+    -fx-border-color: transparent transparent -border-menu-item transparent;
+}
+
+.popup-menu .menu-item:pressed {
+    -fx-background-color: -color-active;
+} 
+
+.popup-menu .menu-item.current {
+    -fx-border-color: transparent -color-active -border-menu-item transparent;
+}
+
+.popup-menu .menu-header {
+    -fx-border-color: transparent transparent -border-menu-item -color-mark;
+}
+
+.item-field {
+    -fx-background-color: -default-field-color;
+}
+
+.item-field .header {
+    -fx-border-color: transparent transparent -border-white transparent;
+    -fx-background-color: -field-header-background-color;
+}
+
+.item-field.app-header {
+    -fx-border-color: #1c97ea transparent transparent transparent;
+    -fx-border-width: 2px 0px 0px 0px;
+    -fx-background-color: linear-gradient(#32383d, #292d31);
+}
+
+.item-field.app-header .text {
+    -fx-fill: -basic-text-color;
+}
+
+.item-field.app-header .button {
+    -fx-background-color: transparent;
+}
+
+.item-field.app-header .button.menu {
+    -fx-border-color: transparent transparent transparent -soft-white;
+}
+
+.device-control .glyph-icon {
+    -fx-fill: -white-gradient;    
+}
+
+.device-control .control-name {
+    -fx-fill: -basic-text-color;
+}
+
+.full-device .controls-group-name {
+    -fx-border-color: transparent transparent -color-mark transparent;
+    -fx-fill: -color-mark;
+}
+
+.device-control-data .control-data {
+    -fx-fill: -basic-text-color;
+}
+.device-control-data .control-prefix {
+    -fx-fill: -basic-text-color;
+}
+.device-control-data .control-suffix {
+    -fx-fill: -basic-text-color;
+}
+
+.device-control-toggle {
+    -fx-background-color: -control-color-off;
+    -fx-text-fill: -basic-text-color;
+}
+
+.device-control-toggle:armed,
+.device-control-toggle:selected {
+    -fx-background-color: -control-color-on;
+}
+
+.device-control .button {
+    -fx-background-color: -native-control-default-color;
+    -fx-border-color: -native-control-default-color-border;
+}
+
+.full-device > .text {
+    -fx-text-fill: -basic-text-color;
+}
+
+.my-custom-color {
+    -fx-background-color: transparent;
+}
+
+.my-custom-color:focused,
+.my-custom-color:selected {
+    -fx-background-color: transparent;
+}
+
+.my-custom-color .color-rect-pane .color-rect-border {
+    -fx-border-color: derive(#ececec, -20%);
+}
+
+.my-custom-color > .color-rect-pane #color-rect-indicator {
+    -fx-background-color: null;
+    -fx-border-color: white;
+    -fx-effect: dropshadow(three-pass-box, black, 2, 0.0, 0, 1);
+}
+
+.my-custom-color > .color-rect-pane > .color-bar {
+    -fx-border-color: derive(#ececec, -20%);
+}
+
+.my-custom-color > .color-rect-pane > .color-bar > #color-bar-indicator {
+    -fx-border-color: white;
+    -fx-effect: dropshadow(three-pass-box, black, 2, 0.0, 0, 1);
+}
+
+.media-interface-pane .media-navigation-pane,
+.media-interface-pane .media-volume-pane,
+.media-interface-pane .media-extras-pane,
+.media-interface-pane .media-player-pane,
+.media-interface-pane .media-item-visualizer {
+    -fx-background-color: #10101066;
+}
+
+.media-interface-pane .media-item-visualizer {
+    -fx-border-color: transparent transparent -soft-white transparent;
+}
+.media-interface-pane .media-item-visualizer .label {
+    -fx-effect: dropshadow(three-pass-box, #101010, 2, 0.0, 0, 1);
+}
+.media-interface-pane .media-player-pane {
+    -fx-border-color: -soft-white transparent transparent transparent;
+}
+.media-interface-pane .media-nav-button {
+    -fx-effect: dropshadow(three-pass-box, black, 2, 0.0, 0, 1);
+}
+
+.one-eighty-gauge {
+    -fx-skin             : "eu.hansolo.enzo.gauge.skin.OneEightyGaugeSkin";
+    -bar-background-color: #eff3f3;
+    -bar-color           : green;
+    -title-color         : -soft-white;
+    -value-color         : -soft-white;
+    -unit-color          : -soft-white;
+    -min-text-color      : -soft-white;
+    -max-text-color      : -soft-white;
+}

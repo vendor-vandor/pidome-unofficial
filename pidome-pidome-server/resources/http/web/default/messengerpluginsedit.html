@@ -1,0 +1,88 @@
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_editmessengerplugin", "Messenger plugins", "/messengerpluginsedit.html");
+    });
+</script>
+<div class="defaultcontent" style="max-width:1000px;">
+    <fieldset style="margin-top: 10px">
+        <legend>Messenger plugin settings</legend>
+        <h2>Messaging</h2>
+        <p>The messenger plugin supports SMS messages and Pushbullet. Only fill in what you require.<br/></p>
+    </fieldset>
+</div>
+<div class="defaultcontent" style="max-width:1000px;">
+    <fieldset>
+        <legend>Settings</legend>
+        <div style="float:left; clear: left; width:100%;">
+            <#assign configurationSets=plugin.getConfiguration()>
+            <#assign configSetsList=configurationSets.getOptions()>
+            <div id="optionCollection">
+                <#list configSetsList as configSet>
+                    <h3>${configSet.getConfigurationSetTitle()}</h3>
+                    <#if configSet.getConfigurationSetDescription()??><p>${configSet.getConfigurationSetDescription()}</p></#if>
+                    <#assign optionsList = configSet.getOptions()>
+                    <#list optionsList as option>
+                        <div class="nvp">
+                            <div class="n">
+                                <label for="${option.getId()}">${option.getOptionName()}</label>
+                            </div>
+                            <div class="v">
+                                <input type="text" data-inputtype="${option.getFieldType()}" name="${option.getId()}" id="${option.getId()}" value="${(option.getValue())!""}" />
+                                <script>
+                                    $(document).ready(function() {
+                                        $("#${option.getId()}").jqxTooltip({ content: '${option.getOptionDescription()}', position: 'top', name: 'optiontooltip', theme: siteSettings.getTheme()});
+                                        createWebInputField($("#${option.getId()}"));
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    </#list>
+                </#list>
+                <div class="nvp">
+                    <div class="n"></div>
+                    <div class="v">
+                        <button class="saveMessenger" name="saveMessenger" id="saveMessenger" value="saveMessenger">Save settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function() {
+        
+        $("#saveMessenger").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+        $("#saveMessenger").on('click', function () {
+            saveMessengerPlugin();
+        });
+        
+        function saveMessengerPlugin(){
+            var postData = {};
+            $("#optionCollection input").each(function(){
+                postData[$(this).attr("id")] = $(this).val();
+            });
+            $("#optionCollection select").each(function(){
+                postData[$(this).attr("id")] = $(this).val();
+            });
+            <#if installed??>
+                 postData["installed"] = ${installed};
+            </#if>
+            
+            ///alert(JSON.stringify(postData));
+            $.post("/messengerplugineditor.json", postData)
+                    .done(function(data) {
+                        if (data.result.exec !== true) {
+                            showErrorMessage("Messenger plugin error", "Could not save messenger plugin: " + data.result.reason);
+                        } else {
+                            showInfoMessage("Messenger plugin saved", "Messenger plugin has been added/modified");
+                        }
+                    }, "json").fail(function( jqXHR, textStatus, errorThrown ) {
+                        showErrorMessage("Messenger plugin error", "Could not modify messenger plugin: Request error - " + textStatus + ", " + errorThrown);
+                    });
+        }
+    });
+    function clearHandlers(){
+        clearInternalWidgetHandlers("#optionCollection");
+    }
+</script>

@@ -1,0 +1,9 @@
+\.orig$
+\.orig\..*$
+\.chg\..*$
+\.rej$
+\.conflict\~$
+^\.gradle*$
+\build$
+^distresource$
+^testresource$

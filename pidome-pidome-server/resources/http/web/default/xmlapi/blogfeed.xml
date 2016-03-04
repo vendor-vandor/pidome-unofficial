@@ -1,0 +1,6 @@
+<messages><#list content?keys as key><message>
+    <url>${content[key].url}</url>
+    <datetime>${content[key].date}</datetime>
+    <title>${content[key].title}</title>
+    <description>${content[key].description}</description>
+</message></#list></messages>

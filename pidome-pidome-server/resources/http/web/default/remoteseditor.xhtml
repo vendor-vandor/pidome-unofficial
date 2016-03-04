@@ -1,0 +1,164 @@
+<div style=" padding: 0px 5px 0px 5px;">
+    <#if !installed_id?? && !media_id??>
+        <h2>Add a remote</h2>
+        <p>Add a remote here. Select which kind of remote you want to add and which devices the server should use to receive and/or send the signals for this specific remote.
+           If you want to add an universal remote, you first need to create a normal remote. This is because the universal remote uses the "buttons" from the created
+           regular remote.</p>
+        <p>
+           Just think about it as in real life: You have a default remote, you buy a universal one, and this one is programmed to use the default remote's signal.<br/>
+           As with a lot of real universal remotes (for example the Logitech or Philips ones) you can macro buttons. So you have one button sending multiple commando's. If
+           for some reason the universal the remote fails to send or receiving device fails to interpret one of the actions, it is handy to have your original remote so you can still
+           perform the action.<br/> Te main difference is, you now do not have to search for your original remote because it always will be available for example on your phone
+           or other used client.</p>
+        <div class="nvp">
+            <div class="n">
+                Select remote to add
+            </div>
+            <div class="v">
+                <div id="installed_id"></div>
+            </div>
+        </div>
+        <script>
+                var adapterSource = {
+                    datatype: "json",
+                    localdata: [{'id':0,'name':'Select...'},<#list pluginlist?keys as pluginKey>{'id':${pluginKey}, 'name':'${pluginlist[pluginKey].name}'},</#list>],
+                    datafields: [
+                        { name: 'id' },
+                        { name: 'name' }
+                    ]
+                };
+                var pluginsAdapter = new $.jqx.dataAdapter(adapterSource);
+                $("#installed_id").jqxDropDownList({ source: pluginsAdapter, displayMember: "name", valueMember: "id", selectedIndex: 0, width: '250', height: '25', theme: siteSettings.getTheme()});
+                $("#installed_id").on('select', function (event) {
+                    if (event.args) {
+                        var item = event.args.item;
+                        if (item) {
+                            $('#remoteseditcontent').empty();
+                            $('#remoteseditcontent').load("/remoteseditor.xhtml?installed_id=" + item.value + "&ajax=true" );
+                        }
+                    }
+                });
+        </script>
+    <#else>
+        <#if installed_id??>
+            <h2>Add remote</h2>
+            <p>Add a new remote here. The above part shows the default plugin options to make it work in the server. Optional is that below the default options
+                plugin options are shown specific for the plugin self.</p>
+        <#else>
+            <h2>Edit remote</h2>
+            <p>Edit the media plugin here. The above part shows the default plugin options to make it work in the server. Optional is that below the default options
+                plugin options are shown specific for the plugin self.</p>
+        </#if>
+        <p>To assign remote commandos to the remote first add the remote, and press assign in the remotes list</p>
+        <div style="float:left; clear: left; width:100%;">
+            <h3>Base configuration</h3>
+            <div class="nvp">
+                <div class="n">
+                    <label for="plugin_name">Name</label>
+                </div>
+                <div class="v">
+                    <input type="text" name="plugin_name" id="plugin_name" value="${plugin.getPluginName()}" />
+                </div>
+            </div>
+            <div class="nvp">
+                <div class="n">
+                    <label for="plugin_desc">Description</label>
+                </div>
+                <div class="v">
+                    <input type="text" name="plugin_desc" id="plugin_desc" value="${plugin.getPluginDescription()}" />
+                </div>
+            </div>
+            <div class="nvp">
+                <div class="n">
+                    <label for="plugin_fav">Favorite</label>
+                </div>
+                <div class="v">
+                    <div id="plugin_fav"></div>
+                </div>
+            </div>            
+            <input type="hidden" name="plugin_location" id="plugin_location" value="1" />
+        </div>
+        <script>
+            $(document).ready(function() {
+                createWebInputField($('#plugin_name'));
+                createWebInputField($('#plugin_desc'));
+                var adapterFavoriteSource = {
+                    datatype: "json",
+                    localdata: [{'id': 'true', 'name': 'Yes'}, {'id': 'false', 'name': 'No'}],
+                    datafields: [
+                        {name: 'id'},
+                        {name: 'name'}
+                    ]
+                };
+                var favoriteAdapter = new $.jqx.dataAdapter(adapterFavoriteSource);
+                $("#plugin_fav").jqxDropDownList({source: favoriteAdapter, displayMember: "name", valueMember: "id", width: '250', height: '25', theme: siteSettings.getTheme()});
+                var yesno = $("#plugin_fav").jqxDropDownList('getItemByValue', ${plugin.getIsFavorite()?c});
+                $("#plugin_fav").jqxDropDownList('selectItem', yesno);
+            });
+        </script>
+        <div style="float:left; clear: left; width:100%;">
+            <#assign configurationSets=plugin.getConfiguration()>
+            <#assign configSetsList=configurationSets.getOptions()>
+            <div id="optionCollection">
+                <#list configSetsList as configSet>
+                    <h3>${configSet.getConfigurationSetTitle()}</h3>
+                    <#if configSet.getConfigurationSetDescription()??><p>${configSet.getConfigurationSetDescription()}</p></#if>
+                    <#assign optionsList = configSet.getOptions()>
+                        <#list optionsList as option>
+                            <div class="nvp">
+                                <div class="n">
+                                    <label for="remoteOption_${option.getId()}">${option.getOptionName()}</label>
+                                </div>
+                                <div class="v">
+                                    <#if option.getFieldType().toString()=="DEVICEDATA">
+                                        <button class="selectDevice" name="selectionDevice_${option.getId()}" id="selectionDevice_${option.getId()}" value=""><#if option.getValue()?? && option.getValue()!="">Change<#else>Set</#if> Device</button>
+                                        <span id="${option.getId()}_device_content"><#if deviceSet??>${deviceSet[option.getId()]!""}</#if></span>
+                                    <#elseif option.getFieldType().toString()=="SELECT">
+                                        <select name="remoteOption_${option.getId()}" id="utilityOption_${option.getId()}">
+                                            <#list option.getSet()?keys as optionName>
+                                                <option value="${optionName}"<#if option.getValue()==optionName> selected="selected"</#if>>${option.getSet()[optionName]}</option>
+                                            </#list>
+                                        </select>
+                                    </#if>
+                                </div>
+                            </div>
+                        </#list>
+                </#list>
+            </div>
+        </div>
+        <button id="save_remote" name="save_remote" value="Save Remote">Save Remote</button>
+    </div>
+    <script>
+        $(document).ready(function() {
+            var itemSelectionModal = new ItemSelectionModal();
+            itemSelectionModal.setOptions({"deviceFilter": "button", "deviceTypeFilter":["devices"]});
+            itemSelectionModal.setSelectionType("match");
+
+            $(".selectDevice").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+            $(".selectDevice").on('click', function () {
+                var typeName = $(this).attr("id").split("_")[1];
+                itemSelectionModal.setCallBack(function(returnData){
+                    setSelectedDevice(typeName, returnData);
+                });
+                itemSelectionModal.open();   
+            });
+
+            function setSelectedDevice(contentDivName, data){
+                $('#' + contentDivName + "_device_content").html(data.deviceName + ', ' + data.deviceCommandName + 
+                    '<input type="hidden" id="remoteOption_'+contentDivName+'" name="remoteOption_'+contentDivName+'" value="' + data.deviceId +'_' + data.deviceGroupId + '_' + data.deviceCommandValue + '" >');
+
+            }
+            $("#save_remote").jqxButton({width: '150', theme: siteSettings.getTheme()});
+            $("#save_remote").on('click', function() {
+                saveRemotePlugin();
+            });
+
+        });
+    </script>
+</#if>
+<#if installed_id??>
+    <input type="hidden" name="installed_id" id="installed_id" value="${installed_id}" />
+</#if>
+<#if remote_id??>
+    <input type="hidden" name="remote_id" id="remote_id" value="${remote_id}" />
+</#if>

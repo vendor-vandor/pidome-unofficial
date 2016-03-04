@@ -1,0 +1,73 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Feb 7, 2014, 10:43:26 AM
+    Author     : John
+*/
+
+body {
+    color: #ffffff;
+    background-color: #252526;
+}
+#topheader {
+    border-bottom-color: #32abda;
+    background: -webkit-linear-gradient(#d56909, #964a06); /* For Safari */
+    background: -o-linear-gradient(#d56909, #964a06); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#d56909, #964a06); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#d56909, #964a06);
+    box-shadow: 0px 2px 5px 0px #111111;
+}
+#topheaderleft a {
+    color: #ffffff;
+}
+#favoritebox ul li {
+    border-bottom-color: #0f0f0f;
+    background: -webkit-linear-gradient(#2f2f2f, #1b1b1b); /* For Safari */
+    background: -o-linear-gradient(#2f2f2f, #1b1b1b); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#2f2f2f, #1b1b1b); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#2f2f2f, #1b1b1b);
+}
+/*
+Overriding some default colors
+*/
+#topmenu.jqx-widget-header-android {
+    background: -webkit-linear-gradient(#2f2f2f, #1b1b1b); /* For Safari */
+    background: -o-linear-gradient(#2f2f2f, #1b1b1b); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(#2f2f2f, #1b1b1b); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(#2f2f2f, #1b1b1b);
+}
+/*
+All the graphs setup
+*/
+.jqx-chart-axis-text, .jqx-chart-label-text, .jqx-chart-legend-text, .jqx-chart-axis-description, .jqx-chart-title-text, .jqx-chart-title-description {
+    fill: #ffffff;
+    color: #ffffff;
+}
+.devicechart {
+    border: 1px solid #252526;    
+}
+/*
+Devices colors
+*/
+.devicegroup {
+    border-bottom: 1px solid #007acc;
+}
+#devicecontent {
+    border-color: transparent;
+}
+#loadermessage {
+    background-color: #7F7F7F;
+}
+/*
+Media controls page setup
+*/
+#mediacontent h3 {
+   color: #ffffff;
+   border-bottom: 1px solid #007acc;
+}
+#playliststable {
+    border-top: 1px solid #007acc;
+}

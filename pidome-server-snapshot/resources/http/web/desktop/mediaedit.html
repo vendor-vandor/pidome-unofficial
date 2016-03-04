@@ -1,0 +1,215 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_editmedia", "${page_title}", "/desktop/mediaedit.html");
+    });
+</script>
+<button class="addNewMedia" id="addNewMedia" name="addNewMedia" style="margin-top: 10px;">Add new Media</button><p></p>
+<div id="mediaeditpanel">
+    <div class="splitter-panel">
+        <table id="mediaedittable" class="edittable">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Edit</th>
+                    <th>Running</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Description</th>
+                    <th>Plugin</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="splitter-panel">
+        <div id="mediaeditcontent" class="itemeditor"><span class="initialmessage">Click Add media or Click on a Media item in the list.</span></div>
+    </div>
+</div>
+<button class="addNewMedia" id="addNewMedia" name="addNewMedia" style="margin-top: 10px;">Add new Media</button>
+<div id="innerscrollmargin"></div>
+<div id="dialog-confirm-delete" title="Confirm" style="display:none;">
+    <div>Confirm media delete</div>
+    <div></div>
+</div>
+<script>
+    var allMediaData;
+    
+    $(document).ready(function() {
+        
+        var allMediaSource = {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int'},
+                { name: 'pluginname', type: 'string'},
+                { name: 'description', type: 'string'},
+                { name: 'name', type: 'string'},
+                { name: 'active', type: 'bool'},
+                { name: 'locationname', type: 'string'}
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MediaService.getPlugins","id":"MediaService.getPlugins"}',
+            root: "result>data"
+        };
+        allMediaData = new $.jqx.dataAdapter(allMediaSource);
+        
+        $("#dialog-confirm-delete").jqxWindow({
+            width: 400,
+            height: 150,
+            theme: siteSettings.getTheme(),
+            autoOpen: false,
+            isModal: true
+        });
+        
+        $("#mediaeditcontent").jqxPanel({ width: '100%', height: '100%', autoUpdate: true, theme: siteSettings.getTheme()}); 
+        $('#mediaeditpanel').jqxSplitter({ width: 1000, height: 695,  panels: [{ size: 425, collapsible: false }, { size: 575, collapsed: true }], theme: siteSettings.getTheme() });
+        $("#mediaedittable").jqxDataTable({ source: allMediaData, groups: ['locationname'], filterable: true, filtermode: 'simple', selectionMode: "singleRow", height: 695, width: 995, sortable: true, pageable: true, pageSize: 5, pagerButtonsCount: 5, theme: siteSettings.getTheme(),
+            groupsRenderer: function(value, rowData, level){
+                return "Location: " + value;
+            },
+            columns: [
+                {text: 'id', dataField: 'id', hidden: true},
+                {text: '', width: 60, 
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return '<div><button class="mutationEditMedia" name="mutationEditMedia" id="mutationEditMedia-'+rowData.id+'" value="'+rowData.id+'">Edit</button></div>';
+                    }
+                },
+                {text: 'Running', dataField: 'active', width: 75,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return value===true?"Yes":"No";
+                    }      
+                },
+                {text: 'Name', dataField: 'name', width: 200},
+                {text: 'Location', dataField: 'locationname', width: 150},
+                {text: 'Description', dataField: 'description'},
+                {text: 'Plugin', dataField: 'pluginname', width: 200},
+                {text: 'Action', width: 60, 
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return '<div><button class="mutationDeleteMedia" name="mutationDeleteMedia" id="mutationDeleteMedia-'+rowData.id+'-'+row+'" value="'+rowData.id+'">Delete</button></div>';
+                    }
+                }
+            ],
+            rendering: function(){
+                    // destroys all buttons.
+                    if ($(".mutationDeleteMedia").length > 0) {
+                        $(".mutationDeleteMedia").jqxButton('destroy');
+                    }
+                    if ($(".mutationEditMedia").length > 0) {
+                        $(".mutationEditMedia").jqxButton('destroy');
+                    }
+            },
+            rendered: function () {
+               try {
+                    $(".mutationDeleteMedia").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".mutationDeleteMedia").on('click', function () {
+                        var media = $(this).attr('id').split("-")[1];
+                        var row = $(this).attr('id').split("-")[2];
+                        var mediaName = $("#mediaedittable").jqxDataTable('getCellValue', row, 'name');
+                        var mediaLocation = $("#mediaedittable").jqxDataTable('getCellValue', row, 'locationname');
+
+                        $("#dialog-confirm-delete").jqxWindow('setTitle','Delete: ' + mediaName);
+                        $("#dialog-confirm-delete").jqxWindow('setContent','<p style="text-align:center;">Are you sure you want to delete media "'+mediaName+'" at location "'+mediaLocation+'"</p>' + 
+                                                                           '<div style="text-align:center;">'+
+                                                                           '    <input type="button" id="dialog-do-delete" value="Yes delete" />'+
+                                                                           '    <input type="button" id="dialog-do-cancel" value="No cancel" />'+
+                                                                           '</div>');
+                        $("#dialog-do-delete").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                        $("#dialog-do-delete").on('click', function () {
+                            $.getJSON("/mediaeditor.xhtml?remove_id=" + media )
+                                .done(function(data) {
+                                        $("#pleaseWaitProgress").dialog("close");
+                                        if (data.result.exec !== true) {
+                                            showErrorMessage("Media delete error", "Could not delete media: " + data.result.message);
+                                        } else {
+                                            showInfoMessage("Media delete", "Media " + mediaName + " at " + mediaLocation + " has been deleted.");
+                                            allMediaData.dataBind();
+                                        }
+                                }, "json");
+                            $("#dialog-confirm-delete").jqxWindow('close');
+                        });
+                        $("#dialog-do-cancel").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                        $("#dialog-do-cancel").on('click', function () {
+                            $("#dialog-confirm-delete").jqxWindow('close');
+                        });
+                        $("#dialog-confirm-delete").jqxWindow('open');
+
+                    });
+                } catch (err){
+                    //// nothing to delete.
+                }
+
+               try {
+                    $(".mutationEditMedia").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".mutationEditMedia").on('click', function () {
+                        var mediaItem = $(this).attr('id').split("-")[1];
+                        $('#mediaeditpanel').jqxSplitter('expand');
+                        clearInternalWidgetHandlers("#mediaeditcontent");
+                        $('#mediaeditcontent').empty();
+                        $('#mediaeditcontent').load("/mediaeditor.xhtml?media_id=" + mediaItem + "&ajax=true" );
+                    });
+
+                } catch (err){
+                    //// nothing to edit.
+                }
+            }
+        });
+        
+        $(".addNewMedia").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+        $(".addNewMedia").on('click', function () {
+            $('#mediaeditpanel').jqxSplitter('expand');
+            clearInternalWidgetHandlers("#mediaeditcontent");
+            $('#mediaeditcontent').empty();
+            $('#mediaeditcontent').load("/mediaeditor.xhtml?ajax=true" );
+        });
+       
+    });
+
+    function saveMediaPlugin(){
+        var postData = {};
+        var urlString = "";
+        if($("#installed_id").val()!== undefined && $("#installed_id").val()!=="0"){
+            postData["installed_id"] = $("#installed_id").val();
+            urlString = "?installed_id=" + $("#installed_id").val();
+        } else {
+            postData["media_id"] = $("#media_id").val();
+            urlString = "?media_id=" + $("#media_id").val();
+        }
+        postData["plugin_name"] = $("#plugin_name").val();
+        postData["plugin_desc"] = $("#plugin_desc").val();
+        postData["plugin_location"] = $("#plugin_location").val();
+        postData["plugin_fav"] = $("#plugin_fav").val();
+        $("#optionCollection input").each(function(){
+            postData[$(this).attr("id")] = $(this).val();
+        });
+        $.post("/mediaeditor.xhtml" + urlString, postData)
+                .done(function(data) {
+                    var obj = jQuery.parseJSON( data );
+                    if (obj.result.exec !== true) {
+                        showErrorMessage("Media plugin error", "Could not add/modify media plugin: " + obj.result.reason);
+                    } else {
+                        showInfoMessage("Media plugin added/modified", "Media plugin " + postData["plugin_name"] + " has been added/modified");
+                        $('#mediaeditpanel').jqxSplitter('collapse');
+                        clearInternalWidgetHandlers("#mediaeditcontent");
+                        allMediaData.dataBind();
+                    }
+                }, "json").fail(function( jqXHR, textStatus, errorThrown ) {
+                    showErrorMessage("Media plugin error", "Could not add/modify media plugin: Request error - " + textStatus + ", " + errorThrown);
+                });
+    }
+    function clearHandlers(){
+        clearInternalWidgetHandlers("#mediaeditcontent");
+        $(".addNewMedia").jqxButton('destroy');
+        $("#mediaeditcontent").jqxPanel('destroy');
+        $("#mediaedittable").jqxDataTable('destroy');
+        $("#mediaeditpanel").jqxSplitter('destroy');
+        $("#dialog-confirm-delete").jqxWindow('destroy');
+    }
+</script>
+<div id="innerscrollmargin"></div>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

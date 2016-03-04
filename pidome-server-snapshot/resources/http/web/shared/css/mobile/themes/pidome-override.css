@@ -1,0 +1,757 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Dec 19, 2014, 2:54:33 PM
+    Author     : John
+*/
+body {
+    background: url(/shared/images/mobile/pidome-mobile-background-image.png);
+    background-repeat: no-repeat;
+    background-position: center bottom;
+    background-attachment: fixed;
+    background-color: #101012;
+}
+.ui-page {
+    min-width: 1270px !important;
+}
+///jqx ovrrides
+/*jqxChart Style*/
+#devicegraph .jqx-chart-axis-text,
+#svgChart .jqx-chart-label-text, 
+#svgChart .jqx-chart-tooltip-text, 
+#svgChart .jqx-chart-legend-text
+{
+    fill: #c3c3c3;
+    color: #c3c3c3;
+    font-size: 0.9em;
+}
+.jqx-chart-axis-description
+{
+    fill: #c3c3c3;
+    color: #c3c3c3;
+    font-size: 11px;
+    font-family: Verdana;
+}
+.jqx-chart-title-text
+{
+    fill: #c3c3c3;
+    color: #c3c3c3;
+    font-size: 14px;
+    font-weight: bold;
+    font-family: Verdana;
+}
+.jqx-chart-title-description
+{
+    fill: #c3c3c3;
+    color: #c3c3c3;
+    font-size: 12px;
+    font-weight: normal;
+    font-family: Verdana;
+}
+
+#headercontent,
+#footercontent {
+    border-top: 1px #d56909 solid;
+    background: #252526;
+}
+
+#headercontent h1,
+#footercontent {
+    color: #c3c3c3;
+    text-shadow: 0 1px 0 #111113;
+}
+
+/* Name - Value pairs */
+.nvp { width: 100%; }
+.nvp .n { width: 49%; float:left; clear:left; }
+.nvp .v { width: 50%; float:left; }
+
+a.external-button {
+    background-color: #1c97ea;
+    border-color: #196b8c;
+    color: #ffffff;
+    text-shadow: 0 1px 0 #444444;
+    margin-right: 0px;
+    margin-left: 0px;
+    font-size: 0.8em;
+    font-weight: bold;
+    border-width: 1px;
+    border-style: solid;
+}
+
+#simplenotification {
+    overflow: visible;
+    border-width: 1px;
+    border-style: solid;
+    box-shadow: 0 0 12px rgba(0,0,0,.6);
+    border-radius: .6em;
+    background-color: #4d4d4d;
+    border-color: #6b6b6b;
+    color: #c3c3c3;
+    text-shadow: 0 1px 0 #111113;
+}
+
+#simplenotification a[data-role="button"]:hover {
+    background-color: #1c97ea;
+    border-color: #196b8c;
+    color: #ffffff;
+    text-shadow: 0 1px 0 #444444;
+} 
+
+#simplenotification a[data-role="button"] {
+    background-color: #0570b8;
+    border-color: #165e7c;
+    color: #c3c3c3;
+    text-shadow: 0 1px 0 #111113;
+    -webkit-border-radius: 1em;
+    border-radius: 1em;
+    right: -11px;
+    position: absolute;
+    top: -11px;
+    margin: 0;
+    z-index: 1101;
+    -webkit-box-shadow: 0 1px 10px rgba(0,0,0,0.74);
+    -moz-box-shadow: 0 1px 10px rgba(0,0,0,0.74);
+    box-shadow: 0 1px 10px rgba(0,0,0,0.74);
+    -webkit-background-clip: padding;
+    background-clip: padding-box;
+    text-decoration: none !important;
+    border-width: 1px;
+    border-style: solid;
+    padding: 0;
+    width: 1.75em;
+    height: 1.75em;
+    text-indent: -9999px;
+    white-space: nowrap !important;
+    display: block;
+    text-align: center;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+} 
+
+
+#simplenotification a[data-role="button"]::after {
+    background-color: rgba(0, 0, 0, 0.14902);
+    background-image:url(/shared/css/mobile/themes/images/icons-png/delete-white.png);
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    display: block;
+    height: 22px;
+    left: 14px;
+    margin-left: -11px;
+    margin-top: -11px;
+    position: absolute;
+    top: 14px;
+    width: 22px;
+    content: "";
+}
+
+#headercontent {
+    box-shadow: 0px 5px 5px black;
+    z-index: 1001;
+    height: 47px;
+}
+
+#main-content-body {
+    background: transparent;
+}
+
+#mainmenupanel {
+    background: -webkit-linear-gradient(left, #101012 , #1d1d1f, #101012); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(right, #101012, #1d1d1f, #101012); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(right, #101012, #1d1d1f, #101012); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to right, #101012 , #1d1d1f, #101012); /* Standard syntax */
+    border-right: 1px solid #b6b6b6;
+}
+
+#menucloser {
+    background-color: #347abe;
+    color: #c3c3c3;
+    text-shadow: 0 1px 0 #111113;
+}
+
+#menuset {
+    background: transparent;
+}
+
+#menuset li {
+    border: 0px solid #000;
+    background: transparent;
+    vertical-align:middle;
+    line-height: 4em;
+    height: 4.3em;
+    color: #c3c3c3;
+    text-shadow: 0 1px 0 #111113;
+}
+#menuset li img {
+    margin-left: .5em;
+    vertical-align: middle;
+    float:left;
+    clear: both;
+    width: 4em;
+    height: 4em;
+}
+
+#menuset li span {
+    margin-left: .5em;
+    color: #b6b6b6;
+    font-size: 1.2em;
+}
+
+#menuset li span.active {
+    color: #d56909;
+    text-shadow: -1px 1px 2px #713804, 1px -1px 2px #713804;
+}
+.pagecontent {
+    background: transparent; 
+}
+.ui-content {
+    background-color:transparent;
+}
+/*
+Quick run bar on top of the page
+*/
+#quickrunbox {
+    height: 4em;
+    background: #1d1d21;
+    border-bottom: 2px solid #b6b6b6;
+    line-height: 4em;
+    position: absolute;
+    width:100%;
+    top:-2em;
+    box-shadow: 0px 5px 5px black;
+    overflow: hidden;
+    z-index: 1000;
+}
+
+.quickrun-button {
+    height: inherit;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    border-right: 1px solid #b6b6b6;
+    display: inline-block;
+    width: 10em;
+    vertical-align: middle;
+}
+.quickrun-button-highlight {
+    background: #25588a;
+}
+.quickrun-button img {
+    width: 1.5em;
+}
+.quickrun-button span.text {
+    height: auto;
+    display: inline-block;
+    line-height: 1em;
+    vertical-align: middle;
+    max-width: 6.7em;
+    overflow: hidden;
+    margin-left: 0.5em;
+    text-shadow: none;
+    color: #b6b6b6;
+}
+
+/*
+    Full page details header
+*/
+.pagemainheader {
+    height: 3em;
+    background: -webkit-linear-gradient(top, #252526, #101012); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom, #252526, #101012); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom, #252526, #101012); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom, #252526, #101012); /* Standard syntax */
+    border-bottom: 1px solid #d56909;
+    line-height: 2em;
+    box-shadow: 0px 5px 5px black;
+    z-index: 2;
+    position:relative;
+}
+
+.pagemainheader h2 {
+    margin-top: 0px;
+    color: #c3c3c3;
+    text-shadow: 0 1px 0 #111113;
+    vertical-align:middle;
+    line-height: 2.4em;
+    padding-left:.5em;
+    font-size: 1.3em;
+    font-weight: normal;
+    margin-left: .1em;
+}
+.ui-header .ui-title, .ui-footer .ui-title {
+    line-height: 2.1;
+}
+/*
+    Scroller additions
+*/
+div.iscroll-scroller { width: 100%; }
+
+/* 
+    Widgets
+*/
+
+.widget-role {
+    background-color: transparent;
+}
+
+#dashboard-widgets .ui-grid-a .ui-li-static {
+    padding-right: 0.3em;
+    line-height: 2em;
+}
+
+#dashboard-widgets .ui-grid-a>.ui-block-a.widget-role,
+#dashboard-widgets .ui-grid-a>.ui-block-b.widget-role {
+    width: 48% !important;
+    min-width: 18em;
+}
+#dashboard-widgets .ui-grid-a>.ui-block-a.widget-role {
+    overflow: hidden;
+    margin-right: 3%;
+}
+
+#dashboard-widgets .ui-grid-b > .ui-block-a.widget-role,
+#dashboard-widgets .ui-grid-b > .ui-block-b.widget-role,
+#dashboard-widgets .ui-grid-b > .ui-block-c.widget-role {
+    max-width: 7em;
+    min-width: 0em;
+    overflow: hidden;
+}
+
+div.ui-bar.ui-bar-a.widget-role-header {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+div.ui-bar.ui-bar-a.widget-role-header,
+div.ui-body.ui-body-a.widget-role-body {
+    border-color: transparent !important;
+    background: transparent !important;
+}
+
+div.ui-body.ui-body-a.widget-role-body li {
+    background: transparent !important;
+}
+
+div.ui-bar.ui-bar-a.widget-role-header h3 {
+    border-bottom: 1px solid #d56909;
+    width: 100%;
+    font-size: 1.2em;
+}
+
+.widget-scroll-content {
+    width:100%;
+    position: absolute;
+    /* Prevent elements to be highlighted on tap */
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    /* Put the scroller into the HW Compositing layer right from the start */
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+/*
+    Device widget
+*/
+#widget-scroll-wrapper-devices {
+    min-height: 18em;
+    height: 18em;
+    max-height: 18em;
+}
+
+.widget-devices {
+    border-bottom: 1px solid #d56909;
+}
+
+.widget-role.device-control {
+    text-align: right;
+}
+.widget-role .openDevice .button-control {
+    margin-right: 0px;
+    height: 1.875em;
+    padding: 0em 1em;
+    font-size: 0.8em;
+}
+.widget-role .openDevice .button-control.colorpicker {
+    padding: .5em 1em 0em 1em;
+    height: 1.7em;
+    text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+/*
+ Presence widget
+*/
+.widget-presence {
+    width: 5em;
+    height: 5em;
+    padding-bottom: 0.4em;
+    display: inline-block;
+}
+.widget-presence .name,
+.widget-presence .icon {
+    text-align: center;
+    width: 4em;
+}
+.widget-presence .name {
+    padding-top: 0.2em;
+    height: 1em;
+}
+.widget-presence .icon {
+    height: 4em;
+    background-size: 4em;
+    background-position-x: 0.25em;
+}
+.widget-presence.presence_home div.icon {
+    background-image: url(/shared/images/mobile/structs/presence/home.png);
+}
+.widget-presence.presence_away div.icon {
+    background-image: url(/shared/images/mobile/structs/presence/away.png);
+}
+.widget-presence.presence_home .name {
+    color: #347abe;
+    text-shadow: -1px 1px 2px #25588a, 1px -1px 2px #25588a;
+}
+
+.favorite.users {
+    width: inherit;
+    height: 6em;
+}
+
+#favorite-users-placeholder {
+    width:100%;
+    height:210px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    box-sizing:border-box;
+}
+
+/*
+Maedia widget
+*/
+#media-widget-case-type {
+    float:left;
+    text-align: center;
+    height: 5em;
+    width: 5em;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+#media-widget-case-type.dvd {
+    background-image: url(/shared/images/mobile/structs/media/dvdcover.png);
+}
+#media-widget-case-type.cd {
+    background-image: url(/shared/images/mobile/structs/media/cdcover.png);
+}
+#media-widget-case-coverimage {
+    text-align: center;
+    background-repeat: no-repeat;
+    height: 5em;
+    width: 5em;
+    float:left;
+}
+#media-widget-case-coverimage.dvd {
+    background-size: auto 4.6em;
+    background-position: 0.65em 0.15em;
+}
+#media-widget-case-coverimage.cd {
+    background-size: auto 4.0em;
+    background-position: 0.5em 0.15em;
+}
+#media-widget-player {
+    float:left;
+    padding-top:0.2em;
+}
+#media-widget-controlscontainer {
+    margin-top: 1em;
+}
+#media-widget-controlscontainer>div {
+    float: left;
+    width: 5.5em;
+    height: 1.8em;
+    background-size: auto 1.8em;
+    background-repeat: no-repeat;
+}
+#media-widget-prev {
+    background-image: url(/shared/images/mobile/structs/media/previous.png);
+}
+#media-widget-stop {
+    background-image: url(/shared/images/mobile/structs/media/stop.png);
+}
+#media-widget-pause {
+    background-image: url(/shared/images/mobile/structs/media/pause.png);
+}
+#media-widget-play {
+    background-image: url(/shared/images/mobile/structs/media/play.png);
+}
+#media-widget-next {
+    background-image: url(/shared/images/mobile/structs/media/next.png);
+}
+#media-widget-playing-title {
+    font-size: 1.4em;
+    padding-left: 0.2em;
+    color: #d56909;
+}
+/*
+Common full view pages
+*/
+.full {
+    padding:0px;
+    margin: 0px;
+    z-index: 1;
+}
+.full .ui-grid-a>.ui-block-a {
+    box-shadow: 3px 0px 5px black;
+}
+.full .ui-block-a li,
+.full .ui-block-b li {
+    margin:0px;
+    background-color: transparent;
+    padding-left:1em;
+    box-shadow: 0 -1px 0 black inset, 0 1px 0 black;
+}
+.full .ui-block-b li {
+    padding-left:1em;
+}
+.full .ui-block-a li.active {
+    color: #347abe;
+    text-shadow: -1px 1px 2px #25588a, 1px -1px 2px #25588a;
+}
+.full>.ui-grid-a>.ui-block-b {
+    padding-left: 2em;
+}
+
+/*
+* Devices page
+*/
+#deviceviewset {
+    clear: left;
+}
+#deviceviewset .ui-block-a,
+#deviceviewset .ui-block-b {
+    height: inherit;
+    overflow: hidden;
+    border-right: 2px solid #3f3f41;
+    box-shadow: 3px 0px 5px black;
+}
+
+#deviceviewset .ui-block-a {
+    background-color: #101012;
+    z-index: 1;
+    position:relative;
+}
+
+#deviceviewset .ui-block-b {
+    background-color: #252526;
+    z-index: 0;
+}
+
+#scroll-wrapper-devices-locations ul,
+#scroll-wrapper-devices-devices ul {
+    margin: -1px 0px 0px 0px;
+    /* Prevent elements to be highlighted on tap */
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    /* Put the scroller into the HW Compositing layer right from the start */
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+.display-device {
+    width: 100%;
+    padding-right: 2em;
+}
+.ui-bar.ui-bar-a.display-device-header {
+    background: transparent;
+    border: 0px solid #000;
+    width: inherit;
+    margin-top: -1px;
+    font-weight: normal;
+    font-size: 1.3em;
+    border-bottom: 1px solid #347abe;
+    padding-left: 0px;
+    padding-right: 0px;
+    color: #347abe;
+}
+.display-device-body {
+    background: transparent;
+    border: 0px solid #000;
+    margin-bottom: 1em;
+}
+.full.devices .ui-grid-a.fulldevicecontrol>.ui-block-a,
+.full.devices .ui-grid-a.fulldevicecontrol>.ui-block-b {
+    box-shadow: none;
+    line-height: 2em;
+    vertical-align: middle;
+}
+.display-device-body .colorpickercontainer {
+    padding: 3em;
+}
+.full.devices .cp-swatches ul li {
+    padding-left: 0px;
+}
+
+.colorpickercontainer .ui-input-text {
+    margin: 0px;
+    border-width: 0px;
+}
+.full.devices .ui-grid-a.fulldevicecontrol>.ui-block-b .button-control {
+    margin-right: 0px;
+    height: 1.875em;
+    padding: .5em 1em 0em 1em;
+    font-size: 0.8em;
+}
+.full.devices .ui-grid-a.fulldevicecontrol>.ui-block-b .button-control.colorpickerbutton {
+    text-shadow: 1px 0 0 #000, -1px 0 0 #000, 0 1px 0 #000, 0 -1px 0 #000, 1px 1px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+.full.devices button[data-role="button"],
+.full.devices a[data-role="button"] {
+    margin-left: 0px;
+    height: 1.7em;
+    padding: .5em 1em 1.5em 1em;
+    font-size: 0.8em;
+}
+
+/*
+Device graphs
+*/
+.devicegraphicon {
+    float: right;
+}
+
+
+/*
+* Media page
+*/
+#mediaviewset {
+    clear: left;
+}
+#mediaviewset .ui-block-a,
+#mediaviewset .ui-block-b {
+    height: inherit;
+    overflow: hidden;
+    border-right: 2px solid #3f3f41;
+    box-shadow: 3px 0px 5px black;
+}
+
+#mediaviewset .ui-block-a {
+    background-color: #101012;
+    z-index: 1;
+    position:relative;
+}
+
+#mediaviewset .ui-block-b {
+    background-color: #252526;
+    z-index: 0;
+}
+#scroll-wrapper-media-locations ul,
+#scroll-wrapper-media-media ul {
+    margin: -1px 0px 0px 0px;
+    /* Prevent elements to be highlighted on tap */
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    /* Put the scroller into the HW Compositing layer right from the start */
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+}
+#mediafullcontent .mediaheader {
+    border: 0px solid #000;
+    background-color: transparent;
+    border-bottom: 1px solid #347abe;
+    width: 100%;
+    font-size: 1.2em;
+    padding-left: 0em;
+    padding-bottom: 0.5em;
+    color: #347abe
+}
+.display-media {
+    width: 100%;
+    margin-left: -1em;
+}
+#media-body {
+    border-color: transparent !important;
+    background: transparent !important;
+}
+#media-case-type {
+    float:left;
+    text-align: center;
+    height: 10em;
+    width: 10em;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+#media-case-type.dvd {
+    background-image: url(/shared/images/mobile/structs/media/dvdcover.png);
+}
+#media-case-type.cd {
+    background-image: url(/shared/images/mobile/structs/media/cdcover.png);
+}
+#media-case-coverimage {
+    text-align: center;
+    background-repeat: no-repeat;
+    height: 10em;
+    width: 10em;
+    float:left;
+}
+#media-case-coverimage.dvd {
+    background-size: auto 9.6em;
+    background-position: 1.3em 0.3em;
+}
+#media-case-coverimage.cd {
+    background-size: auto 9.0em;
+    background-position: 1em 0.3em;
+}
+#media-player {
+    float:left;
+    padding-top:0.2em;
+}
+#media-controlscontainer {
+    margin-top: 1em;
+}
+#media-controlscontainer>div {
+    float: left;
+    width: 5em;
+    height: 1.8em;
+    background-size: auto 1.8em;
+    background-repeat: no-repeat;
+}
+#media-prev {
+    background-image: url(/shared/images/mobile/structs/media/previous.png);
+}
+#media-stop {
+    background-image: url(/shared/images/mobile/structs/media/stop.png);
+}
+#media-pause {
+    background-image: url(/shared/images/mobile/structs/media/pause.png);
+}
+#media-play {
+    background-image: url(/shared/images/mobile/structs/media/play.png);
+}
+#media-next {
+    background-image: url(/shared/images/mobile/structs/media/next.png);
+}
+#media-playing-artist, #media-playing-album, #media-playing-duration {
+    padding: 0.5em 0em;
+    padding-left: 0.8em;
+    overflow: hidden;
+}
+
+#fullweatherallcontent {
+    text-shadow: 0 1px 0 #111113;
+}

@@ -1,0 +1,194 @@
+<p class="defaultcontent">
+    A scene is a little program that sets selected devices to a specific selected state, you can turn on/off lights set colors like you would do with macro's. The main difference between
+    a macro and a scene is that a scene takes hold of the device states and is bounded to locations (locations are determined by the devices).<br/><br/>
+    - Holding device states (locked) means that automation rules or other external factors can not change this device's state. All changes will be held back and remembered. The result of this is when a scene has
+    become inactive, device will be getting the state they would have if the scene was not active by executing the held back commands. You are always able to change change a device's state manually!<br/>
+    - A scene is bound to locations. this means the following: There can be only one scene active per location. If a scene influences multiple locations, all these locations will have the scene applied.<br/><br/>
+    <b>Example</b>: If you have a scene called "Diner" which includes devices in the living and dining room, these both locations are active with the scene "Diner". Activating a scene with the name "Watch movie" which only influences
+    the living room while "Diner" is active, will deactivate the scene "Diner" for both locations. The Dining room devices will be set to their original/new states and the living room to the "Watch movie" scene state.
+</p>
+<button class="addNewScene" name="addNewScene" style="margin-top: 7px;">Add new Scene</button><p></p>
+<table id="scenesedittable" class="edittable">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Locations influence</th>
+        </tr>
+    </thead>
+    <tbody>
+
+    </tbody>
+</table>
+<button class="addNewScene" name="addNewScene" style="margin-top: 10px;">Add new Scene</button><p></p>
+<div id="innerscrollmargin"></div>
+<div id="dialog-confirm-delete" title="Confirm" style="display:none;">
+    <div>Confirm scene delete</div>
+    <div></div>
+</div>
+<script>
+    
+    var allScenesData;
+    
+    $(document).ready(function() {
+        
+        $("#dialog-confirm-delete").jqxWindow({
+            width: 400,
+            height: 150,
+            theme: siteSettings.getTheme(),
+            autoOpen: false,
+            isModal: true
+        });
+        
+        var scenesData = {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int'},
+                { name: 'name', type: 'string'},
+                { name: 'description', type: 'string'},
+                { name: 'active', type: 'bool'},
+                { name: 'locations', type: 'string'}
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "ScenesService.getScenes","id":"ScenesService.getScenes"}',
+            root: "result>data"
+        };
+        var allScenesData = new $.jqx.dataAdapter(scenesData);
+        
+        $(".addNewScene").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+        $(".addNewScene").on('click', function () {
+            refreshPageContent('/scene.html');
+        });
+        
+        $("#scenesedittable").jqxDataTable({ source: allScenesData, filterable: true, filtermode: 'simple', selectionMode: "none", height: 500, width: 998, sortable: true, pageable: true, pageSize: 14, pagerButtonsCount: 10, theme: siteSettings.getTheme(),
+            groupsRenderer: function(value, rowData, level){
+                return "Type: " + value;
+            },
+            columns: [
+                {text: 'Id', dataField: 'id', hidden: true},
+                {text: '', width: 85, 
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return '<div><button class="runSceneButton" name="runSceneButton" id="scenerun-'+rowData.id+'-'+((rowData.active)?'deactivate':'activate')+'">'+((rowData.active)?' De-activate ':' Activate ')+'</button></div>';
+                    }
+                },
+                {text: 'Name', dataField: 'name', width: 200},
+                {text: 'Description', dataField: 'description'},
+                {text: 'Locations influence', dataField: 'locations', 
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return value;
+                    }
+                },
+                {text: 'Action', width: 130, 
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return '<div><button class="editSceneButton" name="editSceneButton" id="sceneedit-'+rowData.id+'">Edit</button>' +
+                                    '<button class="deleteSceneButton" name="deleteSceneButton" id="scenedelete-'+rowData.id+'-'+row+'">Delete</button></div>';
+                    }
+                }
+            ],
+            rendering: function(){
+                    // destroys all buttons.
+                    if ($(".editSceneButton").length > 0) {
+                        $(".editSceneButton").jqxButton('destroy');
+                    }
+                    if ($(".deleteSceneButton").length > 0) {
+                        $(".deleteSceneButton").jqxButton('destroy');
+                    }
+                    if ($(".runSceneButton").length > 0) {
+                        $(".runSceneButton").jqxButton('destroy');
+                    }
+            },
+            rendered: function () {
+                try {
+                    $(".editSceneButton").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".editSceneButton").on('click', function () {
+                        var scene = $(this).attr('id').split("-")[1];
+                        refreshPageContent('/scene.html?id=' + scene);
+                    });
+                } catch(error){
+                    /// Nothing to edit.
+                }
+                try {
+                    $(".deleteSceneButton").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".deleteSceneButton").on('click', function () {
+                        
+                        var scene = $(this).attr('id').split("-")[1];
+                        var row = $(this).attr('id').split("-")[2];
+                        var sceneName = $("#scenesedittable").jqxDataTable('getCellValue', row, 'name');
+                        
+                        $("#dialog-confirm-delete").jqxWindow('setTitle','Delete: ' + sceneName);
+                        $("#dialog-confirm-delete").jqxWindow('setContent','<p style="text-align:center;">Are you sure you want to delete scene "'+sceneName+'"</p>' + 
+                                                                           '<div style="text-align:center;">'+
+                                                                           '    <input type="button" id="dialog-do-delete" value="Yes delete" />'+
+                                                                           '    <input type="button" id="dialog-do-cancel" value="No cancel" />'+
+                                                                           '</div>');
+                        $("#dialog-do-delete").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                        $("#dialog-do-delete").on('click', function () {       
+                            $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"ScenesService.deleteScene\", \"params\":{\"id\":"+scene+"},\"id\":\"ScenesService.deleteScene\"}")
+                                .done(function(data) {
+                                    try {
+                                        if(data.result.success !== true){
+                                            showErrorMessage("Scenes", data.result.message);
+                                        } else {
+                                            showInfoMessage("Scenes", "Scene has been deleted");
+                                            allScenesData.dataBind();
+                                        }
+                                    } catch(err){
+                                        var message = "<strong>Message</strong>:<br/>";
+                                        if(data.error.data.trace!==undefined){
+                                            message += data.error.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                                        } else {
+                                            message += data.error.data.message;
+                                        }
+                                        showErrorMessage("Server error: " + data.error.message, message);
+                                    }
+                                }, "json");
+                                $("#dialog-confirm-delete").jqxWindow('close');
+                            });
+                            $("#dialog-do-cancel").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                            $("#dialog-do-cancel").on('click', function () {
+                                $("#dialog-confirm-delete").jqxWindow('close');
+                            });
+                            $("#dialog-confirm-delete").jqxWindow('open');
+                        });
+                } catch(error){
+                    
+                }
+                try {
+                    $(".runSceneButton").jqxButton({ width: '75', theme: siteSettings.getTheme()});
+                    $(".runSceneButton").on("click", function (){
+                    var scene = $(this).attr('id').split("-")[1];
+                    var requestAction = $(this).attr('id').split("-")[2];
+                    $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"ScenesService."+((requestAction==="activate")?'activateScene':'deActivateScene')+"\", \"params\":{\"id\":"+scene+"},\"id\":\"ScenesService.ScenesService."+((requestAction==="activate")?'activateScene':'deActivateScene')+"\"}")
+                        .done(function(data) {
+                            try {
+                                if(data.result.success !== true){
+                                    showErrorMessage("Scenes", data.result.message);
+                                } else {
+                                    showInfoMessage("Scenes", "Scene is set");
+                                    allScenesData.dataBind();
+                                }
+                            } catch(err){
+                                var message = "<strong>Message</strong>:<br/>";
+                                if(data.error.data.trace!==undefined){
+                                    message += data.error.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                                } else {
+                                    message += data.error.data.message;
+                                }
+                                showErrorMessage("Server error: " + data.error.message, message);
+                            }
+                        }, "json");
+                    });
+                } catch(error){
+                    /// Nothing to run.
+                }
+            }
+        });
+        
+    });
+    function clearHandlers(){
+        clearInternalWidgetHandlers("#contentbody");
+    }  
+    
+    setPageBreadcrumbs(3, "page_scenes", "Scenes", "/scenes.html");
+    
+</script>

@@ -1,0 +1,25 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Nov 15, 2013, 2:16:19 PM
+    Author     : John Sirach <john.sirach@gmail.com>
+*/
+.root {
+    -fx-background-color: transparent;
+    -fx-text-fill: #ffffff;
+}
+
+#notificationblock .date,
+#notificationblock .clientinfo,
+#notificationblock .sysstateinfo {
+    -fx-font-weight: bold;
+    -fx-font-size: 1.2em;
+}
+.widgetactionbutton {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}

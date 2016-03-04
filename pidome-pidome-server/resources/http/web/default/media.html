@@ -1,0 +1,229 @@
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(1, "page_mediacontrol", "Media control", "/media.html");
+    });
+</script>
+<div id="mediapanel">
+    <div class="splitter-panel">
+        <div id="mediacontent"></div>
+    </div>
+    <div class="splitter-panel">
+        <table id="mediatable">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Location</th>
+                    <th>Playing</th>
+                    <th>Playlist</th>
+                </tr>
+            </thead>
+            <tbody>
+                <#list devicelisting?keys as key>
+                <#assign device = devicelisting[key]>
+                <tr>
+                    <td><#if device.pluginObject??>${device.pluginObject.getPluginId()}</#if></td>
+                    <td>${device.name}</td>
+                    <td>${device.location}</td>
+                    <td>
+                        <#if device.pluginObject?? && device.pluginObject.getNowPlayingData()??>
+                            <#assign runningDetail = device.pluginObject.getNowPlayingData()>
+                            <#if runningDetail.ItemType?? && runningDetail.ItemType=="AUDIO">
+                                Audio:&nbsp;
+                                <#if runningDetail.TITLE_ARTIST?? && runningDetail.TITLE_ARTIST!="">${runningDetail.TITLE_ARTIST} - </#if>
+                                <#if runningDetail.TITLE?? && runningDetail.TITLE!="">${runningDetail.TITLE}</#if>
+                            <#elseif runningDetail.ItemType?? && runningDetail.ItemType=="VIDEO">
+                                Video:&nbsp;
+                                <#if runningDetail.TITLE?? && runningDetail.TITLE!="">${runningDetail.TITLE}</#if>
+                            <#elseif runningDetail.ItemType?? && runningDetail.ItemType=="PVR">
+                                PVR:&nbsp;
+                                <#if runningDetail.TITLE?? && runningDetail.TITLE!="">${runningDetail.TITLE}</#if>
+                            <#else>
+                                Nothing playing now.
+                            </#if>
+                        <#else>
+                            Nothing playing now.
+                        </#if>
+                    </td>
+                    <td>
+                        <#if device.pluginObject?? && device.pluginObject.getPlayList()??>
+                            ${device.pluginObject.getPlayList()?size}
+                        <#else>
+                            0
+                        </#if>
+                    </td>
+                </tr>
+                </#list>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+
+<script>
+    
+    function showMediaItem(mediaId){
+        $('#mediapanel').jqxSplitter('expand');
+        $('#mediacontent').empty();
+        $('#mediacontent').load("/mediarenderer.xhtml?mediaid=" + mediaId + "&ajax=true");
+    }
+    
+    $(document).ready(function() {
+        $('#mediapanel').jqxSplitter({orientation: 'horizontal',width: 1000, height: 780, panels: [{size: 340, collapsible: true, collapsed: true}, {size: 660, collapsible: false, collapsed: false }], theme: siteSettings.getTheme()});
+        $("#mediacontent").jqxPanel({width: '100%', height: 744, autoUpdate: true, theme: siteSettings.getTheme()});
+        $("#mediatable").jqxDataTable({groups: ['Location'],filterable: true, filtermode: 'simple', selectionMode: "singleRow", height: '100%', width: '100%', sortable: true, pageable: true, pageSize: 5, pagerButtonsCount: 5, theme: siteSettings.getTheme(),
+            groupsRenderer: function(value, rowData, level){
+                return "Location: " + value;
+            },
+            columns: [
+                {text: 'Id', dataField: 'Id', hidden: true },
+                {text: 'Name', dataField: 'Name' },
+                {text: 'Location', dataField: 'Location', width:250},
+                {text: 'Playing', dataField: 'Playing', width: 450},
+                {text: 'Playlist', dataField: 'Playlist', width:50}
+            ]
+        });
+        
+        
+        
+        $("#mediatable").on('rowClick', function(event) {
+            // event args.
+            var args = event.args;
+            // row data.
+            var row = args.row;
+            showMediaItem(row.Id);
+        });
+        function updateTableData(playerId, field, value) {
+            var rows = $("#mediatable").jqxDataTable('getRows');
+            for (var i = 0; i < rows.length; i++) {
+                var rowData = rows[i];
+                if(rowData.Id == playerId){
+                    $("#mediatable").jqxDataTable('setCellValue', i, field, value);
+                    break;
+                }
+            }
+        }
+        pidomeRPCSocket.addCallback(function(thingy) {
+            try {
+                var playerId = thingy.params.id;
+                $("#player_"+playerId+"_title").html(thingy.params.title);
+                $("#player_"+playerId+"_artist").html(thingy.params.title_artist);
+                $("#player_"+playerId+"_album").html(thingy.params.album);
+                var newPlayingData = "Unknown";
+                if(thingy.params.itemtype==="AUDIO"){
+                    newPlayingData = "Audio:&nbsp;" + thingy.params.title_artist + " - " + thingy.params.title;
+                } else if(thingy.params.itemtype==="VIDEO"){
+                   newPlayingData = "Video:&nbsp;" + thingy.params.title;
+                } else if(thingy.params.itemtype==="PVR"){
+                   newPlayingData = "PVR:&nbsp;" + thingy.params.title;
+                }
+                updateTableData(playerId, 'Playing', newPlayingData);
+                ////updateTableData(playerId, 'Playlist', $('#mediaplaylistplaylist table tbody').children().size());
+            } catch (error){
+                ///showErrorMessage("Media error", error);
+            }
+        }, "MediaService.getCurrentMedia");
+        pidomeRPCSocket.addCallback(function(thingy) {
+            try {
+                var playerId = thingy.params.id;
+                if(thingy.params.command==="STOP"){
+                    $("#player_"+playerId+"_title").html("Nothing playing");
+                    $("#player_"+playerId+"_artist").html("");
+                    $("#player_"+playerId+"_album").html("");
+                    updateTableData(playerId, 'Playing', "Nothing playing");                    
+                }
+            } catch (error){
+                ///showErrorMessage("Media error", error);
+            }
+        }, "MediaService.playerCommand");
+        pidomeRPCSocket.addCallback(function(thingy) {
+            try {
+                var playerId = thingy.params.id;
+                $('#mediaplaylistplaylist table tbody').empty();
+                updateTableData(playerId, 'Playlist', 0);
+            } catch (error){
+                ///showErrorMessage("Media error", error);
+            }
+        }, "MediaService.playlistCleared");
+        pidomeRPCSocket.addCallback(function(thingy) {
+            try {
+                var playerId = thingy.params.id;
+                var img = "";
+                if(thingy.params.itemtype==="AUDIO"){
+                    img = '<img height="25" src="../shared/images/icons/media/audio.png" alt="Audio" />';
+                } else if(thingy.params.itemtype==="VIDEO"){
+                    img = '<img height="25" src="../shared/images/icons/media/video.png" alt="Video" />';
+                }else if(thingy.params.itemtype==="VIDEO"){
+                    img = '<img height="25" src="../shared/images/icons/media/pvr.png" alt="PVR" />';
+                }
+                $('#mediaplaylistplaylist table tbody').append(
+                        '<tr id="player_'+playerId+'_item_'+thingy.params.pos+'">'+
+                            '<td align="center" style="width:36px;">'+
+                                img +
+                            '</td>' +
+                            '<td style="width:478px;">'+thingy.params.title+'</td>'+
+                            '<td style="width:90px;">'+
+                                '<button style="float: left;" class="mediacontrol enabled" value="PlayerCommand.PLAYLISTITEM||'+thingy.params.pos+'||'+thingy.params.playlist+'||'+thingy.params.itemtype+'"><img src="../shared/images/icons/media/play.png" alt="Play" /></button>'+
+                                ((thingy.params.itemtype!=="PVR")?'<button style="float: left;" class="mediacontrol enabled" value="PlaylistCommand.REMOVE||'+thingy.params.pos+'||'+thingy.params.playlist+'"><img src="../shared/images/icons/media/delete.png" alt="Delete" /></button>':'')+
+                            '</td>'+
+                        '</tr>'
+                );      
+                $('#player_'+playerId+'_item_'+thingy.params.pos + ' button').jqxButton({ width: 30,height: 25, theme: siteSettings.getTheme()});
+                $('#player_'+playerId+'_item_'+thingy.params.pos + ' button').on('click', function () {
+                        var itemWorkWith = $("#" + $( this ).attr("id")).attr("value");
+                        if(itemWorkWith.startsWith("PlayerCommand.PLAYLISTITEM")){
+                            var splittedWork = itemWorkWith.split("||");
+                            $.get("/mediaExecutor.json?mediaid=" + $( "#mediaid" ).val() + "&action=PlayerCommand.PLAYLISTITEM&itemid=" + splittedWork[1] + "&playlistid=" + splittedWork[2] + "&type=" + splittedWork[3]) 
+                                .done(function(data) {
+                                });
+                        } else if(itemWorkWith.startsWith("PlaylistCommand.REMOVE")){
+                            var splittedWork = itemWorkWith.split("||");
+                            $.get("/mediaExecutor.json?mediaid=" + $( "#mediaid" ).val() + "&action=PlaylistCommand.REMOVE&itemid=" + splittedWork[1] + "&playlistid=" + splittedWork[2]) 
+                                .done(function(data) {
+                                });
+                        }
+                });
+                updateTableData(playerId, 'Playlist', $('#mediaplaylistplaylist table tbody').children().size());
+            } catch (error){
+                ///showErrorMessage("Media error", error);
+            }
+        }, "MediaService.addPlaylistItem");
+        
+        pidomeRPCSocket.addCallback(function(thingy) {
+            try {
+                var playerId = thingy.params.id;
+                $('#player_'+playerId+'_item_'+thingy.params.pos).remove();
+                updateTableData(playerId, 'Playlist', $('#mediaplaylistplaylist table tbody').children().size());
+                /// After the removeal the position id's change on the server, need to reflect this in the displayed items so the correct items will be played/removed after a removal on the server.
+                /// Get all the children
+                $('#mediaplaylistplaylist table tbody').children().each(function(){
+                    //// check if the id is higher then the removed id (position)
+                    var curPos = parseInt($(this).attr("id").split("_")[3]);
+                    if(curPos>thingy.params.pos){
+                        /// Id is higher, so the used playlist positions should be a position lower.
+                        $('#'+$(this).attr("id")+' button').each(function(){
+                            var itemWorkWith = $("#" + $( this ).attr("id")).attr("value").split('||');
+                            $("#" + $( this ).attr("id")).attr("value", itemWorkWith[0] + '||' + (parseInt(itemWorkWith[1])-1) + '||' + itemWorkWith[2]);
+                        });
+                        $(this).attr("id", 'player_'+playerId+'_item_'+(curPos-1));
+                    }
+                });
+            } catch (error){
+                showErrorMessage("Media error", error);
+            }
+        }, "MediaService.removePlaylistItem");
+        
+        
+        <#if _GET.mediaLink??>
+            showMediaItem(${_GET.mediaLink});
+        </#if>
+        
+    });
+    
+    function clearHandlers(){
+        $("#devicecontent").jqxPanel('destroy');
+        $("#devicetable").jqxDataTable('destroy');
+        $("#mediapanel").jqxSplitter('destroy');
+    }
+    
+</script>

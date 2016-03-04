@@ -1,0 +1,169 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(4, "page_com_customdevices", "${page_title}", "/desktop/communitydevices.html");
+    });
+</script>
+<p class="defaultcontent">
+    On this page you can search for new or updated community created devices. Currently this is read only and quite empty.
+</p>
+<div class="defaultcontent" id="customdevicessearchform" style="width: 978px; line-height: 25px;">
+    <div class="nvp" style="float:left; width: 350px;">
+        <div class="n" style="width: 75px;">
+            <label for="customdevicename">Name</label>
+        </div>
+        <div class="v" style="float:left; width: 225px;">
+            <input type="text" name="customdevicename" id="customdevicename" />
+        </div>
+    </div>
+    <div class="nvp" style="float:left; width: 400px;">
+        <div class="n" style="width: 75px;">
+            <label for="customdevicedriver">Driver</label>
+        </div>
+        <div class="v">
+            <div name="customdevicedriver" id="customdevicedriver"></div>
+        </div>
+    </div>
+    <div style="float:left;">
+        <input type="button" name="customdevicesearch" id="customdevicesearch" value="Search" />
+    </div>
+    <div style="clear: both;"></div>
+</div>
+<div id="communitydevicespanel">
+    <div class="splitter-panel">
+        <table id="communitydevicetable">
+            <thead>
+                <tr>
+                    <th align="left">Id</th>
+                    <th align="left">Name</th>
+                    <th align="left">Version</th>
+                    <th align="left">Sequence</th>
+                    <th align="left">Updated</th>
+                    <th align="left">Driverid</th>
+                    <th align="left">Needs driver</th>
+                    <th align="left">Relies on package</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="splitter-panel">
+        <div id="communitydevicecontent" style="padding-left:5px;"></div>
+  
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    
+    var globalSearchName     = "blinkm";
+    var globalSearchDriverId = "NATIVE_PIDOMEI2C_DRIVER";
+    
+    var communityDevicesSearchResultSource = {
+        datatype: "json",
+        datafields: [
+            { name: 'deviceid', type: 'string'},
+            { name: 'devicename', type: 'string'},
+            { name: 'deviceversion', type: 'string'},
+            { name: 'devicesequence', type: 'int'},
+            { name: 'devicedate', type: 'string'},
+            { name: 'driverid', type: 'string'},
+            { name: 'drivername', type: 'string'},
+            { name: 'packageversionname', type: 'string'},
+            { name: 'packagesequence', type: 'int'},
+            { name: 'packagename', type: 'string'}
+        ],
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PlatformService.searchCustomDevices", "params": {"devicename": "'+globalSearchName+'", "driverid":"'+globalSearchDriverId+'"}, "id":"PlatformService.searchCustomDevices"}',
+        root: "result>data"
+    };
+    
+    $(document).ready(function () {
+        
+        createWebInputField($("#customdevicename"), 225);
+        
+        var allDriversSource = {
+            datatype: "json",
+            datafields: [
+                { name: 'driverid', type: 'string'},
+                { name: 'name', type: 'string'},
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "HardwareService.getPeripheralSoftwareDriversForCustomDevices", "id":"HardwareService.getPeripheralSoftwareDriversForCustomDevices"}',
+            root: "result>data"
+        };
+        var communityDevicesSearchDrivers = new $.jqx.dataAdapter(allDriversSource);
+        
+        $("#customdevicedriver").jqxDropDownList({
+            source: communityDevicesSearchDrivers, selectedIndex: 0, displayMember: "name", valueMember: "driverid", width: 300, height: 25, theme: siteSettings.getTheme()
+        });
+        
+        var communityDevicesSearchResultData = new $.jqx.dataAdapter(communityDevicesSearchResultSource);
+        
+        $("#communitydevicecontent").jqxPanel({ width: 640, height: 658, autoUpdate: true, sizeMode: "fixed", theme: siteSettings.getTheme()}); 
+        $('#communitydevicespanel').jqxSplitter({ width: 1000, height: 660,  panels: [{ size: 375, collapsible: false }, { size: 625, collapsed: true }], theme: siteSettings.getTheme() });
+        $("#communitydevicetable").jqxDataTable({ source: communityDevicesSearchResultData, selectionMode: "singleRow", height: 660, width: 995, sortable: true, pageable: true, pageSize: 15, pagerButtonsCount: 5, theme: siteSettings.getTheme(),
+            groupsRenderer: function(value, rowData, level){
+                return "Location: " + value;
+            },
+            columns: [
+                {text: 'Id', dataField: 'deviceid', hidden: true},
+                {text: 'Name', dataField: 'devicename'},
+                {text: 'Version', dataField: 'deviceversion', width:100},
+                {text: 'Sequence', dataField: 'devicesequence', hidden:true},
+                {text: 'Updated', dataField: 'devicedate', width:120},
+                {text: 'Driverid', dataField: 'driverid', hidden: true},
+                {text: 'Needs driver', dataField: 'drivername', width:200},
+                {text: 'Relies on package', dataField: 'packagename', width:200}
+            ]
+        });
+        $("#customdevicesearch").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+        $("#customdevicesearch").off('click');
+        $("#customdevicesearch").on('click', function () {
+            globalSearchDriverId = $("#customdevicedriver").val();
+            globalSearchName     = $("#customdevicename").val();
+            communityDevicesSearchResultSource.url = '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PlatformService.searchCustomDevices", "params": {"devicename": "'+globalSearchName+'", "driverid":"'+globalSearchDriverId+'"}, "id":"PlatformService.searchCustomDevices"}';
+            communityDevicesSearchResultData.dataBind();
+        });
+        $("#communitydevicetable").on('rowClick', function (event) {
+            var args = event.args;
+            var row = args.row;
+            openComunityDevice(row);
+        });
+    });
+    function openComunityDevice(set){
+        $('#communitydevicespanel').jqxSplitter('expand');
+        clearInternalWidgetHandlers("#communitydevicecontent");
+        $("#communitydevicecontent").empty();
+        var url = '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getCleanCustomDevice", "params": {"id":"' + set.deviceid + '"} "id":"DeviceService.getCleanCustomDevice"}';
+        $.get(url).done(function(data) {
+            try {
+                var deviceData = data.result.data;
+                $("#communitydevicecontent").append('<h2 class="whiteheader" style="border-bottom: 1px solid #007acc;">'+deviceData.friendlyname+'</h2>');
+                if(deviceData!=undefined){
+                    $("#communitydevicecontent").append(
+                            '<table><tr><td>Status</td><td>: '+((deviceData.defsequence==set.devicesequence)?'Your current version is up to date':((deviceData.defsequence>set.devicesequence)?'Your device is newer then the online version, If you have modified it, let the original author know so he/she can follow up if needed.':'Your current device is not up to date. features to update will be added shortly.'))+'</td></tr>' +
+                            '<tr><td>Current Version</td><td>: '+deviceData.defsequence+'</td></tr>' +
+                            '<tr><td>Remote  Version</td><td>: '+set.devicesequence+'</td></tr></table>'
+                    );
+                } else {
+                    $("#communitydevicecontent").append(
+                        '<p>You do not have this device, Click install to be able to use this device. If there are additional packages needed you will be notified about this (work in progress).</p>'
+                    );
+                }
+                $("#communitydevicecontent").append('<h3 class="whiteheader" style="border-bottom: 1px solid #007acc;">Additional info</h3>'+
+                   '<table><tr><td>Driver</td><td>: '+set.drivername+'</td></tr>' + 
+                   '<tr><td>Package</td><td>: '+set.packagename+'</td></tr>'+
+                   '<tr><td>Package version</td><td>: '+set.packageversionname+', '+((set.packagesequence==deviceData.packagesequence)?'up to date':'Upgrade needed')+' ('+set.packagesequence+')</td></tr></table>'
+                );
+            } catch (err){
+                alert(err);
+            }
+        });
+                
+    }
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

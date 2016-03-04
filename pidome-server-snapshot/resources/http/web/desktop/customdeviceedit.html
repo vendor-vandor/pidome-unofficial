@@ -1,0 +1,1268 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script>
+$(document).ready(function () {    
+    setPageBreadcrumbs(2, "page_customdevices", "Custom devices", "/desktop/customdeviceslist.html", "Add/Edit custom device");
+});
+</script>
+<div style="display:none;">
+    <input type="hidden" name="driver_driver" id="driver_driver" value="" />
+    <input type="hidden" name="package" id="package" value="" />
+    <input type="hidden" name="name" id="name" value="" />
+    <input type="text" name="friendlyname" id="friendlyname" value="" />
+</div>
+<div class="row" style="width:1120px;">
+    <div class="col-lg-12">
+        <div class="row">
+            <div class="col-lg-12 contentfield roundedcorners">
+                <div class="row">
+                    <div class="col-lg-9">
+                        <h2 style="margin:0px;padding:0px;">Device information</h2>
+                    </div>
+                    <div class="col-lg-3">
+                        <button id="showJSON" class="btn btn-info" style="float:right;">Show device JSON source</button><div style="clear:both;"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p class="bg-warning" id="devicecreationdevicetyperemark" style="padding: 9px; border-radius: 3px; margin-top: 10px; margin-bottom:10px; display:none;">
+                            You are editing a cloned device, make sure to at least rename it to avoid confusion! When this device is saved it will be added as a new custom device.
+                        </p>
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="driver" class="col-lg-3 control-label">Driver/Plugin name</label>
+                                <div class="col-lg-9">
+                                    <#if device?? && !_GET.cloneFrom??>
+                                    ${device.driver}<br/>
+                                    <#else>
+                                    <select class="form-control" id="driver" onchange="changeDriverDriver();" style="color: #000;">
+
+                                    </select>
+                                    </#if>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="visual_name" class="col-lg-3 control-label">Device name</label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" id="visual_name" placeholder="Enter device name" value="" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="visual_name-gen" class="col-lg-3 control-label">Generated id</label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control" id="visual_name-gen" placeholder="Auto generated id" value="" readonly="readonly" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="visual_description" class="col-lg-3 control-label">Description</label>
+                                <div class="col-lg-9">
+                                    <textarea id="visual_description" rows="6" cols="100" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 contentfield roundedcorners" style="margin-top: 30px;">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2>Device editor</h2>
+                        <p>This is where the magic happens. Create device actions or device data reading fields. Also, here you also define how devices are displayed in clients. Device components can only exist in groups.<br/>
+                           With groups you can define which sort of actions belong together. In this way you can split up color actions, settings actions or just an on/off section. You need at least one group.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-2">
+                        <h3>Components</h3>
+                        <div id="deviceActionsMenu">
+                            <ul id="vis-selectComponents">
+                                <li id="vis-addGroup" class="ui-state-default vis-addGroup">Add group</li>
+                                <li id="vis-addData" class="ui-state-default vis-addItem">Add data field</li>
+                                <li id="vis-addSelect" class="ui-state-default vis-addItem">Add select field</li>
+                                <li id="vis-addButton" class="ui-state-default vis-addItem">Add single button</li>
+                                <li id="vis-addToggleButton" class="ui-state-default vis-addItem">Add toggle button</li>
+                                <li id="vis-addSlider" class="ui-state-default vis-addItem">Add slider</li>
+                                <li id="vis-addColorPicker" class="ui-state-default vis-addItem">Add color picker</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-10">
+                        <h3>Device structure</h3>
+                        <div id="deviceActionsComposer" class="well well-sm" style="background-color:transparent;">
+                            <div id="devicecontent" class="deviceActionsField">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 contentfield roundedcorners" style="margin-top: 30px;" id="deviceOptionsData">
+                <h2>Device options settings</h2>
+                <p>
+                    <b>First of all, you probably do not need this unless you have coded for it, or read you need it.</b><br/>
+                    Here you can add/remove/change device options for your device. These options are available in the device java code and shown to the
+                    user when he/she wants to add a device.<br/>
+                    <br/>
+                    When the device created uses automatic sending of data, and the options are needed as part of the data to be send you can
+                    use the order field to set the order in which the data is begin send. An order index of 0 means disabled/not used.
+                    Refer to the wiki and/or device information for more information about the options order.</p>
+                <div id="vis-options-data" style="margin-top: 5px;">
+
+                </div>
+                <div style="clear:both;"></div>
+                <div style="width:100%; border-top:1px solid #d56909; margin-top:10px; padding-top:5px;">
+                    <button style="float:right;" class="btn btn-info" id="vis-add-input-option">Add an input option</button>
+                    <button style="float:right; margin-right: 5px;" class="btn btn-info" id="vis-add-select-option">Add a selection option</button>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 contentfield roundedcorners" style="margin-top: 30px;" id="deviceLocData">
+                <h2>Device location settings</h2>
+                <p>Here you can edit the location data information. This address is used to identify a device on a data bus/Sensor network etc.. The address of a lamp or other device somewhere. If there is no address used select not used.</p>
+                <div id="deviceLocationEditor">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                            <label for="visual_address-label" class="col-lg-3 control-label">Label</label>
+                            <div class="col-lg-9">
+                                <input type="text" class="form-control" id="visual_address-label" placeholder="Label for address" value="" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="visual_location_type" class="col-lg-3 control-label">Address type</label>
+                            <div class="col-lg-9">
+                                <select class="form-control" id="visual_location_type">
+                                    <option value="string">String</option>
+                                    <!-- <option value="integer">Number</option> -->
+                                    <option value="hex">Hexadecimal</option>
+                                    <option value="false">Not used</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="visual_address_description" class="col-lg-3 control-label">Description</label>
+                            <div class="col-lg-9">
+                                <textarea id="visual_address_description" rows="6" cols="100" class="form-control"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="clear:both;"></div>
+            </div>
+        </div>
+        
+        <div style="margin:10px;">
+            <#if device?? && !_GET.cloneFrom??>
+                <button value="editDevice" class="saveDevice btn btn-success" id="editDevice" name="editDevice" style="margin-top: 10px;" onclick="return false;">Update device</button>
+            <#else>
+                <button value="newDevice" class="saveDevice btn btn-success" id="newDevice" name="newDevice" style="margin-top: 10px;" onclick="return false;">Save new device</button>
+            </#if>
+        </div>
+    </div>
+</div>
+
+<!-- ask for deletion -->
+<div id="dialog-deleteconfirm" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Delete item</h4>
+            </div>
+            <div class="modal-body">
+                <div>
+                    Are you sure you want to delete <span id="delete-itemname" style="font-weight: bold;"></span>?
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="delete-ok">Delete item</button>
+                <button type="button" class="btn btn-info" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- group edit -->
+<div id="dialog-groupedit" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit group</h4>
+            </div>
+            <div class="modal-body" id="groupeditcontent">
+                <p>Edit the group here. The group id should be or conform the device you are adding or if you are programming your own device for the server the id used here will
+                    help you get the group in the source code.</p>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="groupeditid" class="col-lg-3 control-label">Group id</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control nospaces alphanumericset" id="groupeditid" placeholder="Group id" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="groupeditname" class="col-lg-3 control-label">Group name</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="groupeditname" placeholder="Visual name" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="groupedit-ok">Save changes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- data control edit -->
+<div id="dialog-controldataedit" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit data control</h4>
+            </div>
+            <div class="modal-body">
+                <h2>Data</h2>
+                <p>The data control is used for displaying different kinds of data, but can also be used to create graphs and trigger items to be executed.</p>
+                <p>The control id should be setup as the device requires or if you create your own device this id can be used in the code to retrieve this control</p>
+                <p>By default a data control is read only, meaning it can only show data from devices, set to false to be able to use a data control to send data to devices.</p>
+                <h3>Settings</h3>
+                <p>When a control field is hidden it is not shown in interfaces. This can be handy when a data field is only meant to be used within code or privately with plugins.</p>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="data_control_id" class="col-lg-3 control-label">Control id</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control nospaces alphanumericset" id="data_control_id" placeholder="Control id" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_description" class="col-lg-3 control-label">Control name</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="data_control_description" placeholder="Visual name" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_modifier" class="col-lg-3 control-label">Allow modifiers/suppliers</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="data_control_modifier">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_datatype" class="col-lg-3 control-label">Data type</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="data_control_datatype">
+                                <option value="string">String</option>
+                                <option value="integer">Integer</option>
+                                <option value="boolean">Boolean</option>
+                                <option value="float">Float</option>
+                                <option value="hex">Hexadecimal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_graph" class="col-lg-3 control-label">Data graph</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="data_control_graph">
+                                <option value="none">No graph</option>
+                                <option value="time-series">Time series (averages)</option>
+                                <option value="time-totals">Time totals (absolute)</option>
+                                <option value="time-log">Time logarithmic series</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_hidden" class="col-lg-3 control-label">Hidden</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="data_control_hidden">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_retention" class="col-lg-3 control-label">Remember last value</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="data_control_retention">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_readonly" class="col-lg-3 control-label">Read only</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="data_control_readonly">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_extra" class="col-lg-3 control-label">Control extra</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="data_control_extra" placeholder="Extra value" />
+                        </div>
+                    </div>
+                    <script>
+                        $(document).ready(function(){
+                            $("#data_control_datatype").change(function() {
+                                $(".databooloptions").hide();
+                                $(".numthresholds").hide();
+                                switch($( this ).val()){
+                                    case "integer":
+                                    case "float":
+                                        $(".numthresholds").show();
+                                    break;
+                                    case "boolean":
+                                        $(".databooloptions").show();
+                                    break;
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+                <h3>Features</h3>
+                <p>Features are options which are not required and depend on support of these in clients. The PiDome clients support all features by default</p>
+                <p>Prefix and suffix are used to display data before or after the data being displayed.</p>
+                <p class="numthresholds">Min, Max, Warning and High values are used to determine the lowest and highest possible values and when warning or too high values are reached. When these are filled in we can show some nice graphical stuff. Leave empty to disable this functionality</p>
+                <p class="databooloptions">Boolean options give you the possibility to visualize a true/false on/off data read out. This can be color, text or a combination of these.</p>
+                <p>Data timeout is used to provide a visual notification when data has not been received in a certain amount of time in seconds. Timeout * 1 = warning, TimeOut * 3 presumes offline. When multiple timeouts are set, the longest time out set will be used for possible offline determination. Timeout "0" disables this function.</p>
+                <p>The below Representation is used in the PiDome client so it can display one of these types in the visual floor map. The shortcut is used in device overview displays so a device can be controlled without actually open it.</p>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="data_control_prefix" class="col-lg-3 control-label">Label prefix</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="data_control_prefix" placeholder="Prefix" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_suffix" class="col-lg-3 control-label">Label suffix</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="data_control_suffix" placeholder="Suffix" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_timeout" class="col-lg-3 control-label">Data timeout</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control numericset" id="data_control_timeout" placeholder="Seconds" value="0" />
+                        </div>
+                    </div>
+                    <div class="form-group databooloptions">
+                        <label for="data_control_boolvis" class="col-lg-3 control-label">Visual type</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="data_control_boolvis">
+                                <option value="text">Text</option>
+                                <option value="color">Color</option>
+                                <option value="text-color">Text and color</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group databooloptions">
+                        <label for="data_control_falsetext" class="col-lg-3 control-label">False/Off text</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="data_control_falsetext" placeholder="Maximal" value="0" />
+                        </div>
+                    </div>
+                    <div class="form-group databooloptions">
+                        <label for="data_control_truetext" class="col-lg-3 control-label">True/On text</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="data_control_truetext" placeholder="Warning" value="0" />
+                        </div>
+                    </div>
+                    <div class="form-group numthresholds">
+                        <label for="data_control_minvalue" class="col-lg-3 control-label">Min value</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control" id="data_control_minvalue" placeholder="Minimal" value="0" />
+                        </div>
+                    </div>
+                    <div class="form-group numthresholds">
+                        <label for="data_control_maxvalue" class="col-lg-3 control-label">Max value</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control numericset" id="data_control_maxvalue" placeholder="Maximal" value="0" />
+                        </div>
+                    </div>
+                    <div class="form-group numthresholds">
+                        <label for="data_control_warnvalue" class="col-lg-3 control-label">Warning value</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control numericset" id="data_control_warnvalue" placeholder="Warning" value="0" />
+                        </div>
+                    </div>
+                    <div class="form-group numthresholds">
+                        <label for="data_control_highvalue" class="col-lg-3 control-label">High value</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control numericset" id="data_control_highvalue" placeholder="High" value="0" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_shortcut" class="col-lg-3 control-label">Shortcut position</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="data_control_shortcut">
+                                <option value="0">None</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_control_visual" class="col-lg-3 control-label">Representation</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="data_control_visual">
+                                <option value="none">None</option>
+                                <option value="luxlevel">Light (Lux)</option>
+                                <option value="lightpercentage">Light (%)</option>
+                                <option value="temperature">Temperature (°C)</option>
+                                <option value="temperatureF">Temperature (°F)</option>
+                                <option value="humidity">Humidity</option>
+                                <option value="pressure">Pressure</option>
+                                <option value="fluid">Fluids/Rain/Water</option>
+                                <option value="wind">Wind (speed/gusts/etc.)</option>
+                                <option value="movement">Movement</option>
+                                <option value="battery">Battery level (0-100%)</option>
+                                <option value="pcvalue">Computer value (load/ram/etc.)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="controldataedit-ok">Save changes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Button control edit -->
+<div id="dialog-controlbuttonedit" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit button control</h4>
+            </div>
+            <div class="modal-body">
+                <h2>Button</h2>
+                <p>The button control is a single action that can be taken, if you want to switch something like on/off or up/down etc. then use a toggle button.</p>
+                <p>The control id should be setup as the device requires or if you create your own device this id can be used in the code to retrieve this control</p>
+                <h3>Settings</h3>
+                <p>When a control field is hidden it is not shown in interfaces. This can be handy when a data field is only meant to be used within code.</p>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="button_control_id" class="col-lg-3 control-label">Control id</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control nospaces alphanumericset" id="button_control_id" placeholder="Control id" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="button_control_description" class="col-lg-3 control-label">Short button description</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="button_control_description" placeholder="Descriptive name" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="button_control_modifier" class="col-lg-3 control-label">Allow modifiers/suppliers</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="button_control_modifier">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="button_control_datatype" class="col-lg-3 control-label">Data type</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="button_control_datatype">
+                                <option value="string">String</option>
+                                <option value="integer">Integer</option>
+                                <option value="boolean">Boolean</option>
+                                <option value="float">Float</option>
+                                <option value="hex">Hexadecimal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="button_control_label" class="col-lg-3 control-label">Button label</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control nospaces alphanumericset" id="button_control_label" placeholder="Text on button" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="button_control_value" class="col-lg-3 control-label">Button value</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="button_control_value" placeholder="Value to send" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="button_control_hidden" class="col-lg-3 control-label">Hidden</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="button_control_hidden">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="button_control_extra" class="col-lg-3 control-label">Control extra</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="button_control_extra" placeholder="Extra value" />
+                        </div>
+                    </div>
+                </div>
+                <h3>Features</h3>
+                <p>Features are options which are not required and depend on support of these in clients. The PiDome clients support all features by default</p>
+                <p>The shortcut is used in device overview displays so a device can be controlled without actually open it.</p>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="button_control_shortcut" class="col-lg-3 control-label">Shortcut position</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="button_control_shortcut">
+                                <option value="0">None</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="controlbuttonedit-ok">Save changes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Select field control edit -->
+<div id="dialog-controlselectedit" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit select control</h4>
+            </div>
+            <div class="modal-body">
+                <h2>Select</h2>
+                <p>The select control is a single action that can be taken, a list of options is presented and on selection the selected value is send to the server.</p>
+                <p>The control id should be setup as the device requires or if you create your own device this id can be used in the code to retrieve this control</p>
+                <h3>Settings</h3>
+                <p>When a control field is hidden it is not shown in interfaces. This can be handy when a data field is only meant to be used within code.</p>
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="select_control_id" class="col-lg-3 control-label">Control id</label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control nospaces alphanumericset" id="select_control_id" placeholder="Control id" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="select_control_description" class="col-lg-3 control-label">Short button description</label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control alphanumericset" id="select_control_description" placeholder="Descriptive name" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="select_control_modifier" class="col-lg-3 control-label">Allow modifiers/suppliers</label>
+                                <div class="col-lg-9">
+                                    <select class="form-control" id="select_control_modifier">
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="select_control_datatype" class="col-lg-3 control-label">Data type</label>
+                                <div class="col-lg-9">
+                                    <select class="form-control" id="select_control_datatype">
+                                        <option value="string">String</option>
+                                        <option value="integer">Integer</option>
+                                        <option value="boolean">Boolean</option>
+                                        <option value="float">Float</option>
+                                        <option value="hex">Hexadecimal</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="select_control_hidden" class="col-lg-3 control-label">Hidden</label>
+                                <div class="col-lg-9">
+                                    <select class="form-control" id="select_control_hidden">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="select_control_extra" class="col-lg-3 control-label">Control extra</label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control alphanumericset" id="select_control_extra" placeholder="Extra value" />
+                                </div>
+                            </div>
+                        </div>
+                        <h3>Features</h3>
+                        <p>Features are options which are not required and depend on support of these in clients. The PiDome clients support all features by default</p>
+                        <p>The shortcut is used in device overview displays so a device can be controlled without actually open it.</p>
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="select_control_shortcut" class="col-lg-3 control-label">Shortcut position</label>
+                                <div class="col-lg-9">
+                                    <select class="form-control" id="button_control_shortcut">
+                                        <option value="0">None</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="defaultcontent" style="padding-top:0px;">
+                            <div style="width:249px;float:left;">
+                                <h3>Select list <span style="cursor:pointer;float:right;" onclick="createSelectItem('Set', 'set');"><img src="/shared/images/deviceeditor/plus-2x.png" class="cpickerAddButtonAction" alt="Add item"/></span></h3>
+                                <div id="selectfielditemslist">
+
+                                </div>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="controlselectedit-ok">Save changes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<!-- Toggle control -->
+<div id="dialog-controltoggleedit" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit toggle button control</h4>
+            </div>
+            <div class="modal-body">
+                <h2>Toggle button</h2>
+                <p>The toggle button is used mainly in opposite purpose actions. In short: On/Off,Up/Down,True/False etc...</p>
+                <p>The control id should be setup as the device requires or if you create your own device this id can be used in the code to retrieve this control</p>
+                <h3>Settings</h3>
+                <p>When a control field is hidden it is not shown in interfaces. This can be handy when a data field is only meant to be used within code.</p>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="toggle_control_id" class="col-lg-3 control-label">Control id</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control nospaces alphanumericset" id="toggle_control_id" placeholder="Control id" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="toggle_control_description" class="col-lg-3 control-label">Short toggle description</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="toggle_control_description" placeholder="Descriptive name" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="toggle_control_modifier" class="col-lg-3 control-label">Allow modifiers/suppliers</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="toggle_control_modifier">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="toggle_control_datatype" class="col-lg-3 control-label">Data type</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="toggle_control_datatype">
+                                <option value="string">String</option>
+                                <option value="integer">Integer</option>
+                                <option value="boolean">Boolean</option>
+                                <option value="float">Float</option>
+                                <option value="hex">Hexadecimal</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="toggle_control_on_label" class="col-lg-3 control-label">Button On/up/true label</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="toggle_control_on_label" placeholder="Text on button" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="toggle_control_on_value" class="col-lg-3 control-label">Button On/up/true value</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="toggle_control_on_value" placeholder="Value to send" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="toggle_control_off_label" class="col-lg-3 control-label">Button Off/down/false label</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="toggle_control_off_label" placeholder="Text on button" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="toggle_control_off_value" class="col-lg-3 control-label">Button Off/down/false value</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="toggle_control_off_value" placeholder="Value to send" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="button_control_hidden" class="col-lg-3 control-label">Hidden</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="button_control_hidden">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="toggle_control_retention" class="col-lg-3 control-label">Remember last state</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="toggle_control_retention">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="toggle_control_extra" class="col-lg-3 control-label">Control extra</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="toggle_control_extra" placeholder="Extra value" />
+                        </div>
+                    </div>
+                </div>
+                <h3>Features</h3>
+                <p>Features are options which are not required and depend on support of these in clients. The PiDome clients support all features by default</p>
+                <p>The shortcut is used in device overview displays so a device can be controlled without actually open it.</p>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="toggle_control_shortcut" class="col-lg-3 control-label">Shortcut position</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="toggle_control_shortcut">
+                                <option value="0">None</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="controltoggleedit-ok">Save changes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Slider control -->
+<div id="dialog-controlslideredit" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit slider control</h4>
+            </div>
+            <div class="modal-body">
+                <h2>Slider</h2>
+                <p>The slider control is used to let an user select between a numeric range. Handy for dimmers etc..</p>
+                <p>The control id should be setup as the device requires or if you create your own device this id can be used in the code to retrieve this control</p>
+                <h3>Settings</h3>
+                <p>When a control field is hidden it is not shown in interfaces. This can be handy when a data field is only meant to be used within code.</p>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="slider_control_id" class="col-lg-3 control-label">Control id</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control nospaces alphanumericset" id="slider_control_id" placeholder="Control id" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="slider_control_description" class="col-lg-3 control-label">Slider description</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="slider_control_description" placeholder="Descriptive name" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="slider_control_modifier" class="col-lg-3 control-label">Allow modifiers/suppliers</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="slider_control_modifier">
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="slider_control_datatype" class="col-lg-3 control-label">Data type</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="slider_control_datatype">
+                                <option value="integer">Integer</option>
+                                <option value="float">Float</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="slider_control_min_value" class="col-lg-3 control-label">Slider min value</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control numericset" id="slider_control_min_value" placeholder="Minimal value" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="slider_control_max_value" class="col-lg-3 control-label">Slider max value</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control numericset" id="slider_control_max_value" placeholder="Maximum value" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="slider_control_hidden" class="col-lg-3 control-label">Hidden</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="slider_control_hidden">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="slider_control_retention" class="col-lg-3 control-label">Remember last value</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="slider_control_retention">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="slider_control_extra" class="col-lg-3 control-label">Control extra</label>
+                        <div class="col-lg-9">
+                            <input type="text" class="form-control alphanumericset" id="slider_control_extra" placeholder="Extra value" />
+                        </div>
+                    </div>
+                </div>
+                <h3>Features</h3>
+                <p>Features are options which are not required and depend on support of these in clients. The PiDome clients support all features by default</p>
+                <p>The shortcut is used in device overview displays so a device can be controlled without actually open it.
+                   Be aware that the slider takes up 2 positions in the PiDome client which makes position 3 unavailable</p>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label for="slider_control_shortcut" class="col-lg-3 control-label">Shortcut position</label>
+                        <div class="col-lg-9">
+                            <select class="form-control" id="slider_control_shortcut">
+                                <option value="0">None</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="controlslideredit-ok">Save changes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<!-- Color picker control -->
+<div id="dialog-colorpickeredit" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Edit color picker control</h4>
+            </div>
+            <div class="modal-body">
+                <h2>Color picker</h2>
+                <p>The color picker is a special control which allows to select a color and perform an action based on that color based on buttons with arbitrary set commands.</p>
+                <p>The control id should be setup as the device requires or if you create your own device this id can be used in the code to retrieve this control. This control
+                   uses an extra value which is the value set at an action button.</p>
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="colorpicker_control_id" class="col-lg-3 control-label">Control id</label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control nospaces alphanumericset" id="colorpicker_control_id" placeholder="Control id" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="colorpicker_control_description" class="col-lg-3 control-label">Color picker description</label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control alphanumericset" id="colorpicker_control_description" placeholder="Descriptive name" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="colorpicker_control_modifier" class="col-lg-3 control-label">Allow modifiers/suppliers</label>
+                                <div class="col-lg-9">
+                                    <select class="form-control" id="colorpicker_control_modifier">
+                                        <option value="true">Yes</option>
+                                        <option value="false">No</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="colorpicker_control_mode" class="col-lg-3 control-label">Color mode</label>
+                                <div class="col-lg-9">
+                                    <select class="form-control" id="colorpicker_control_mode">
+                                        <option value="hsb">HSB</option>
+                                        <option value="rgb">RGB</option>
+                                        <option value="cie">CIE</option>
+                                        <!-- <option value="kelvin">Kelvin model (N/A)</option> -->
+                                        <!-- <option value="whites">Whites model (N/A)</option> -->
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="colorpicker_control_hidden" class="col-lg-3 control-label">Hidden</label>
+                                <div class="col-lg-9">
+                                    <select class="form-control" id="colorpicker_control_hidden">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="colorpicker_control_retention" class="col-lg-3 control-label">Remember last value</label>
+                                <div class="col-lg-9">
+                                    <select class="form-control" id="colorpicker_control_retention">
+                                        <option value="false">No</option>
+                                        <option value="true">Yes</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="colorpicker_control_extra" class="col-lg-3 control-label">Control extra</label>
+                                <div class="col-lg-9">
+                                    <input type="text" class="form-control alphanumericset" id="colorpicker_control_extra" placeholder="Extra value" />
+                                </div>
+                            </div>
+                        </div>
+                        <h3>Features</h3>
+                        <p>Features are options which are not required and depend on support of these in clients. The PiDome clients support all features by default</p>
+                        <p>The shortcut is used in device overview displays so a device can be controlled without actually open it.</p>
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="colorpicker_control_shortcut" class="col-lg-3 control-label">Shortcut position</label>
+                                <div class="col-lg-9">
+                                    <select class="form-control" id="colorpicker_control_shortcut">
+                                        <option value="0">None</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="defaultcontent" style="padding-top:0px;">
+                            <div style="width:249px;float:left;">
+                                <h3>Button actions <span style="cursor:pointer;float:right;" onclick="createcpickerButton('Set', 'set');"><img src="/shared/images/deviceeditor/plus-2x.png" class="cpickerAddButtonAction" alt="Add button"/></span></h3>
+                                <div id="colorpickerbuttonslist">
+
+                                </div>
+                            </div>
+                            <div style="clear:both;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="colorpickeredit-ok">Save changes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- The select option selection options window -->
+<div id="dialog-optionselect" style="display:none;" class="popupwindowshadow">
+    <div>
+        <span style="float:left;"><img width="16" height="16" src="/shared/images/deviceeditor/wrench-3x.png" alt="Delete" /></span>
+        &nbsp;Edit options for the Select option control
+    </div>
+    <div>
+        <div id="groupeditcontent" class="defaultcontent" style="padding-top:0px;">
+            <h2>Edit select options</h2>
+            <p>Edit your select options here. Added options will be displayed to the user as a select list.</p>
+            <h3>Selection list <span style="cursor:pointer;float:right;" onclick="createOptionSelectButton('Set', 'set');"><img src="/shared/images/deviceeditor/plus-2x.png" class="cpickerAddButtonAction" alt="Add button"/></span></h3>
+            <div id="optionselectlist" style="max-height:300px;overflow-y:auto;">
+                    
+            </div>
+            <div style="clear:both;"></div>
+        </div>
+        <div>
+            <div style="float: right; margin-top: 15px;">
+                <input type="button" id="optionselect-ok" value="OK" style="margin-right: 10px" />
+                <input type="button" id="optionselect-cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<#if device?? &&!_GET.cloneFrom??>
+<input type="hidden" name="editType" id="simpleDeviceEditType" value="edit" />
+<#else>
+<input type="hidden" name="editType" id="simpleDeviceEditType" value="new" />
+</#if>
+<div id="innerscrollmargin"></div>
+<link href="/shared/js/libs/jqueryui/css/base/jquery-ui.css" rel="stylesheet" />
+<script>
+    
+var globalCustomDevicesList;
+    
+function changeDriverDriver(){
+    var curVal = $("#driver").val();
+    $.each(globalCustomDevicesList, function(key, value) {
+        if(curVal === value.customdevicepath){
+            $("#driver_driver").val(value.id);
+            $("#package").val(value.package);
+            createEmptyDevice();
+        }
+    });
+}
+    
+$(document).ready(function () {
+   
+   $.getScript( "/shared/js/libs/highlight/highlight.pack.js", function( data, textStatus, jqxhr ) {
+       
+   });
+   
+    $.getScript( "/shared/js/sitelibs/customdeviceseditor.js", function( data, textStatus, jqxhr ) {
+
+        var deviceId = $.urlParam('device');
+        var cloneFromId = $.urlParam('cloneFrom');
+
+        var isClonedDevice = false;
+        var isEditDevice = false;
+        var isNewDevice = false;
+
+        if(deviceId!==null){
+            isEditDevice = true;
+        }else if(cloneFromId!==null){
+            isEditDevice = true;
+            isClonedDevice = true;
+        } else {
+            isNewDevice = true;
+        }
+
+        function getDeclaredDevices(currentDriver){
+            $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getDeclaredCustomDevices", "id":"DeviceService.getDeclaredCustomDevices"}', function(data){
+                globalCustomDevicesList = data.result.data;
+                var selectSet = $('#driver');
+                $.each(globalCustomDevicesList, function(key, value) {
+                    selectSet.append($("<option/>", {
+                        value: value.customdevicepath,
+                        text: value.friendlyname
+                    }));
+                });
+                if(typeof currentDriver !== "undefined"){
+                    selectSet.attr("disabled", "disabled");
+                    $.each(globalCustomDevicesList, function(key, value) {
+                        if(value.id==currentDriver){
+                            selectSet.val(value.customdevicepath);
+                        }
+                    });
+                } else {
+                    changeDriverDriver();
+                }
+            });
+        }
+
+        if(isEditDevice || isClonedDevice){
+            var getId;
+            if(isClonedDevice){
+                $("#devicecreationdevicetyperemark").show();
+                $("button.saveDevice").text("Save cloned device");
+                $("button.saveDevice").off('click').on("click", function (){
+                    saveCustomDevice(0);
+                });
+                getId = cloneFromId;
+            } else if(isEditDevice){
+                $("button.saveDevice").text("Update device");
+                $("button.saveDevice").off('click').on("click", function (){
+                    saveCustomDevice(deviceId);
+                });
+                getId = deviceId;
+            }
+            getHttpJsonRPC('{"jsonrpc": "2.0", "method": "DeviceService.getDeviceSkeleton", "params": {"id":'+getId+'}, "id": "DeviceService.getDeviceSkeleton"}', function(data){
+                $("#driver_driver").val(data.driver_driver);
+                $("#package").val(data.package);
+                if(isClonedDevice){
+                    $("#name").val("Clonefrom"+data.name);
+                    $("#visual_name").val("Clone from: " + data.friendlyname);
+                } else {
+                    $("#name").val(data.name);
+                    $("#visual_name").val(data.friendlyname);
+                }
+                getDeclaredDevices(data.driver_driver);
+                createDeviceComponents(data.struct.device);
+            });
+        } else if(isNewDevice){
+            $("button.saveDevice").text("Save new device");
+            $("button.saveDevice").off('click').on("click", function (){
+                saveCustomDevice(0);
+            });
+            getDeclaredDevices();
+        }
+
+
+        $("#showJSON").on("click", function(){
+            newwindow2=window.open('','Device_XML_source','height=600,width=800');
+            var tmp = newwindow2.document;
+            var reg = /(<)/g;
+            tmp.write('<html><head><link rel="stylesheet" href="/shared/js/libs/highlight/styles/default.css" /></head><body><pre><code id="jsoncodesource" class="json">' + JSON.stringify(jsonDevice(), null, 4) + '</code></pre></body></html>');
+            hljs.highlightBlock(tmp.getElementById("jsoncodesource"));
+            tmp.close();
+            return false;
+        });
+
+        $('.nospaces').on("keydown", function(e){
+            return e.which !== 32;
+        });
+
+        $('.alphanumericset').keypress(function(key) {
+            if(key.charCode === 32){ //// " "
+                return true;
+            } else if(key.charCode === 95){ ///_
+                return true;
+            } else if(key.charCode >= 48 && key.charCode <= 57){ /// 0-9
+                return true;
+            } else if((key.charCode > 64 && key.charCode < 91) || (key.charCode > 96 && key.charCode < 123)) { /// [A-Za-z]
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        $('.numericset').keypress(function(key) {
+            if(key.charCode === 46 ||key.charCode === 110 || key.charCode === 190){ /// Quite often it is one of these, two or all used for period/decimal/period characters
+                return true;
+            } else if(key.charCode >= 48 && key.charCode <= 57){ /// 0-9
+                return true;
+            } else {
+                return false;
+            }
+        });
+
+        $('#dialog-deleteconfirm').modal({ show:false });
+
+        $('#dialog-groupedit').modal({ show:false });
+
+        $('#dialog-controldataedit').modal({ show:false });
+        $('#data_control_datatype').on("change", function(){
+            if(($('#data_control_datatype').val()!=="integer" && $('#data_control_datatype').val()!=="float") || $('#data_control_hidden').val()=="true"){
+                $("#data_control_graph").attr("disabled", "disabled");
+                $("#data_control_graph").val("none");
+            } else {
+                $("#data_control_graph").removeAttr("disabled");
+            }                
+        });
+        $('#data_control_hidden').on("change", function(){
+            if(($('#data_control_datatype').val()!=="integer" && $('#data_control_datatype').val()!=="float") || $('#data_control_hidden').val()=="true"){
+                $("#data_control_graph").attr("disabled", "disabled");
+                $("#data_control_graph").val("none");
+            } else {
+                $("#data_control_graph").removeAttr("disabled");
+            }                
+        });
+
+        $('#dialog-controlbuttonedit').modal({ show:false });
+
+        $('#dialog-controltoggleedit').modal({ show:false });
+
+        $('#dialog-controlslideredit').modal({ show:false });
+
+        $('#dialog-colorpickeredit').modal({ show:false });
+
+/*
+        $('#dialog-optionselect').jqxWindow({
+            theme: siteSettings.getTheme(), height: 530, width: 300,
+            resizable: true, isModal: true, modalOpacity: 0.3,autoOpen: false,
+            okButton: $('#optionselect-ok'), cancelButton: $('#optionselect-cancel'),
+            initContent: function () {
+                $('#optionselect-ok').jqxButton({ width: '65px',theme: siteSettings.getTheme() });
+                $('#optionselect-cancel').jqxButton({ width: '65px',theme: siteSettings.getTheme() });
+            }
+        }); 
+*/
+
+        $(window).scroll(function() {
+            var winHeight = $(window).height();
+            var winWidth = $(window).width();
+            $('.popupwindowshadow').each(function(){
+                var editPosX = (winWidth/2) - ($(this).width()/2) + $(window).scrollLeft();
+                var editPosY = (winHeight/2) - ($(this).height()/2) + $(window).scrollTop();
+                $(this).jqxWindow({position: {x: editPosX, y: editPosY}});
+            });
+        });
+
+        $( "#vis-driver" ).change(function() {
+            $("#driver").val($(this).val());
+            setDeviceDriverDriver($(this).val());
+        });
+
+        function setDeviceDriverDriver(driverName){
+            $("#driver_driver").val(driverName);
+        }
+        
+        function saveCustomDevice(deviceId){
+            $("#pleaseWaitProgress").dialog( "open" );
+            var paramsVars = {};
+            var sendMethod;
+            if(deviceId===0){
+                paramsVars["devicedriver"] = $("#driver").val();
+                paramsVars["driverid"] = parseInt($("#driver_driver").val());
+                paramsVars["packageid"] = parseInt($("#package").val());
+                sendMethod = "DeviceService.addCustomDevice";
+            } else {
+                sendMethod = "DeviceService.updateCustomDevice";
+                paramsVars["id"] = parseInt(deviceId);
+            }
+            paramsVars["identifier"] = $("#name").val();
+            paramsVars["friendlyname"] = $("#visual_name").val();
+            paramsVars["struct"] = {"device": jsonDevice()};
+            
+            var rpcCommand = { "jsonrpc"     : "2.0",
+                               "method"      : sendMethod,
+                               "params"      : paramsVars,
+                               "id"          : sendMethod};
+            quickMessage("info", "Saving custom device");
+            postHttpJsonRPC(JSON.stringify(rpcCommand), function(data){
+                quickMessage("success", "Custom device saved");
+                refreshPageContent("/desktop/customdeviceslist.html");
+            });
+            
+            return false;
+        }
+    });
+});
+    
+function clearHandlers(){
+
+}
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

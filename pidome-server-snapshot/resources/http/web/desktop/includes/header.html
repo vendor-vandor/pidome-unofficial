@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>PiDome - ${page_title}</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="/shared/js/libs/bootstrap/css/bootstrap.css" />
+        <link rel="stylesheet" href="/shared/js/libs/bootstrap-table/bootstrap-table.min.css" />
+        <link rel="stylesheet" href="/shared/js/jq/styles/jqx.base.css" />
+        <link rel="stylesheet" href="/shared/js/jq/styles/jqx.metrodark.css" />
+        <link rel="stylesheet" href="/shared/js/libs/jquery.colorpickersliders/jquery.colorpickersliders.css" />
+        <link rel="stylesheet" href="/shared/css/webappconstruct.css" />
+        <link rel="stylesheet" href="/shared/css/webappcolors.css" />
+        <link rel="stylesheet" href="/shared/css/foundation.css" />
+        <link rel="stylesheet" href="/shared/css/themes/dark.css" />
+        <script src="/shared/js/libs/jquery/jquery.min.js"></script>
+        <script src="/shared/js/libs/jqueryui/jquery-ui.min.js"></script>
+        <script src="/shared/js/libs/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/shared/js/libs/extension-tools.js"></script>
+        <script src="/shared/js/jq/jqx-all.js"></script>
+        <script src="/shared/js/sitelibs/utils.js"></script>
+        <script>
+            function setSizes(){
+                try {
+                    var height;
+                    if($("#bottombar").position().top > $("body").height()){
+                        height = $("#bottombar").position().top - 140;
+                    } else {
+                        height = $("body").height() - 148;
+                    }
+                } catch (err){}
+            }
+            $(document).ready(function() {
+                window.onerror = function(message, filename, lineno, colno, error) {
+                    extendedPageError("Interface/script error", 
+                                      "An error occured in the interface: " + message, 
+                                      "file: " + filename + "<br/>" + 
+                                      "line: "+lineno+"<br/>" + 
+                                      "column: "+colno, 
+                                      null, 
+                                      error.stack);
+                };
+            });
+        </script>
+        <script src="/shared/js/libs/tinycolor/tinycolor.js"></script>
+        <script src="/shared/js/libs/jquery.colorpickersliders/jquery.colorpickersliders.js"></script>
+        <script src="/shared/js/sitelibs/RPCSocketHandler.js"></script>
+        <script src="/shared/js/libs/highcharts/highcharts-custom.js"></script>
+        <script src="/shared/js/sitelibs/Graphing.js"></script>
+        <script>
+            var pidomeRPCSocket;
+            //if (window.location.protocol !== 'https:') {
+                pidomeRPCSocket = new RPCSocket("ws:/${_SERVER.hostname}:8088");
+            //} else {
+                //pidomeRPCSocket = new RPCSocket("wss:/${_SERVER.hostname}:8089");
+            //}
+            pidomeRPCSocket.Init();
+        </script>
+        <script src="/shared/js/sitelibs/executors.js"></script>
+    </head>
+    <body class="default">
+        <div id="fullallcontentcontainer">
+            <div id="fullheader">
+                <div id="topheader">
+                    <div id="topheaderleft">
+                        <a href="/desktop/index.html">
+                            <img class="menulogo" src="/shared/images/logo.png" alt="PiDome" />
+                            <span class="menulogoappname">PiDome Control</span>
+                        </a>
+                    </div>
+                    <div id="topheaderright">
+                        <div>
+                            <img src="../shared/images/icons/clock_lightgreyed.png" alt="time" />
+                            <span id="currentstatenotif"><span id="servertime">${time}</span> (<span id="daypartname">${daypart}</span>, <span id="presencename">${presence}</span>, <span id="userstatusname">${userstatus}</span>)</span>
+                            <img src="../shared/images/icons/cal_lightgreyed.png" alt="date" /><span id="serverdate">${date}</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="mainmenubar" class="breadcrumbanim">
+                    <div id="mainmenu" style="clear:left;">
+                        <nav class="navbar-xs navbar-default">
+                            <div class="navbar-primary">
+                                <ul class="nav navbar-nav">
+                                    <li class="dropdown"><a href="#" class="dropdown-toggle menu-parent" data-index="0" data-toggle="dropdown" role="button">Dashboard <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li id="page_dashboard"><a href="/desktop/index.html" class="menuLink" data-index="0" data-idload="page_dashboard">Dashboard</a></li>
+                                            <li id="page_pidomenews"><a href="/desktop/pidomenews.html" class="menuLink" data-index="0" data-idload="page_pidomenews">News and info</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown"><a href="#" class="dropdown-toggle menu-parent" data-index="1" data-toggle="dropdown" role="button">Control <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li id="page_devicecontrol"><a href="/desktop/devices.html" class="menuLink" data-index="1" data-idload="page_devicecontrol">Devices</a></li>
+                                            <li id="page_mediacontrol"><a href="/desktop/media.html" class="menuLink" data-index="1" data-idload="page_mediacontrol">Media</a></li>
+                                            <li id="page_weatherview"><a href="/desktop/weather.html" class="menuLink" data-index="1" data-idload="page_weatherview">Weather</a></li>
+                                            <li id="page_utilitymcview"><a href="/desktop/utilitymeasurements.html" class="menuLink" data-index="1" data-idload="page_utilitymcview">Utility usages</a></li>
+                                            <li id="page_remotecontrol"><a href="/desktop/remotes.html" class="menuLink" data-index="1" data-idload="page_remotecontrol">Remotes</a></li>
+                                        </ul>
+                                    </li>
+                                    <#if _SERVER.userloginrole=="ADMIN"><li class="dropdown"><a href="#" class="dropdown-toggle menu-parent" data-index="2" data-toggle="dropdown" role="button">Management <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li id="page_discovereddevices"><a href="/desktop/discovereddevices.html" class="menuLink" data-index="2" data-idload="page_discovereddevices">Device discovery</a></li>
+                                            <li class="dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Devices</a>
+                                                <ul class="dropdown-menu">
+                                                    <li id="page_editdevices"><a href="/desktop/devicesedit.html" class="menuLink" data-index="2" data-idload="page_editdevices">Add/Remove/Settings</a></li>
+                                                    <li id="page_customdevices"><a href="/desktop/customdeviceslist.html" class="menuLink" data-index="2" data-idload="page_customdevices">Custom devices</a></li>
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Drivers</a>
+                                                <ul class="dropdown-menu">
+                                                    <li id="page_editdrivers"><a href="/desktop/driversedit.html" class="menuLink" data-index="2" data-idload="page_editdrivers">Drivers</a></li>
+                                                    <li id="page_editscripteddrivers"><a href="/desktop/driversscripted.html" class="menuLink" data-index="2" data-idload="page_editscripteddrivers">Custom drivers</a></li>
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Peripherals</a>
+                                                <ul class="dropdown-menu">
+                                                    <li id="page_attachedperipherals"><a href="/desktop/peripherals.html" class="menuLink" data-index="2" data-idload="page_attachedperipherals">Peripherals</a></li>
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Plugins</a>
+                                                <ul class="dropdown-menu">
+                                                    <li id="page_editmedia"><a href="/desktop/mediaedit.html" class="menuLink" data-index="2" data-idload="page_editmedia">Media</a></li>
+                                                    <li id="page_editweather"><a href="/desktop/weatheredit.html" class="menuLink" data-index="2" data-idload="page_editweather">Weather</a></li>
+                                                    <li id="page_editutility"><a href="/desktop/utilityedit.html" class="menuLink" data-index="2" data-idload="page_editutility">Utility measurement</a></li>
+                                                    <li id="page_editmessengerplugin"><a href="/desktop/messengerpluginsedit.html" class="menuLink" data-index="2" data-idload="page_editmessengerplugin">Messenger service</a></li>
+                                                    <li id="page_settingsremotes"><a href="/desktop/settingsremotes.html" class="menuLink" data-index="2" data-idload="page_settingsremotes">Remotes</a></li>
+                                                    <li id="page_editdeviceplugins"><a href="/desktop/deviceplugins.html" class="menuLink" data-index="2" data-idload="page_editdeviceplugins">Device plugins</a></li>
+                                                    <li id="page_editmodifiersplugins"><a href="/desktop/modifierplugins.html" class="menuLink" data-index="2" data-idload="page_editmodifiersplugins">Data modifiers</a></li>
+                                                </ul>
+                                            </li>
+                                            <li class="dropdown-submenu"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Data</a>
+                                                <ul class="dropdown-menu">
+                                                    <li id="page_editlocations"><a href="/desktop/settingslocations.html" class="menuLink" data-index="2" data-idload="page_editlocations">Floors/Rooms</a></li>
+                                                    <li id="page_editcategories"><a href="/desktop/settingscategories.html" class="menuLink" data-index="2" data-idload="page_editcategories">Categories</a></li>
+                                                    <li id="page_editpresences"><a href="/desktop/settingspresences.html" class="menuLink" data-index="2" data-idload="page_editpresences">Presences</a></li>
+                                                    <li id="page_edituserstatus"><a href="/desktop/settingsuserstatus.html" class="menuLink" data-index="2" data-idload="page_edituserstatus">User statuses</a></li>
+                                                    <li id="page_editdayparts"><a href="/desktop/settingsdayparts.html" class="menuLink" data-index="2" data-idload="page_editdayparts">Day parts</a></li>
+                                                </ul>
+                                            </li>
+                                            <li class="divider"></li>
+                                            <li id="page_people"><a href="/desktop/people.html" class="menuLink" data-index="2" data-idload="page_people">Persons / Users</a></li>
+                                            <li id="page_clients"><a href="/desktop/fixedclients.html" class="menuLink" data-index="2" data-idload="page_clients">User interfaces</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown"><a href="#" class="dropdown-toggle menu-parent" data-index="3" data-toggle="dropdown" role="button">Automation <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li id="page_scenes"><a href="/desktop/scenes.html" class="menuLink" data-index="3" data-idload="page_scenes">Scenes</a></li>
+                                            <li class="divider"></li>
+                                            <li id="page_triggers"><a href="/desktop/triggers.html" class="menuLink" data-index="3" data-idload="page_triggers">Triggers</a></li>
+                                            <li id="page_complexrules"><a href="/desktop/complexrules.html" class="menuLink" data-index="3" data-idload="page_complexrules">Automation rules</a></li>
+                                            <li id="page_macros"><a href="/desktop/macros.html" class="menuLink" data-index="3" data-idload="page_macros">Macros</a></li>
+                                            <li class="divider"></li>
+                                            <li id="page_customevents"><a href="/desktop/customevents.html" class="menuLink" data-index="3" data-idload="page_customevents">Custom events</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown"><a href="#" class="dropdown-toggle menu-parent" data-index="4" data-toggle="dropdown" role="button">Designers <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li id="page_dashboards"><a href="/desktop/dashboards.html" class="menuLink" data-index="4" data-idload="page_dashboards">Dashboards</a></li>
+                                            <li id="page_flooreditor"><a href="/desktop/flooreditor.html" class="menuLink" data-index="4" data-idload="page_flooreditor">Visual floor plan</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown"><a href="#" class="dropdown-toggle menu-parent" data-index="5" data-toggle="dropdown" role="button">Community <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li id="page_com_customdevices"><a href="/desktop/communitydevices.html" class="menuLink" data-index="5" data-idload="page_com_customdevices">Get community devices</a></li>
+                                            <li id="page_com_publishdevices"><a href="/desktop/communitydevicespublish.html" class="menuLink" data-index="5" data-idload="page_com_publishdevices">Publish custom devices</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown"><a href="#" class="dropdown-toggle menu-parent" data-index="6" data-toggle="dropdown" role="button">Audits/Logs <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li id="page_connectedclients"><a href="/desktop/connectedclients.html" class="menuLink" data-index="6" data-idload="page_connectedclients">Connected clients</a></li>
+                                            <li class="divider"></li>
+                                            <li id="page_notifications"><a href="/desktop/notifications.html" class="menuLink" data-index="6" data-idload="page_notifications">Notifications</a></li>
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown"><a href="#" class="dropdown-toggle menu-parent" data-index="7" data-toggle="dropdown" role="button">Security <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li id="page_fenceaccesscontrollers"><a href="/desktop/fencecontrollertokenmanagement.html" class="menuLink" data-index="7" data-idload="page_fenceaccesscontrollers">Controller/Token management</a></li> 
+                                        </ul>
+                                    </li>
+                                    <li class="dropdown"><a href="#" class="dropdown-toggle menu-parent" data-index="8" data-toggle="dropdown" role="button">System <span class="caret"></span></a>
+                                        <ul class="dropdown-menu">
+                                            <li id="page_serversettings"><a href="/desktop/settings.html" class="menuLink" data-index="8" data-idload="page_serversettings">Server settings</a></li>
+                                            <li id="page_packages"><a href="/desktop/packages.html" class="menuLink" data-index="8" data-idload="page_packages">Packages</a></li>
+                                            <!-- <li id="page_pluginsettings"><a href="/desktop/settingsplugins.html" onclick="return loadPageContent(this, 8, 'page_pluginsettings');">Plugin settings</a></li> -->
+                                            <li class="divider"></li>
+                                            <li id="page_serverstatus"><a href="/desktop/serverstatus.html" class="menuLink" data-index="8" data-idload="page_serverstatus">Server status</a></li>
+                                        </ul>
+                                    </li>
+                                    </#if>
+                                    <li id="page_myself"><a href="/desktop/me.html" class="menuLink menu-parent" data-index="9" data-idload="page_myself">My info</a></li>
+                                </ul>
+                            </div><!-- /.container-fluid -->
+                        </nav>
+                    </div>
+                    <div id="menusubset">
+                        <div id="loggedinas">
+                            <span style="overflow-x: hidden;">Logged in: ${_SERVER.userloginname}</span> <span style="cursor:pointer; text-decoration: underline; float:right; margin-right: 7px;" id="logoffsys">Log off</span>
+                            <script>
+                                $(document).ready(function() {
+                                    $(".menuLink").on("click", function (e){
+                                        e.preventDefault();
+                                        loadPageContent($(this), Number($(this).attr("data-index")), $(this).attr("data-idload"));
+                                    });
+                                    $("#logoffsys").on("click", function(){
+                                        $.get('/login.xhtml?signOff=true', function(data){
+                                            document.cookie = "key=; path=/ ;expires=Thu, 01 Jan 1970 00:00:00 UTC";
+                                            window.location.reload();
+                                        });
+                                    });
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="pageheadertitle">
+                <h1>Dashboard</h1>
+                <div id="simpleheaderdescription"></div>
+                <div id="pageinfoicon"></div>
+            </div>
+            <div id="mainbodycontentpart">
+                <div id="contentbody" class="container-fluid">

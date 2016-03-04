@@ -1,0 +1,83 @@
+<div class="dashboardmain" id="dashboardmaincontent">
+    <div style="float:right; margin-top: -73px;">
+        <button type="button" class="btn btn-default" aria-label="Left Align" id="editdashboard">
+            <span class="glyphicon glyphicon-th" aria-hidden="true"></span> Edit dashboard
+        </button>
+    </div>
+    <p class="contentfield roundedcorners">
+        Here and there are some web interface inconsistencies. Please read this forum post: "<a href="http://forum.pidome.org/viewtopic.php?id=166" target="_blank" style="font-weight: bold; text-decoration:underline;">Web interface changes</a>" as it explains it a little bit.
+    </p>
+    <div class="gridster">
+        <ul>
+        </ul>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<link rel="stylesheet" href="/shared/js/libs/gridster/jquery.gridster.min.css" />
+<link rel="stylesheet" href="/shared/css/dashboard.css" />
+<script> 
+    $(document).ready(function() {
+     
+        $.when(
+            $.getScript( "/shared/js/libs/gridster/jquery.gridster.min.js" ),
+            $.getScript( "/shared/js/sitelibs/dashboard.js" ),
+            $.Deferred(function( deferred ){
+                $( deferred.resolve );
+            })
+        ).done(function(){
+            getHttpJsonRPC('{"jsonrpc": "2.0", "method": "DashboardService.getDashboard", "id":"DashboardService.getDashboard"}', function(data){
+                if(data.id!==0){
+                    var serialization = Gridster.sort_by_row_and_col_asc(data.data);
+                    $("#editdashboard").off("click").on("click", function(){
+                        refreshPageContent("/dashboarddesigner.html?id=" + data.id);
+                    });
+                    var gridpane = $(".gridster ul");
+                    $.each(serialization, function() {
+                        var contentDiv = "<div ";
+                        for(var item in this.config){
+                            contentDiv += (item + '="'+this.config[item]+'" ');
+                        }
+                        contentDiv += "></div>"
+                        gridpane.append('<li data-row="'+this.row+'" data-col="'+this.col+'" data-sizex="'+this.size_x+'" data-sizey="'+this.size_y+'">' + contentDiv + '</li>');
+                    });
+                    var grid = $(".gridster ul").gridster({
+                        widget_margins: [5, 5],
+                        widget_base_dimensions: [90, 90],
+                        serialize_params: function($w, wgd) { 
+                            var tag = $($w).first().find('.dashboard-tile');
+                            var tagset = {};
+                            $(tag[0].attributes).each(function() {
+                                tagset[this.nodeName]=this.nodeValue;
+                            });
+                            return { 
+                                col: wgd.col, row: wgd.row, size_x: wgd.size_x, size_y: wgd.size_y, config: tagset 
+                            } 
+                        }
+                    }).data('gridster');
+                    grid.disable();
+                    var dashBuilder = new DashBoardBuilder(grid, $(".gridster ul"));
+                    dashBuilder.build();
+                } else {
+                        quickMessage("warning", "There is no dashboard present");
+                }
+                pidomeRPCSocket.addCallback(function(thingy) {
+                    try {
+                        if(data.id===thingy.params.id){
+                            refreshPageContent("/index.html");
+                        }
+                    } catch(err){
+                        /// Not really that important, but nice if it works.
+                    }
+                }, "DashboardService.saveUserDashboard");
+                
+            });
+        });
+    });
+    
+        setPageBreadcrumbs(0, "page_dashboard", "Dashboard", "/index.html");
+        setPageTitleDescription("Collection of your favorite items and quick server status view.");
+    
+    function clearHandlers(){
+        clearInternalWidgetHandlers("#dashboardmaincontent");
+    }
+</script>

@@ -1,0 +1,160 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<div class="contentfield no-background">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="pidomenewstableheader"><h2 style="float:left;">Latest news and info</h2></div>
+                <table id="newstable" class="table table-striped table-hover"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-search="true"
+                       data-toolbar="pidomenewstableheader">
+                    <thead>
+                        <tr>
+                            <th data-field="datetime" data-width="160">Date</th>
+                            <th data-field="title" data-width="320">Title</th>
+                            <th data-field="description">Short description</th>
+                            <th data-field="url" data-width="75" data-formatter="externalLinkFormatter">View online</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="contentfield no-background" style="margin-top:10px;">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="pidomeissuestableheader"><h2 style="float:left;">Known issues and upcoming changes/features</h2></div>
+                <table id="issuestable" class="table table-striped table-hover"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-search="true"
+                       data-toolbar="pidomeissuestableheader">
+                    <thead>
+                        <tr>
+                            <th data-field="metadata" data-width="100" data-formatter="issueTypeFormatter">Type</th>
+                            <th data-field="priority" data-width="75" data-formatter="issuePriorityFormatter">Priority</th>
+                            <th data-field="created_on" data-width="160">Date</th>
+                            <th data-field="title" data-width="320">Title</th>
+                            <th data-field="content" data-formatter="issueContentFormatter">Short description</th>
+                            <th data-field="local_id" data-width="75" data-formatter="externalIssueLinkFormatter">View online</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(0, "page_pidomenews", "News/Info", "/desktop/pidomenews.html");
+        setPageTitleDescription("Latest pidome news, bug reports and upcoming enhancements (this page is only available in alpha and beta releases)");
+    });
+    function externalLinkFormatter(value,row,index){
+        return '<a class="btn btn-success glyphicon glyphicon-globe" href="'+value+'" target="_blank" role="button"></a>';
+    }
+    
+    function externalIssueLinkFormatter(value,row,index){
+        return '<a class="btn btn-success glyphicon glyphicon-globe" href="https://bitbucket.org/pidome/pidome-server/issue/'+value+'/" target="_blank" role="button"></a>';
+    }
+    
+    function issuePriorityFormatter(value,row,index){
+        var type;
+        switch(value){
+            case 'trivial':
+            case 'minor':
+                type = "label-success";
+            break;
+            case 'major':
+                type = "label-warning";
+            break;
+            case 'critical':
+            case 'blocker':
+                type = "label-danger";
+            break;
+            default:
+                type = "label-warning";
+            break;
+        }
+        return '<span class="label '+type+'">'+value.toUpperCase()+'</span>';
+    }
+    
+    function issueTypeFormatter(metadata,row,index){
+        var type;
+        switch(metadata.kind){
+            case 'enhancement':
+            case 'proposal':
+                type = "label-success";
+            break;
+            case 'task':
+                type = "label-warning";
+            break;
+            case 'bug':
+                type = "label-danger";
+            break;
+            default:
+                type = "label-warning";
+            break;
+        }
+        return '<span class="label '+type+'">'+metadata.kind.toUpperCase()+'</span>';
+    }
+    
+    function issueContentFormatter(value){
+        if(value.length<=250){
+            return value;
+        } else {
+            return value.substring(0, 250) + " [...]";
+        }
+    }
+    
+    $('#newstable').bootstrapTable({
+        url: '/xmlapi/blogfeed.xml?feed=https://pidome.wordpress.com/feed/',
+        height: 320,
+        toolbarAlign: 'left',
+        undefinedText: 'No news',
+        dataType: 'xml',
+        cache: false,
+        responseHandler: function(data){
+            var returnArray = [];
+            var handleData = xmlToJson(data).messages;
+            for(var a=0;a<handleData.length;a++){
+                var messagesData = handleData[a].message;
+                for(var i=0;i<messagesData.length;i++){
+                    var message = messagesData[i];
+                    returnArray.push({
+                        "datetime" : message.datetime[0]["#text"][0],
+                        "title" : message.title[0]["#text"][0],
+                        "description" : message.description[0]["#text"][0],
+                        "url" : message.url[0]["#text"][0]
+                    });
+                }
+            }
+            return returnArray;
+        }
+    });
+    
+    $('#issuestable').bootstrapTable({
+        url: 'https://bitbucket.org/api/1.0/repositories/pidome/pidome-server/issues?status=new&status=open&version=0.1',
+        height: 320,
+        toolbarAlign: 'left',
+        undefinedText: 'No issues',
+        dataType: 'jsonp',
+        cache: false,
+        responseHandler: function(data){
+            return data.issues;
+        }
+    });
+    
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

@@ -1,0 +1,130 @@
+<div style=" padding: 0px 5px 0px 5px;">
+    <#if !installed_id?? && !plugin_id??>
+        <h2>Add devices plugin</h2>
+        <p>Add a new devices plugin here. The above part shows the default plugin options to make it work in the server. Optional is that below the default options
+            plugin options are shown specific for the plugin self.</p>
+        <div class="nvp">
+            <div class="n">
+                Select your devices plugin to add
+            </div>
+            <div class="v">
+                <div id="installed_id"></div>
+            </div>
+        </div>
+        <script>
+                var adapterSource = {
+                    datatype: "json",
+                    localdata: [{'id':0,'name':'Select...'},<#list pluginlist?keys as pluginKey>{'id':${pluginKey}, 'name':'${pluginlist[pluginKey].name}'},</#list>],
+                    datafields: [
+                        { name: 'id' },
+                        { name: 'name' }
+                    ]
+                };
+                var pluginsAdapter = new $.jqx.dataAdapter(adapterSource);
+                $("#installed_id").jqxDropDownList({ source: pluginsAdapter, displayMember: "name", valueMember: "id", selectedIndex: 0, width: '250', height: '25', theme: siteSettings.getTheme()});
+                $("#installed_id").on('select', function (event) {
+                    if (event.args) {
+                        var item = event.args.item;
+                        if (item) {
+                            $('#pluginscontent').empty();
+                            $('#pluginscontent').load("/pluginDeviceSettingsRenderer.xhtml?installed_id=" + item.value + "&ajax=true" );
+                        }
+                    }
+                });
+        </script>
+    <#else>
+        <#if installed_id??>
+            <h2>Add devices plugin</h2>
+            <p>Add a new devices plugin here. The above part shows the default plugin options to make it work in the server. Optional is that below the default options
+                plugin options are shown specific for the plugin self.</p>
+        <#else>
+            <h2>Edit devices plugin</h2>
+            <p>Edit the devices plugin here. The above part shows the default plugin options to make it work in the server. Optional is that below the default options
+                plugin options are shown specific for the plugin self.</p>
+        </#if>
+        <div style="float:left; clear: left; width:100%;">
+            <h3>Base configuration</h3>
+            <div class="nvp">
+                <div class="n">
+                    <span>Plugin</span>
+                </div>
+                <div class="v">
+                    <span>${plugin.getBaseName()}</span>
+                </div>
+            </div>
+            <div class="nvp">
+                <div class="n">
+                    <label for="plugin_name">Name</label>
+                </div>
+                <div class="v">
+                    <input type="text" name="plugin_name" id="plugin_name" value="${plugin.getPluginName()}" />
+                </div>
+            </div>
+            <div class="nvp">
+                <div class="n">
+                    <label for="plugin_desc">Description</label>
+                </div>
+                <div class="v">
+                    <input type="text" name="plugin_desc" id="plugin_desc" value="${plugin.getPluginDescription()}" />
+                </div>
+            </div>
+        </div>
+        <div style="float:left; clear: left; width:100%;">
+            <#assign configurationSets=plugin.getConfiguration()>
+            <#assign configSetsList=configurationSets.getOptions()>
+            <div id="optionCollection">
+                <#list configSetsList as configSet>
+                    <h3>${configSet.getConfigurationSetTitle()}</h3>
+                    <#if configSet.getConfigurationSetDescription()??><p>${configSet.getConfigurationSetDescription()}</p></#if>
+                    <#assign optionsList = configSet.getOptions()>
+                    <#list optionsList as option>
+                        <div class="nvp">
+                            <div class="n">
+                                <label for="pluginOption_${option.getId()}">${option.getOptionName()}</label>
+                            </div>
+                            <div class="v">
+                                <#if option.getFieldType().toString()=="DEVICEDATA">
+                                    <button class="selectDevice" name="selectionDevice_${option.getId()}" id="selectionDevice_${option.getId()}" value=""><#if option.getValue()?? && option.getValue()!="">Change<#else>Set</#if> Device</button>
+                                    <span id="${option.getId()}_device_content"><#if deviceSet??>${deviceSet[option.getId()]!""}</#if></span>
+                                <#elseif option.getFieldType().toString()=="CHECKBOX">
+                                <input type="checkbox" name="pluginOption_${option.getId()}" id="pluginOption_${option.getId()}" <#if option.getValue()??><#if option.getValue()!="">checked="checked"</#if></#if> />
+                                <#elseif option.getFieldType().toString()=="SELECT">
+                                    <select name="pluginOption_${option.getId()}" id="pluginOption_${option.getId()}">
+                                        <#list option.getSet()?keys as optionName>
+                                            <option value="${optionName}"<#if option.getValue()==optionName> selected="selected"</#if>>${option.getSet()[optionName]}</option>
+                                        </#list>
+                                    </select>
+                                <#else>
+                                    <input type="text" data-inputtype="${option.getFieldType()}" name="pluginOption_${option.getId()}" id="pluginOption_${option.getId()}" value="${(option.getValue())!""}" />
+                                    <script>
+                                        $(document).ready(function() {
+                                            $("#pluginOption_${option.getId()}").jqxTooltip({ content: '${option.getOptionDescription()}', position: 'top', name: 'optiontooltip', theme: siteSettings.getTheme()});
+                                            createWebInputField($("#pluginOption_${option.getId()}"));
+                                        });
+                                    </script>
+                                </#if>
+                            </div>
+                        </div>
+                    </#list>
+                </#list>
+            </div>
+        </div>
+        <button id="save_devices" name="save_devices" value="Save devices plugin">Save devices plugin</button>
+    </div>
+        <script>
+            $(document).ready(function() {
+                createWebInputField($('#plugin_name'));
+                createWebInputField($('#plugin_desc'));
+                $("#save_devices").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+                $("#save_devices").on('click', function () {
+                    saveDevicesPlugin();
+                });
+            });
+        </script>
+    </#if>
+    <#if installed_id??>
+        <input type="hidden" name="installed_id" id="installed_id" value="${installed_id}" />
+    </#if>
+    <#if plugin_id??>
+        <input type="hidden" name="plugin_id" id="plugin_id" value="${plugin_id}" />
+    </#if>

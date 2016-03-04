@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="error" name="pidome-client" packages="org.pidome.client.loggers">
+    <appenders>
+        <RollingFile name="RollingFile" fileName="log/appLog.txt" filePattern="log/appLog-%d{yyyy-MM-dd}-%i.gz">
+          <PatternLayout>
+            <pattern>%d [%t] %-5p %c - %m%n</pattern>
+          </PatternLayout>
+          <Policies>
+            <TimeBasedTriggeringPolicy />
+            <SizeBasedTriggeringPolicy size="5 MB"/>
+          </Policies>
+          <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        <ConsoleWriter name="ConsoleWriter">
+          <PatternLayout>
+            <pattern>%d{E MMM dd HH:mm:ss z yyyy} - [%t] %c{1}: %m%n</pattern>
+          </PatternLayout>
+        </ConsoleWriter>
+    </appenders>
+    <loggers>
+        <root level="info">
+            <appender-ref ref="RollingFile" />
+            <appender-ref ref="ConsoleWriter" level="debug"/>
+        </root>
+    </loggers>
+</configuration>

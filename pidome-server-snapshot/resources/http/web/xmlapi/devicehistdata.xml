@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data>
+    <server server="PiDome.Server">
+        <version major="${server.version_major}" minor="${server.version_minor}" build="${server.version_build}" name="${server.version_name}" release="${server.version_release}" />
+        <date date="${server.date_date}" time="${server.date_time}" />
+        <message><#if history??>${history.message.message}</#if></message>
+    </server>
+    <#if history??>
+        <history>
+            <hour><#if history.hour??><#list history.hour?keys as dataKey><data time="${dataKey}">${history.hour[dataKey]?c}</data></#list></#if></hour>
+            <day><#if history.day??><#list history.day?keys as dataKey><data time="${dataKey}">${history.day[dataKey]?c}</data></#list></#if></day>
+            <week><#if history.week??><#list history.week?keys as dataKey><data time="${dataKey}">${history.week[dataKey]?c}</data></#list></#if></week>
+            <month><#if history.month??><#list history.month?keys as dataKey><data time="${dataKey}">${history.month[dataKey]?c}</data></#list></#if></month>
+            <year><#if history.year??><#list history.year?keys as dataKey><data time="${dataKey}">${history.year[dataKey]?c}</data></#list></#if></year>
+        </history>
+    <#else>
+        <history><hour/><day/><week/><month/><year/></history>
+    </#if>
+</data>

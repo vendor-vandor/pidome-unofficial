@@ -1,0 +1,2 @@
+PRAGMA user_version=1;
+ALTER TABLE plugins ADD COLUMN fixed BOOLEAN NOT NULL DEFAULT 0;

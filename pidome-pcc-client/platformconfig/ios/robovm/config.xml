@@ -1,0 +1,11 @@
+<config>
+  <executableName>PiDome</executableName>
+  <os>ios</os>
+  <arch>thumbv7</arch>
+  <resources>
+    <resource>
+      <directory>resources</directory>
+    </resource>
+  </resources>
+  <target>ios</target>
+</config>

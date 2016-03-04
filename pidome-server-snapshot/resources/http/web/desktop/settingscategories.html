@@ -1,0 +1,489 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_editcategories", "${page_title}", "/desktop/settingscategories.html");
+    });
+</script>
+<div class="defaultcontent" id="categorylocationeditor" style="max-width:1000px;">
+    <fieldset>
+        <legend>Categories</legend>
+        <p>Create your categories here. Some categories can not be deleted and edited because they are used as categories minimal required. When a category is created automatically the sub category "Common" is created.<br/>
+        A category constant is used to display/identify the category types in images etc, custom images is a feature which will be added later.</p>
+        <div style="float:left;">
+            <h3>Add new category</h3>
+            <section class="itemeditor">
+                <div class="nvp">
+                    <div class="n"><label for="newCatName">Name</label></div>
+                    <div class="v"><input data-inputtype="string" type="text" name="newCatName" id="newCatName" value="" /></div>
+                </div>
+                <div class="nvp">
+                    <div class="n"><label for="newCatDesc">Description</label></div>
+                    <div class="v"><input data-inputtype="string" type="text" name="newCatDesc" id="newCatDesc" value="" /></div>
+                </div>
+                <div class="nvp">
+                    <div class="n"><label for="newCatConst">Constant</label></div>
+                    <div class="v"><input data-inputtype="stringuppercase" type="text" name="newCatConst" id="newCatConst" value="" /></div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        &nbsp;
+                    </div>
+                    <div class="v">
+                        <button id="newCat" name="newCat" value="newCat">Add</button>
+                        <button id="cancelNewCat" name="cancelNewCat" value="cancelNewCat" style="margin-left: 10px;">Cancel</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div style="float:left; margin-left:15px;">
+            <h3>Edit categories</h3>
+            <section class="itemeditor">
+                <div style="float:left; width:220px;">
+                    <div id="categoriesEditList"></div>
+                </div>
+                <div style="float:left;">
+                    <div class="nvp">
+                        <div class="n"><label for="updateCatName">Name</label></div>
+                        <div class="v"><input data-inputtype="string" type="text" name="updateCatName" id="updateCatName" value="" /></div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n"><label for="updateCatDesc">Description</label></div>
+                        <div class="v"><input data-inputtype="string" type="text" name="updateCatDesc" id="updateCatDesc" value=""/></div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n"><label for="updateCatConst">Constant</label></div>
+                        <div class="v"><input data-inputtype="stringuppercase" type="text" name="updateCatConst" id="updateCatConst" value=""/></div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            &nbsp;
+                        </div>
+                        <div class="v">
+                            <button id="updateCat" name="updateCat" value="updateCat">Update</button>
+                            <button id="cancelUpdateCat" name="cancelUpdateCat" value="cancelUpdateCat" style="margin-left: 10px;">Cancel</button>
+                            <button id="deleteUpdateCat" name="deleteUpdateCat" value="deleteUpdateCat" style="margin-left: 10px;">Delete</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="updateCategoryId" id="updateCategoryId" value="" />
+                </div>
+            </section>
+        </div>
+    </fieldset>
+    <fieldset style="margin-top: 15px;">
+        <legend>Sub categories</legend>
+        <p>Create your sub categories here. Some sub categories can not be edited/deleted because they are default for the main category. For example the "Common" sub category can not be altered or deleted.
+            If you want to delete the sub category "Common" and the main category does not contain extra sub categories, you can delete the main category.<br/>
+        Devices are connected to sub categories.</p>
+        <div style="float:left;">
+            <h3>Add new sub category</h3>
+            <section class="itemeditor">
+                <div class="nvp">
+                    <div class="n"><label for="newSubCatName">Name</label></div>
+                    <div class="v"><input data-inputtype="string" type="text" name="newSubCatName" id="newSubCatName" value="" /></div>
+                </div>
+                <div class="nvp">
+                    <div class="n"><label for="newSubCatDesc">Description</label></div>
+                    <div class="v"><input data-inputtype="string" type="text" name="newSubCatDesc" id="newSubCatDesc" value="" /></div>
+                </div>
+                <div class="nvp">
+                    <div class="n"><label for="newSubCatCatlist">Select category</label></div>
+                    <div class="v"><div id="newSubCatCatlist"></div></div>
+                </div>
+                <div class="nvp">
+                    <div class="n">
+                        &nbsp;
+                    </div>
+                    <div class="v">
+                        <button id="newSubCat" name="newSubCat" value="newSubCat">Add</button>
+                        <button id="cancelNewSubCat" name="cancelNewSubCat" value="cancelNewSubCat" style="margin-left: 10px;">Cancel</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+        <div style="float:left; margin-left:15px;">
+            <h3>Edit sub categories</h3>
+            <section class="itemeditor">
+                <div style="float:left; width:220px;">
+                    <div id="subCategoriesEditList"></div>
+                </div>
+                <div style="float:left;">
+                    <div class="nvp">
+                        <div class="n"><label for="updateSubCatName">Name</label></div>
+                        <div class="v"><input data-inputtype="string" type="text" name="updateSubCatName" id="updateSubCatName" value="" /></div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n"><label for="updateSubCatDesc">Description</label></div>
+                        <div class="v"><input data-inputtype="string" type="text" name="updateSubCatDesc" id="updateSubCatDesc" value=""/></div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n"><label for="editSubCatCatlist">Select category</label></div>
+                        <div class="v"><div id="editSubCatCatlist"></div></div>
+                    </div>
+                    <div class="nvp">
+                        <div class="n">
+                            &nbsp;
+                        </div>
+                        <div class="v">
+                            <button id="updateSubCat" name="updateSubCat" value="updateSubCat">Update</button>
+                            <button id="cancelUpdateSubCat" name="cancelUpdateSubCat" value="cancelUpdateSubCat" style="margin-left: 10px;">Cancel</button>
+                            <button id="deleteUpdateSubCat" name="deleteUpdateSubCat" value="deleteUpdateSubCat" style="margin-left: 10px;">Delete</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="updateSubCategoryId" id="updateSubCategoryId" value="" />
+                </div>
+            </section>
+        </div>
+    </fieldset>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    var allCategoriesData;
+    var allSubCategoriesData;
+    
+    $(document).ready(function () {
+        
+        var allCategoriesSource = {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int'},
+                { name: 'name', type: 'string'},
+                { name: 'fixed', type: 'bool'}
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "CategoryService.getCategoryList", "id":"CategoryService.getCategoryList"}',
+            root: "result>data"
+        };
+        allCategoriesData = new $.jqx.dataAdapter(allCategoriesSource);
+        
+        var allSubcategoriesSource = {
+            datatype: "json",
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "CategoryService.getFullCategoryList", "id":"CategoryService.getFullCategoryList"}',
+            root: "result>data"
+        };
+        allSubCategoriesData = new $.jqx.dataAdapter(allSubcategoriesSource);
+        
+        $("#categoriesEditList").jqxComboBox({
+            placeHolder: "Select category", source: allCategoriesData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme(),
+            renderer: function (index, label, value) {
+                if(allCategoriesData.records[index].fixed===false){
+                    return label;
+                } else {
+                    return "*" + label;
+                }
+            }
+        });
+        $("#categoriesEditList").on('select', function (event) {
+            if (event.args) {
+                var item = event.args.item;
+                if(allCategoriesData.records[item.index].fixed===false){
+                    if (item) {
+                        $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "CategoryService.getCategory", "params":{"id": '+item.value+'},"id":"CategoryService.getCategory"}')
+                            .done(function(data) {
+                                setCategoryEditEnabled(data.result.data.name,data.result.data.description,data.result.data.constant);
+                                $("#updateCategoryId").val(data.result.data.id);
+                            })
+                            .fail(function() {
+                                showErrorMessage("Error","Could not retrieve category " + item.label);
+                            });
+                    }
+                } else {
+                    showErrorMessage("Error","The category " + item.label + " can not be altered nor deleted.");
+                    resetCategoriesEditInputs();
+                }
+            }
+        });
+    
+        $("#newCat").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#newCat").on('click', function (event) {
+            if(inputFieldValid($("#newCatName")) && inputFieldValid($("#newCatDesc")) && inputFieldValid($("#newCatConst"))){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "CategoryService.addCategory", "params":{"name":"'+$("#newCatName").val()+'","description":"'+$("#newCatDesc").val()+'","constant":"'+$("#newCatConst").val()+'"},"id":"CategoryService.addCategory"}')
+                    .done(function(data) {
+                        try {
+                            if(data.result.success===true){
+                                showInfoMessage("Added",$("#newCatName").val()+" has been Added");
+                                resetCategoriesNewInputs();
+                                allCategoriesData.dataBind();
+                                allSubCategoriesData.dataBind();
+                            } else {
+                                showErrorMessage("Error","Could not add category: " + data.result.message);
+                            }
+                        } catch(err){
+                            showErrorMessage("Error","Could not add category: " + data.message);
+                        }
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not add category");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct category data.");
+            }
+        });
+    
+        $("#cancelNewCat").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelNewCat").on('click', function (event) {
+            resetCategoriesNewInputs();
+        });
+    
+        function resetCategoriesNewInputs(){
+            $("#newCatName").val('');
+            $("#newCatDesc").val('');
+            $("#newCatConst").val('');
+            createSizedWebInputField($("#newCatName"), 250);
+            createSizedWebInputField($("#newCatDesc"), 250);
+            createSizedWebInputField($("#newCatConst"), 100);
+        }
+
+
+        $("#updateCat").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#updateCat").on('click', function (event) {
+            if(inputFieldValid($("#updateCatName")) && inputFieldValid($("#updateCatDesc")) && inputFieldValid($("#updateCatConst"))){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "CategoryService.editCategory", "params":{"id": '+$("#updateCategoryId").val()+', "name":"'+$("#updateCatName").val()+'","description":"'+$("#updateCatDesc").val()+'","constant":"'+$("#updateCatConst").val()+'"},"id":"CategoryService.editCategory"}')
+                    .done(function(data) {
+                        try {
+                            if(data.result.success===true){
+                                showInfoMessage("Updated","Category has been udated");
+                                resetCategoriesEditInputs();
+                                allCategoriesData.dataBind();
+                                allSubCategoriesData.dataBind();
+                            } else {
+                                showErrorMessage("Error","Could not update category: " + data.result.message);
+                            }
+                        } catch (err){
+                            showErrorMessage("Error","Could not update category: " + data.message);
+                        }
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not update category");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct category data.");
+            }
+        });
+        $("#cancelUpdateCat").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelUpdateCat").on('click', function (event) {
+            resetCategoriesEditInputs();
+        });
+        $("#deleteUpdateCat").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#deleteUpdateCat").on('click', function (event) {
+            $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "CategoryService.deleteCategory", "params":{"id": '+$("#updateCategoryId").val()+'},"id":"CategoryService.deleteCategory"}')
+                .done(function(data) {
+                    showInfoMessage("Updated","Category has been deleted");
+                    resetCategoriesEditInputs();
+                    resetSubCategoriesEditInputs();
+                    allCategoriesData.dataBind();
+                    allSubCategoriesData.dataBind();
+                })
+                .fail(function() {
+                    showErrorMessage("Error","Could not delete category");
+                });
+        });
+
+        function setCategoryEditEnabled(name,description,constant) {
+            $("#updateCatName").val(name);
+            $("#updateCatDesc").val(description);
+            $("#updateCatConst").val(constant);
+            createSizedWebInputField($("#updateCatName"), 250);
+            createSizedWebInputField($("#updateCatDesc"), 250);
+            createSizedWebInputField($("#updateCatConst"), 100);
+            $("#updateCat").jqxButton({disabled: false });
+            $("#cancelUpdateCat").jqxButton({disabled: false });
+            $("#deleteUpdateCat").jqxButton({disabled: false });
+        }
+
+        function resetCategoriesEditInputs(){
+            $("#updateCatName").val('');
+            $("#updateCatDesc").val('');
+            $("#updateCatConst").val('');
+            createSizedWebInputField($("#updateCatName"), 250);
+            createSizedWebInputField($("#updateCatDesc"), 250);
+            createSizedWebInputField($("#updateCatConst"), 100);
+            $("#updateCat").jqxButton({disabled: true });
+            $("#cancelUpdateCat").jqxButton({disabled: true });
+            $("#deleteUpdateCat").jqxButton({disabled: true });
+            try {
+                $("#categoriesEditList").jqxComboBox('unselectIndex',$("#categoriesEditList").jqxComboBox('getSelectedItem').index);
+            } catch (err){
+                /// nothing selected.
+            }
+        }
+        
+        /////////////////////////////////////// sub category routines.
+        
+        $("#newSubCat").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#newSubCat").on('click', function (event) {
+            if(inputFieldValid($("#newSubCatName")) && inputFieldValid($("#newSubCatDesc")) && $("#newSubCatCatlist").val()>0){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "CategoryService.addSubCategory", "params":{"name":"'+$("#newSubCatName").val()+'","description":"'+$("#newSubCatDesc").val()+'","category":'+$("#newSubCatCatlist").val()+'},"id":"CategoryService.addSubCategory"}')
+                    .done(function(data) {
+                        try {
+                            if(data.result.success===true){
+                                showInfoMessage("Added",$("#newSubCatName").val()+" has been Added");
+                                resetSubCategoriesNewInputs();
+                                allSubCategoriesData.dataBind();
+                            } else {
+                                showErrorMessage("Error","Could not add sub category: " + data.result.message);
+                            }
+                        } catch(err){
+                            showErrorMessage("Error","Could not add sub category: " + data.message);
+                        }
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not add sub category");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct sub category data.");
+            }
+        });
+    
+        $("#updateSubCat").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#updateSubCat").on('click', function (event) {
+            if(inputFieldValid($("#updateSubCatName")) && inputFieldValid($("#updateSubCatDesc")) && $("#editSubCatCatlist").val()>0){
+                $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "CategoryService.editSubCategory", "params":{"id": '+$("#updateSubCategoryId").val()+', "name":"'+$("#updateSubCatName").val()+'","description":"'+$("#updateSubCatDesc").val()+'","category":'+$("#editSubCatCatlist").val()+'},"id":"CategoryService.editSubCategory"}')
+                    .done(function(data) {
+                        try {
+                            if(data.result.success===true){
+                                showInfoMessage("Updated","Sub category has been udated");
+                                resetSubCategoriesEditInputs();
+                                allSubCategoriesData.dataBind();
+                            } else {
+                                showErrorMessage("Error","Could not update sub category: " + data.error.data.message);
+                            }
+                        } catch (err){
+                            showErrorMessage("Error","Could not update sub category: " + data.message);
+                        }
+                    })
+                    .fail(function() {
+                        showErrorMessage("Error","Could not update sub category");
+                    });
+            } else {
+                showErrorMessage("Error","Make sure you have entered correct sub category data.");
+            }
+        });
+    
+        $("#cancelNewSubCat").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelNewSubCat").on('click', function (event) {
+            resetSubCategoriesNewInputs();
+        });
+        
+        $("#deleteUpdateSubCat").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#deleteUpdateSubCat").on('click', function (event) {
+            $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "CategoryService.deleteSubCategory", "params":{"id": '+$("#updateSubCategoryId").val()+'},"id":"CategoryService.deleteSubCategory"}')
+                .done(function(data) {
+                    showInfoMessage("Updated","Sub category has been deleted");
+                    resetSubCategoriesEditInputs();
+                    allSubCategoriesData.dataBind();
+                })
+                .fail(function() {
+                    showErrorMessage("Error","Could not delete sub category");
+                });
+        });
+        
+        $("#subCategoriesEditList").jqxComboBox({
+            placeHolder: "Select sub category", source: allSubCategoriesData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme(),
+            renderer: function (index, label, value) {
+                if(allSubCategoriesData.records[index].fixed===false){
+                    return label;
+                } else {
+                    return "*" + label;
+                }
+            }
+        });
+        $("#subCategoriesEditList").on('select', function (event) {
+            if (event.args) {
+                var item = event.args.item;
+                if(allSubCategoriesData.records[item.index].fixed===false){
+                    if (item) {
+                        $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "CategoryService.getSubCategory", "params":{"id": '+item.value+'},"id":"CategorySubService.getSubCategory"}')
+                            .done(function(data) {
+                                setSubCategoryEditEnabled(data.result.data.name,data.result.data.description,data.result.data.cat_id);
+                                $("#updateSubCategoryId").val(data.result.data.id);
+                            })
+                            .fail(function() {
+                                showErrorMessage("Error","Could not retrieve category " + item.label);
+                            });
+                    }
+                } else {
+                    showErrorMessage("Error","The category " + item.label + " can not be altered nor deleted.");
+                    resetSubCategoriesEditInputs();
+                }
+            }
+        });
+        
+        $("#cancelUpdateSubCat").jqxButton({width:75, theme: siteSettings.getTheme()});
+        $("#cancelUpdateSubCat").on('click', function (event) {
+            resetSubCategoriesEditInputs();
+        });
+        
+        $("#newSubCatCatlist").jqxComboBox({
+            placeHolder: "Select category", source: allCategoriesData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme()
+        });
+        $("#editSubCatCatlist").jqxComboBox({
+            placeHolder: "Select category", source: allCategoriesData, displayMember: "name", valueMember: "id", width: 200, height: 25, theme: siteSettings.getTheme()
+        });
+        
+        function resetSubCategoriesNewInputs(){
+            $("#newSubCatName").val('');
+            $("#newSubCatDesc").val('');
+            createSizedWebInputField($("#newSubCatName"), 250);
+            createSizedWebInputField($("#newSubCatDesc"), 250);
+            try {
+                $("#newSubCatCatlist").jqxComboBox('unselectIndex',$("#newSubCatCatlist").jqxComboBox('getSelectedItem').index);
+            } catch (err){
+                /// nothing selected.
+            }
+        }
+        
+        function setSubCategoryEditEnabled(name,description, catId) {
+            $("#updateSubCatName").val(name);
+            $("#updateSubCatDesc").val(description);
+            createSizedWebInputField($("#updateSubCatName"), 250);
+            createSizedWebInputField($("#updateSubCatDesc"), 250);
+            $("#updateSubCat").jqxButton({disabled: false });
+            $("#cancelUpdateSubCat").jqxButton({disabled: false });
+            $("#deleteUpdateSubCat").jqxButton({disabled: false });
+            try {
+                $("#editSubCatCatlist").jqxComboBox('selectIndex',$("#editSubCatCatlist").jqxComboBox('getItemByValue', catId).index);
+            } catch (err){
+                /// nothing selected.
+            }
+        }
+
+        function resetSubCategoriesEditInputs(){
+            $("#updateSubCatName").val('');
+            $("#updateSubCatDesc").val('');
+            createSizedWebInputField($("#updateSubCatName"), 250);
+            createSizedWebInputField($("#updateSubCatDesc"), 250);
+            $("#updateSubCat").jqxButton({disabled: true });
+            $("#cancelUpdateSubCat").jqxButton({disabled: true });
+            $("#deleteUpdateSubCat").jqxButton({disabled: true });
+            try {
+                $("#subCategoriesEditList").jqxComboBox('unselectIndex',$("#subCategoriesEditList").jqxComboBox('getSelectedItem').index);
+            } catch (err){
+                /// nothing selected.
+            }
+            try {
+                $("#editSubCatCatlist").jqxComboBox('unselectIndex',$("#editSubCatCatlist").jqxComboBox('getSelectedItem').index);
+            } catch (err){
+                /// nothing selected.
+            }
+        }
+        
+        resetCategoriesNewInputs();
+        resetCategoriesEditInputs();
+        
+        resetSubCategoriesNewInputs();
+        resetSubCategoriesEditInputs();
+        
+    });
+    
+    function clearHandlers(){
+        $("#categoriesEditList").jqxComboBox('destroy');
+        $("#subCategoriesEditList").jqxComboBox('destroy');
+        $("#newSubCatCatlist").jqxComboBox('destroy');
+        $("#editSubCatCatlist").jqxComboBox('destroy');
+    }
+    
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

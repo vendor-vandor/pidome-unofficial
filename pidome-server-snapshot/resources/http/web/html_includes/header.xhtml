@@ -1,0 +1,75 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>PiDome - ${page_title}</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9" />
+        <link href="css/smoothness/jquery-ui-1.10.2.custom.css" rel="stylesheet" />
+        <link href="css/pidome.css" rel="stylesheet" />
+	<script src="js/jquery-1.9.1.js"></script>
+	<script src="js/jquery-ui-1.10.2.custom.js"></script>
+        <script src="js/jquery.dataTables.min.js"></script>
+        <script src="js/collections.js"></script>
+        <script src="js/executors.js"></script>
+    </head>
+    <body>
+        <div id="topBar">
+            <ul id="pagemenu" class="menubar-icons">
+                <li><a href="/desktop/index.html">Home</a></li>
+                <li>
+                    <a href="#control">Control</a>
+                    <ul>
+                        <li><a href="/desktop/devices.html">Devices</a></li>
+                        <li><a href="/desktop/media.html">Media</a></li>
+                    </ul>
+                </li>
+                <li><a href="settings.xhtml">Settings</a>
+                    <ul>
+                        <li><a href="/desktop/devicesedit.html">Devices</a>
+                            <ul>
+                                <li><a href="/desktop/devicesedit.html">Add/Remove/Settings</a></li>
+                                <li><a href="/simpledevices.xhtml">Simple devices</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="/desktop/settingslocations.html">Locations</a></li>
+                        <li><a href="/desktop/settingscategories.html">Categories</a></li>
+                        <li><a href="#Plugins">Plugins</a>
+                            <ul>
+                                <li><a href="/desktop/mediaedit.html">Media</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="/desktop/macros.html">Macros</a>
+                            <ul>
+                                <li><a href="/desktop/macros.html">View list</a></li>
+                                <li><a href="/desktop//macro.html">Create macro</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="/triggers.xhtml">Triggers</a>
+                            <ul>
+                                <li><a href="/desktop/triggers.html">View triggers</a></li>
+                                <li><a href="/desktop/trigger.html">Create trigger</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#Packages">Packages</a>
+                            <ul>
+                                <li class="ui-state-disabled"><a href="/packages_overview.xhtml">Overview</a></li>
+                                <li class="ui-state-disabled"><a href="/packages_overview.xhtml">Install</a></li>
+                                <li class="ui-state-disabled"><a href="/packages_overview.xhtml">Uninstall</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#System">System</a>
+                    <ul>
+                        <li><a href="/desktop/settings.html">Server settings</a></li>
+                        <li><a href="/desktop/serverstatus.html">System state</a></li>
+                        <li><a href="/desktop/peripherals.html">Attached Peripherals</a></li>
+                        <li><a href="/desktop/clients.html">Manage clients</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div id="contentBody">
+            <div id="warning">
+                <p>Be aware, this is only a prototype of the web interface for the server and only available in Chrome. The final interface will look completely different. Current is while still in early development.</p>
+                <p>The interface you are looking at now only works in Google Chrome and Firefox (both tested).
+            </div>

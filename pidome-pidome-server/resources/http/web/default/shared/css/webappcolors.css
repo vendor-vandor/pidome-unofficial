@@ -1,0 +1,219 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jan 29, 2014, 8:30:24 PM
+    Author     : John
+*/
+
+/*
+Component overrides and/or additions
+*/
+.popupwindowshadow {
+    box-shadow: 0px 0px 10px #111;
+}
+
+.input-valid {
+    border-color: #39dd63;
+}
+
+#deviceedittable button.jqx-fill-state-hover,
+#triggeredittable button.jqx-fill-state-hover,
+#macroedittable button.jqx-fill-state-hover,
+#mediaedittable button.jqx-fill-state-hover,
+#userstatustable button.jqx-fill-state-hover,
+#remotes_edittable button.jqx-fill-state-hover,
+#pluginstable button.jqx-fill-state-hover,
+#presencetable button.jqx-fill-state-hover,
+#complexlist button.jqx-fill-state-hover {
+    background-color: #d56909;
+}
+
+
+/*
+Top menu and header
+*/
+#topheaderleft {
+    background-color: transparent;
+}
+#topheaderleft .jqx-widget-header {
+    border-color: transparent;
+    background-color: transparent;
+}
+#topheader .menulogoappname {
+    color: #c2c2c2;
+}
+#topheaderright {
+    background-color: transparent;
+}
+/*
+Top content 
+*/
+#mainmenubar {
+    border-top: 1px #d56909 solid;
+    background-color: #3E3E42;
+}
+#pageheader {
+    background-color: #c5c6ca;
+    border-bottom: 1px solid #babecc;
+    box-shadow: 0px 2px 10px 0px #111111;
+}
+#bottombar {
+    box-shadow: 0px 2px 10px 0px #111111;
+    background-color: #252526;
+}
+
+#bottombarcontent {
+    background-color: #252526;
+}
+
+/*
+All the graphs setup
+*/
+.jqx-chart-axis-text, .jqx-chart-label-text, .jqx-chart-legend-text, .jqx-chart-axis-description, .jqx-chart-title-text, .jqx-chart-title-description {
+    fill: #ffffff;
+    color: #ffffff;
+}
+
+/*
+Page main content 
+*/
+.defaultcontent {
+    background-color: #252526;
+}
+.defaultcontent h1,.defaultcontent h2,.defaultcontent h3,.defaultcontent h4 {
+    color: #ffffff;
+    border-bottom: 1px solid #007acc;
+}
+.defaultcontent a {
+    color: #ffffff;
+}
+
+.dashboardmain h2 {
+    border-bottom: 1px solid #007acc;    
+}
+
+.dashboardmain .listheader {
+    font-size: 12px;
+    line-height: 17px;
+    font-family: 'segoe ui', arial, sans-serif;
+    border-color: #35353A;
+    color: #ffffff;
+    background: #3E3E42;
+    padding: 5px;
+}
+
+.dashboardmain .littlefavcontainer {
+    font-size: 12px;
+    line-height: 17px;
+    font-family: 'segoe ui', arial, sans-serif;
+    border-bottom: 1px solid #35353A;
+    color: #ffffff;
+    padding: 10px 5px;
+    cursor: pointer;
+}
+.dashboardmain .littlefavcontainer:hover {
+    background-color: #d56909;
+}
+
+.dashboardmain .littlefavcontainerClicked {
+    background-color: #007ACC;
+}
+
+.dashboardmain .dashSceneActive {
+    background-color: #007ACC;
+}
+
+/*
+Index page markup
+*/
+
+/*
+devices page setup
+*/
+.whiteheader {
+    color: #ffffff;
+}
+.devicegroup {
+    border-bottom: 1px solid #007acc;
+}
+#devicecontent {
+    border-color: transparent;
+}
+/*
+Item editor colors
+*/
+.itemeditor h2,.itemeditor h3,.itemeditor h4 {
+   color: #ffffff;
+   border-bottom: 1px solid #007acc;
+}
+/*
+Media controls page setup
+*/
+#mediacontent h3,
+#pluginstable h3 {
+   color: #ffffff;
+   border-bottom: 1px solid #007acc;
+}
+#playliststable {
+    border-top: 1px solid #007acc;
+}
+
+/*
+Floor editor toolbar
+*/
+#toolbar {
+    background-color: #00548d;
+    background: linear-gradient(to bottom, #1e5799 0%,#2989d8 50%,#207cca 51%,#7db9e8 100%);
+}
+#toolbar .toolbarbutton {
+    padding: 2px;
+    margin: 4px;
+    width: 24px;
+    height: 24px;
+    float:left;
+    border: 1px solid #01538a;
+    background-color: #a2a2a2;
+    box-shadow: 2px 2px 3px #000000;
+}
+#toolbar .toolbarbutton:active,
+#toolbar .toolbarbutton.active {
+    background-color: #007acc;
+    box-shadow: 0px 0px 3px #007acc;
+}
+
+/*
+Remotes
+*/
+.remotesection { clear: both; margin-bottom: 5px; padding-bottom: 5px; border-bottom: 1px solid #007acc; }
+#remotecontainervisual { width:400px; margin-left: auto; margin-right:auto; margin-top: 30px; } 
+#remoteredled { width: 12px; height: 12px; background-color: #d50; border-radius: 50%; box-shadow: #000 0 -1px 7px 1px, inset #000 0 -1px 9px, #000 0 2px 12px; float:right; margin-right:5px; }
+#remoteredled.remoteredledon { background-color: #f50; box-shadow: #000 0 -1px 7px 1px, inset #900 0 -1px 9px, #F00 0 2px 12px; }
+#remoteredled.remotelednotify { background-color: #050; box-shadow: #000 0 -1px 7px 1px, inset #090 0 -1px 9px, #0F0 0 2px 12px; }
+#remoteredled.remoteledreceivednotify { background-color: #ff0; box-shadow: #000 0 -1px 7px 1px, inset #990 0 -1px 9px, #0F0 0 2px 12px; }
+
+#remote { border: 2px solid #3e3e42; padding: 10px 15px; background: #202021; width: 280px; border-radius: 20px; margin-left: auto; margin-right: auto; }
+#titlerow { border-bottom: 1px solid #d46809; width:100%; margin-bottom: 5px;}
+#remotetitle { float: left; width: 75%; overflow:hidden; font-size: 1.3em; margin-top: -3px; padding-bottom: 5px;}
+#remoteled { float:left; width: 25%; }
+
+.remoterow { width: 100%; float:left; clear:left; margin-bottom: 5px; margin-top: 5px; }
+.remotecell { position:relative; width: 46px; height:38px; text-align: center; vertical-align: middle; margin-left: 15px; float: left; }
+
+#complexrulestoolbar { 
+    border-bottom: 1px solid #007acc; 
+    margin-bottom: -1px; 
+    z-index: 10; 
+    position:absolute; 
+    margin-top:-64px; 
+    height: 75px; 
+    line-height: 30px;
+    vertical-align: middle;
+    background-color: #252526;
+    width: 1000px;
+}
+.disabledpackage {
+    background-color: red;
+}

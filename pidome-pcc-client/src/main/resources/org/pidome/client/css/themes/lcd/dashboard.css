@@ -1,0 +1,346 @@
+/******************************************************************
+ * 
+ * Define dashboard root vars
+ *
+ *****************************************************************/
+//@font-face {
+//    font-family: 'digital-7';
+//    src: url(digital.ttf);
+//}
+
+.app-content {
+    -fx-background-color: transparent;
+}
+
+.dashboard {
+    -fx-font-family: 'digital-7';
+}
+
+.svg-base {
+    visibility: hidden;
+}
+
+.svg-shape {
+    visibility: hidden;
+}
+
+.dashboard .dashboard-tile {
+    -fx-background-color: transparent;
+}
+
+/******************************************************************
+ * 
+ * Dashboard time item
+ *
+ *****************************************************************/
+.dashboard .dashboard-tile.dashboard-time {
+    //-fx-background-color: transparent;
+}
+
+.dashboard .dashboard-tile.dashboard-time .date {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-time .time {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-time .sunriseset {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-time .svg-shape {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-stroke: -fx-default-dashboard-text-color;
+    visibility: visible;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+/******************************************************************
+ * 
+ * Dashboard weather item
+ *
+ *****************************************************************/
+.dashboard .dashboard-tile.dashboard-weather {
+    //-fx-background-color: transparent;
+}
+
+.dashboard .dashboard-tile.dashboard-weather .locationtext{
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-weather .descriptiontext{
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-weather .temperature {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-weather .detailstext {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+/******************************************************************
+ * 
+ * Dashboard device item
+ *
+ *****************************************************************/
+.dashboard .dashboard-tile.dashboard-device {
+    -fx-border-width: 2px, 1px, 1px;
+    -fx-border-color: -fx-default-dashboard-text-color, -fx-border-shade-position-2, -fx-border-shade-position-3, -fx-border-shade-position-4;
+    -fx-border-insets: 0 0 0 0, 1 -1 -1 1, 2 -2 -2 2, 3 -3 -3 3;
+}
+
+////// Toggle stuff
+.dashboard .dashboard-tile.dashboard-device.toggle-control *.text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+.dashboard .dashboard-tile.dashboard-device.toggle-control {
+    -fx-background-color: transparent;
+}
+
+.dashboard .dashboard-tile.dashboard-device.toggle-control.active {
+    -fx-background-color: -fx-default-dashboard-item-active;
+}
+
+.dashboard .dashboard-tile.dashboard-device.toggle-control.active *.text {
+    -fx-fill: -fx-default-dashboard-background-color;
+    -fx-effect: null;
+}
+////// Data stuff
+.dashboard .dashboard-tile.dashboard-device.data-control .control-text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+////// Gauges stuff
+.dashboard .dashboard-tile.dashboard-device.data-control .one-eighty-gauge {
+    -fx-skin             : "eu.hansolo.enzo.gauge.skin.OneEightyGaugeSkin";
+    -bar-color           : -fx-default-dashboard-text-color;
+    -title-color         : -fx-default-dashboard-text-color;
+    -value-color         : -fx-default-dashboard-text-color;
+    -unit-color          : -fx-default-dashboard-text-color;
+    -min-text-color      : -fx-default-dashboard-text-color;
+    -max-text-color      : -fx-default-dashboard-text-color;
+    -bar-background-color: transparent;
+    -fx-background-color : transparent;
+}
+.dashboard .dashboard-tile.dashboard-device.data-control .one-eighty-gauge *.text {
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+////// sliders stuff
+.dashboard .dashboard-tile.dashboard-device.slider-control {
+    //-fx-border-color: transparent;
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .slider-background {
+    -fx-fill: -fx-default-dashboard-item-inactive;
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .slider {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .slider-highlight {
+    -fx-fill: -fx-default-dashboard-item-highlight;
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .slider-cutout {
+    -fx-fill: -fx-default-dashboard-background-color;
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .control-text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .control-text.value {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+///// Single button stuff
+.dashboard .dashboard-tile.dashboard-device.button-control {
+    ///-fx-background-color: #b94272;
+}
+.dashboard .dashboard-tile.dashboard-device.button-control.active {
+    -fx-background-color: -fx-default-dashboard-item-highlight;
+}
+.dashboard .dashboard-tile.dashboard-device.button-control .control-text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+///// Color picker stuff
+.dashboard .dashboard-tile.dashboard-device.colorpicker-control {
+    ///-fx-background-color: #b94272;
+}
+.dashboard .dashboard-tile.dashboard-device.colorpicker-control .control-text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+////// Graphs stuff
+.dashboard .dashboard-tile.data-control {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.dashboard .chart {
+    -fx-background-color: transparent;
+}
+.dashboard .chart *.text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .chart-content {
+    -fx-background-color: transparent;
+}
+
+.dashboard .chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.dashboard .chart-title {
+    -fx-text-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .chart-legend {
+    -fx-text-fill: -fx-default-dashboard-text-color;
+    -fx-background-color:  transparent;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .axis-label {
+    -fx-text-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .axis {
+    -fx-tick-label-fill: -fx-default-dashboard-text-color;
+    -fx-fill: -fx-default-dashboard-text-color;
+}
+
+.dashboard .axis:bottom {
+    -fx-border-color: -fx-default-dashboard-text-color transparent transparent transparent;
+}
+.dashboard .axis:left {
+    -fx-border-color: transparent -fx-default-dashboard-text-color transparent transparent;
+}
+
+.dashboard .axis-tick-mark,
+.dashboard .axis-minor-tick-mark {
+  -fx-fill: null;
+  -fx-stroke: -fx-default-dashboard-text-color;
+}
+.dashboard .chart-horizontal-grid-lines {
+    -fx-stroke-width: 1px;
+    -fx-effect: null;
+    -fx-stroke: -fx-default-dashboard-text-color;
+}
+.dashboard .chart-series-line,
+.dashboard .chart-series-area-line {    
+    -fx-stroke-width: 2px;
+}
+.dashboard .chart-series-area-line { 
+    -fx-stroke: -fx-default-dashboard-text-color;
+}
+
+.dashboard .default-color0.chart-series-line { -fx-stroke: -fx-default-dashboard-text-color; -fx-effect: -fx-default-dashboard-text-shadow; }
+.dashboard .default-color0.chart-line-symbol { -fx-background-color: -fx-default-dashboard-text-color; }
+.dashboard .default-color0.chart-series-symbol { -fx-background-color: transparent; }
+
+/******************************************************************
+ * 
+ * Dashboard macro item
+ *
+ *****************************************************************/
+.dashboard .dashboard-tile.dashboard-macro {
+    -fx-border-width: 2px, 1px, 1px;
+    -fx-border-color: -fx-default-dashboard-text-color, -fx-border-shade-position-2, -fx-border-shade-position-3, -fx-border-shade-position-4;
+    -fx-border-insets: 0 0 0 0, 1 -1 -1 1, 2 -2 -2 2, 3 -3 -3 3;
+    -fx-background-color: transparent;
+}
+.dashboard .dashboard-tile.dashboard-macro.active {
+    -fx-background-color: -fx-default-dashboard-item-highlight;
+}
+.dashboard .dashboard-tile.dashboard-macro .macroname {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+.dashboard .dashboard-tile.dashboard-macro.active .macroname {
+    -fx-fill: -fx-default-dashboard-background-color;
+    -fx-effect: null;
+}
+
+/******************************************************************
+ * 
+ * Dashboard scene item
+ *
+ *****************************************************************/
+.dashboard .dashboard-tile.dashboard-scene {
+    -fx-border-width: 2px, 1px, 1px;
+    -fx-border-color: -fx-default-dashboard-text-color, -fx-border-shade-position-2, -fx-border-shade-position-3, -fx-border-shade-position-4;
+    -fx-border-insets: 0 0 0 0, 1 -1 -1 1, 2 -2 -2 2, 3 -3 -3 3;
+}
+
+.dashboard .dashboard-tile.dashboard-scene.active {
+    -fx-background-color: -fx-default-dashboard-item-active;
+}
+.dashboard .dashboard-tile.dashboard-scene .scenenamebg {
+    -fx-visibility: hidden;
+}
+.dashboard .dashboard-tile.dashboard-scene .scenename {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-spacer.underlined {
+    -fx-border-width: 0 0 0.1em 0;
+    -fx-border-color: -fx-default-dashboard-text-color, -fx-border-shade-position-2, -fx-border-shade-position-3, -fx-border-shade-position-4;
+    -fx-border-insets: 0 0 0 0, 1 -1 -1 1, 2 -2 -2 2,3 -3 -3 3;
+    -fx-padding: 0 0 .5em 0;
+}
+
+.dashboard .dashboard-tile.dashboard-spacer .spacer-header-text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-font-size: 2.4em;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-spacer {
+    -fx-background-color: transparent;
+}
+
+
+
+//// We would like to overwrite the top menu bar :)
+.menu-bar {
+    -fx-background-color: transparent;
+    -fx-border-width: 2px;
+    -fx-border-color: transparent transparent -fx-default-dashboard-text-color transparent;
+}
+
+.menu-bar .title {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.menu-bar .menu-icon {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.menu-bar .title {
+    -fx-font-family: 'digital-7';
+}
+
+.menu-bar *.glyph-icon{
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}

@@ -1,0 +1,538 @@
+<div id="apicontent">
+
+        <div class="row">
+            <div class="col-lg-12" style="border-bottom: 1px solid #1c1e22;">
+                <div>
+                    <ul class="nav nav-tabs">
+                        <li role="presentation" class="active"><a href="#code-globals" aria-controls="code-globals" role="tab" data-toggle="tab">Globals</a></li>
+                        <li role="presentation"><a href="#code-devices" aria-controls="code-devices" role="tab" data-toggle="tab">Devices</a></li>
+                        <li role="presentation"><a href="#code-request" aria-controls="code-request" role="tab" data-toggle="tab">Request</a></li>
+                        <li role="presentation"><a href="#code-driver" aria-controls="code-driver" role="tab" data-toggle="tab">Driver</a></li>
+                        <li role="presentation"><a id="test" href="#code-discovery" aria-controls="code-discovery" role="tab" data-toggle="tab">Discovery (driver)</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="code-globals">
+                            <div style="padding-left: 10px; padding-right:10px; height:400px; overflow-y: scroll;">
+                                <h3>Globals</h3>
+                                <p>Your script has a couple of globally defined variables provided. These are reserved and should not be overridden. These globals help you to debug, log and have 
+                                direct access to the driver functionalities, like sending data to your hardware and perform device discovery functionalities.</p>
+                                <h4>Defined globals</h4>
+                                <ul>
+                                    <li>LOG: For logging purposes</li>
+                                    <li>DEBUG: for debugging purposes</li>
+                                    <li>driver: Access to driver specific functions</li>
+                                </ul>
+                                <strong>Do not use any global variable for any other purpose then stated otherwise it is lost! Especially for the driver global this is VERY important, without this, your script is useless.</strong>
+                                <h4>LOG</h4>
+                                <p>The log variable gives you access to the server wide log file (in the future replaced with driver specific log files) where you are able to log your driver events</p>
+                                <p>This log variabel has five log levels, info, warn, error, debug and trace.</p>
+                                <ul>
+                                    <li><kbd>LOG.info(String message)</kbd><br/>Use this to log only informative messages.</li>
+                                    <li><kbd>LOG.warn(String message)</kbd><br/>Use this to log warnings of items which need attention.</li>
+                                    <li><kbd>LOG.error(String message)</kbd><br/>Use this to log errors which occur in your script, look ahead for an example.</li>
+                                    <li><kbd>LOG.debug(String message)</kbd><br/>Use this to log debug messages which can help you identify issues when these arise. When the server has debug mode enabled these message will appear in the log file. This is not part of the debug output on this page!</li>
+                                    <li><kbd>LOG.trace(String message)</kbd><br/>Use this to log tracing of your script flow. This is only used in extreme cases where you would be needing a lot if information. To see these message in the log file the server has to be started in trace mode.</li>
+                                </ul>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">LOG examples</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+try {
+    ///code
+} catch (err) {
+    LOG.error("An error occured of type " + err.name + " with message: " + err.message);
+}
+                                        </code></pre>
+                                        <pre><code class="javascript">
+if(expression) {
+    LOG.info("Looks good");
+} else {
+    LOG.warn("You should take a look at this");
+}
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <h4>DEBUG</h4>
+                                <p>Currently not available</p>
+                                <p>With the debug parameter you are able to inject message direct into the debug output window. This is a handy feature for quick development. There are no additional
+                                   parameters needed then the message you wantin the output</p>
+                                <ul>
+                                    <li><kbd>DEBUG(String message)</kbd><br/>For logging messages directly to the debugger.</li>
+                                </ul>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">DEBUG example</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+var value = 300;
+DEBUG("Modulus "+value+"%33: " + (value%33));
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <h4>driver</h4>
+                                <p><kbd>driver</kbd> is a special variable which gives you access to a basic default driver's functions. By default drivers do not inherrit any discovery features
+                                but this has been added to the scripting.</p>
+                                <p>the driver aPI is explain at the Driver section and there is an additional section added so you are able to implement device discovery features if needed.</p>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="code-devices">
+                            <div style="padding-left: 10px; padding-right:10px; height:400px; overflow-y: scroll;">
+                                <h3>Devices</h3>
+                                <p>Devices are the entities in the server you will be serving data from by pressing a button or using an other control in the web interface, clients or JSON-RPC API. 
+                                    This section of the API explains how to update control's values and how to intepret requests being made by a device's control.</p>
+                                <h3>Device structure</h3>
+                                <p>A device is made up of different components. It has a name, description, a group of controls, the controls inside groups,options and an address. All these properties are
+                                    available to you in this script. A very abstract model of a device is like this with some important parts mentioned:</p>
+                                <pre><code class="javascript">
+{ 
+    device { 
+        name: "device name",
+        description: "A device description" 
+        controlgroups: [{
+            id:"groupid",
+            controls: [{
+                id:"controlid",
+                otherparameters:othervalues
+            }]
+        }],
+        options: [{
+            id: "optionid1",
+            type: "input"
+        },{
+            id: "optionid2",
+            type: "select",
+            options: [{
+                id: "optionid",
+                label: "option visual"
+            }]
+        }],
+        address: {
+            label: "quick description",
+            description: "A larger description about the address"
+        }
+    }
+}
+                                </code></pre>
+                                <p>The above should give a small idea on how a device has been set up so you will understand the some important parts of the API. You will not be working with any
+                                JSON code but there are convenience functions available which will enable you to retreive the above.</p>
+                                <p>The part you will mostly work with are device groups and controls, If you are planning to create a network of devices the address will also be important for you</p>
+                                <h3>The device API</h3>
+                                <p>the below api refers to the device variable which is not a global variable but available inside the function <kbd>var handleDeviceData = function(device, request){}</kbd>. where device is the parameter supplied.</p>
+                                <p>You can always retrieve devices from the functions called by the server and for this you need the special driver global variable. Refer to the Driver API on how to retreive a device.</p>
+                                <h4>Device information</h4>
+                                <p>When working with devices it sometimes comes in handy to have a device name, id or description in a log file</p>
+                                <ul>
+                                    <li><kbd>device.getDeviceName();</kbd><br/>Returns the name of the device an user has set.</li>
+                                    <li><kbd>device.getDescription();</kbd><br/>The description an user has set.</li>
+                                    <li><kbd>device.getId();</kbd><br/>The id of the device from the database</li>
+                                </ul>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Device information example</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+for each(device in driver.getRunningDevices()){
+    LOG.info("Current device id: " + device.getId() + " has the name "+ device.getDeviceName() + " and description " + device.getDescription());
+}
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <h4>Groups and controls</h4>
+                                <p>As said, a device consists of groups which contain controls. These controls are ALWAYS in a group. even if you would have just one control as it is part of the control's identification.</p>
+                                <h4>Groups</h4>
+                                <ul>
+                                    <li><kbd>device.getFullCommandSet().getControlsGroupsAsList();</kbd><br/>Returns an array of group objects which are available in this device.</li>
+                                    <li><kbd>device.getFullCommandSet().getControlsGroup(String groupid) throws org.pidome.server.connector.drivers.devices.devicestructure.DeviceControlsGroupException;</kbd><br/>Returns a group object with the given id. When the group does not exist it throws an exception, refer to the example below.</li>
+                                    <li><kbd>group.getGroupId();</kbd><br/>Returns the id of the group.</li>
+                                    <li><kbd>group.getGroupLabel();</kbd><br/>Returns the group's descriptive text.</li>
+                                </ul>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Device groups retrieval examples</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+for each(group in device.getFullCommandSet().getControlsGroupsAsList()){
+    LOG.info("Current group id: " + group.getGroupId() + " with name label: " + group.getGroupLabel());
+}
+                                        </code></pre>
+                                        <pre><code class="javascript">
+var DeviceControlsGroupException = org.pidome.server.connector.drivers.devices.devicestructure.DeviceControlsGroupException;
+try { 
+    var groupId = "this group does not exist";
+    var group = device.getFullCommandSet().getControlsGroup(groupId);
+    LOG.info("Current group id: " + group.getGroupId() + " with name label: " + group.getGroupLabel());
+} catch (e if e instanceof DeviceControlsGroupException) {
+    LOG.warn("The group: '" + groupId + "' does not exist");
+} catch (e) {
+    LOG.error("Something else then a non existing group error occured: " + e.message);
+}
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <h4>Controls</h4>
+                                <ul>
+                                    <li><kbd>group.getDeviceControlsAsList();</kbd><br/>Returns an array of device controls available in a control group.</li>
+                                    <li><kbd>group.getDeviceControl(String groupid) throws org.pidome.server.connector.drivers.devices.devicestructure.DeviceControlException;</kbd><br/>Returns a group object with the given id. When the group does not exist it throws an ReferenceError exception, refer to the example below.</li>
+                                    <li><kbd>control.getControlId()</kbd><br/>Returns the id of the control.</li>
+                                    <li><kbd>control.getDescription()</kbd><br/>Returns the short control descriptive text.</li>
+                                    <li><kbd>control.getControlType()</kbd><br/>Returns the control type.</li>
+                                    <li><kbd>control.getDataType()</kbd><br/>Returns the datattype used by the control.</li>
+                                    <li><kbd>control.getValueData()</kbd><br/>Returns the current value data of the control.</li>
+                                </ul>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Device controls retrieval examples</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+for each(control in device.getFullCommandSet().getDeviceControlsAsList()){
+    LOG.info("Current control id: " + control.getControlId() + " with name label: " + control.getDescription() + " of type " + control.getControlType() + " with data type: " + control.getDataType() + " and current value data: " + control.getValueData());
+}
+                                        </code></pre>
+                                        <pre><code class="javascript">
+var DeviceControlsGroupException = org.pidome.server.connector.drivers.devices.devicestructure.DeviceControlsGroupException;
+var DeviceControlException = org.pidome.server.connector.drivers.devices.devicestructure.DeviceControlException;
+
+var groupId   = "groupid";
+var controlId = "controlid";
+
+try { 
+    var group   = device.getFullCommandSet().getControlsGroup(groupId);
+    var control = group.getDeviceControl(controlId);
+
+    LOG.info("Command value from group id: " + group.getGroupId() + " with control id: " + control.getControlId() + " of type " + control.getControlType() + " with data type: " + control.getDataType() + " and current value data: " + control.getValueData());
+
+} catch (e if e instanceof DeviceControlsGroupException) {
+    LOG.warn("The group: '" + groupId + "' does not exist");
+} catch (e if e instanceof DeviceControlException) {
+    LOG.warn("The control '" + controlId + "' does not exist");
+} catch (e) {
+    LOG.error("Something else then a non existing group/control error occured: " + e.message);
+}
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <h4>Update a device</h4>
+                                <p>When you receive data from your hardware, and want to update a device's controls, you need a method for doing this.</p>
+                                <ul>
+                                    <li><kbd>device.passToDevice(String arbitraryData, BasicDataForDeviceContainer dataForDevice);</kbd><br/>Sends data to a device to be updated.</li>
+                                </ul>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Example passing data to devices</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+/**
+* This global variable is needed to be able to pass over driver data to the devices
+**/
+var BasicDataForDeviceContainer = Java.type("org.pidome.server.connector.drivers.devices.BasicDataForDeviceContainer");
+
+function sendDataToDevice(String groupId, String controlId, String value){
+    // Create the object the device can work with using the groupid and controlid.
+    var dataForDevice = new BasicDataForDeviceContainer(groupId, controlId);
+    // Put the value from the driver data.
+    dataForDevice.setValue(value);
+    // Pass on this object to the device and you are done!
+    device.passToDevice("set", dataForDevice);
+}
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <h4>Device address</h4>
+                                <ul>
+                                    <li><kbd>device.getAddress();</kbd><br/>Returns the address of the device. this value can be <kbd>null</kbd> when there is no address known, check for this.</li>
+                                </ul>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Device address retrieval example</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+for each(device in driver.getRunningDevices()){
+    LOG.info("Current device: " + device.getDeviceName() + " address is " + device.getAddress());
+    ///Check if the address is the same
+    if(device.getAddress()==="something"){
+        LOG.info("Device address: " + device.getAddress() + " is the address i was looking for.");
+    }
+}
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <h4>Device options</h4>
+                                <p>This is work in progress so hence not discussed, but it is possible that when a device has options set, these can be retrieved with the value the user has chosen for this specific option.</p>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="code-request">
+                            <div style="padding-left: 10px; padding-right:10px; height:400px; overflow-y: scroll;">
+                                <h3>Requests</h3>
+                                <p>The request object which is part of the function <kbd>var handleDeviceData = function(device, request){}</kbd> has information about the request that has been made in the web interface, clients or other methods like the JSON-RPC API.<br/>
+                                    It is a read only object so only informative data is available</p>
+                                <h4>Request information</h4>
+                                <ul>
+                                    <li><kbd>request.getGroupId();</kbd><br/>Returns the group id of the group where the control resides</li>
+                                    <li><kbd>request.getControlId();</kbd><br/>Returns the id of the control of this request</li>
+                                    <li><kbd>request.getControlType();</kbd><br/>Returns the type of control of this request</li>
+                                    <li><kbd>request.getDataType();</kbd><br/>Returns the datatype of the control of this request</li>
+                                    <li><kbd>request.getCommandValueData();</kbd><br/>Returns the command value data. This is the information to work on in your driver.</li>
+                                </ul>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Request example</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+/**
+* In case there is a problem with communication with the hardware this will come in handy.
+**/
+var IOException = java.io.IOException;
+
+var handleDeviceData = function(device, request){
+
+    // In the device already checks has been done. This would be the place to do additional checks to make sure data really
+    // is as the driver expects it to be. Let us trust for example sake the device routines and send data to the hardware
+
+    var address   = device.getAddress();           // The device knows it's own address. 
+    var controlid = request.getControlId();        // the control id.
+    var value     = request.getCommandValueData(); // The requests data to send.
+    var toSend    = address + ":set:" + controlid + ":" + value + "\n";
+
+    // As we are nice people we wrap the request in a try catch block so we know what kind of error we are getting
+    // and log this.
+    try {
+        driver.sendData(toSend);
+        return true; /// It is nice to know if it succeeded, right?
+    } catch (err if err instanceof IOException){
+        /// We can now log there is an issue with communication with the hardware.
+        LOG.error("Could not send '" + toSend + "' because of a communication error: " + err.message);
+        return false;
+    } catch (err){
+        /// Just in case another error rises
+        LOG.error("A different error then a communication occured: " + err.name + " with message: " + err.message);
+        return false;
+    }
+    // And we are done!
+};
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <p>The request object also holds a reference to the control object where it is all about in the request. This will be added soon to the API explanation
+                                    as some controls need extra attention if you have special needs</p>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="code-driver">
+                            <div style="padding-left: 10px; padding-right:10px; height:400px; overflow-y: scroll;">
+                                <h3>Driver</h3>
+                                <p>In scripts you have access to a global variable called <kbd>driver</kbd>. This global variable holds all the needed functionalities to be able
+                                to receive data from the hardware, send data to the hardware and find out which devices are currently actively running</p>
+                                <p>There is much more available in the <kbd>driver</kbd> variable but because a lot of these functions are not marked final yet they will not be 
+                                   handled in the API until they are. These functions make it possible to delete,create and modify devices on the fly, enable discovery (See discovery API)
+                                   and utility functions to manipulate data</p>
+                                <p>For now the API only described the basics.</p>
+
+                                <h4>the driver mechanism</h4>
+                                <p>Your scripted drivers can be reloaded in real time and they are part of the bigger driver picture. Normally a driver is completely unloaded from memory
+                                    when it is being restarted. Scripted drivers are not! The only part that is reloaded is your script, not the whole driver mechanism.</p>
+                                <p>When drivers are restarted the connection is closed with the hardware and all devices are unloaded. When they start again connections with the hardware
+                                    is re-opened and devices are re-loaded into memory</p>
+                                <p>With scripted drivers everything stays is in memory but only your code is unloaded and reloaded again. Keep this in mind. This means you have to clean up
+                                    after yourself! See the <kbd>driverStop</kbd> function for details.</p>
+
+                                <h4>Ready and stopping signals</h4>
+                                <p>These functions are needed to let you know when the driver starts and when it stops.</p>
+                                <h5>Ready</h5>
+                                <p>As it takes time to load drivers, and especially scripted drivers you need some sort of signal to know when you can start handling data from 
+                                    and be able to send data to hardware.</p>
+                                <p>To overcome this you need to implement a <kbd>driverStart</kbd> function. This function is called by the server to let you know your script has been
+                                    loaded and is ready to do it's magic</p>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Required driver start code.</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+/**
+* Signal the server has correctly loaded this script.
+* Use this function to signal your hardware the script is ready to receive data.
+**/
+var driverStart = function(){
+    // A message for in the log file so you will see when the driver is ready.
+    LOG.info("Hello there, Im ready chap!");
+
+    // You can send data to hardware as it is loaded before the script is.
+    driver.sendData("imready\n"); 
+
+    /// You must return true to let the server know you are also ready.
+    return true;
+};
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <p>The variable <strong>MUST</strong> be called <kbd>driverStart</kbd> as this is the function name the server will call</p>
+                                <p>You will also be able to do any initialization of any object inside this function</p>
+
+                                <h5>Stopping</h5>
+                                <p>The server not only sends a started signal, but also when it is going to stop your driver because the server is shutting down, or when you are
+                                   saving and restarting your script. To let you know that your scripted driver is going to stopped the server sends a stop signal to your script so
+                                   you can let your hardware know it is bye bye.</p>
+                                <p>It is required to have a stop function in your code called <kbd>driverStop</kbd> This function is called by the server to let you know your script is
+                                   being stopped</p>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Required driver stop code.</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+/** 
+* Signal from the server indicating the driver is being stopped.
+* Use this to let the hardware know the driver will stop accepting data.
+**/
+var driverStop = function(){
+    // Create a log entry the script is being stopped.
+    LOG.info("My wonderfull scripted driver is being stopped");
+
+    // The hardware is still alive, so you can send data that the driver is stopping.
+    driver.sendData("byebye\n");
+
+    // Just in case you have some global objects initialized and filled with data, clean up after yourself!
+    myGlobalVariable = ""; // Or you use destroy.
+
+    // Let the server know you handled all stopping code.
+    return true;
+};
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <p>The variable <strong>MUST</strong> be called <kbd>driverStart</kbd> as this is the function name the server will call</p>
+                                <p>You will also be able to do any initialization of any object inside this function</p>
+
+                                <h4>Receiving data from the hardware</h4>
+                                <p>Current driver implementation is pure text based, this means you will get strings to work with. The hardware driver which handles the communication does
+                                    all the control flow like connecting to the hardware, disconnecting and passing data to your script. So you do not have to worry about any hardware control</p>
+                                <h5>Retrieve data function</h5>
+                                <p>The function to retreive data is a required function which has to be defined in your script.</p>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Required code to receive data.</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+var handleDriverData = function(data){
+    //// The log is only used for informative reasons and can be left out
+    LOG.info("Received data from hardware: " + data);
+};
+                                        </code></pre>
+                                    </div>
+                                </div>
+
+                                <p>The var <strong>MUST</strong> be named <kbd>handleDriverData</kbd> as this is the fuction the server will call to supply your script with data.</p>
+                                <p>If your hardware sends data in chunks you must handle this yourself, for example if you use a newline character <kbd>\n</kbd> as an end of data character
+                                    take a look at the next example on how to find out when you know your data is complete.</p>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Handle chunked data example.</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+/**
+* A global variable to keep track of chunked data from the hardware
+**/
+var chunkedData = "";
+
+var handleDriverData = function(data){
+    // Add the data to the global chunked data variable.
+    chunkedData+=data;
+    // Check if your chunked data contains the newline character, when found the value won't be -1
+    if(chunkedData.indexOf('\n')!==-1){
+        //When the \n character is found you will enter this if statement
+
+        // Assign the data to a new variable and remove the newline character at the end.
+        var workData = chunkedData.trim();
+        //Clear out the chunkedData as otherwise you will keep on appending to it.
+        chunkedData = ""; 
+
+        /// Start with working with the driver data.
+        doWorkWithData(workData);
+
+    }
+};
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <h4>Get your devices</h4>
+                                <p>the driver variable has methods availabel for you so you are able to get the list of your current running devices. This comes in quite handy when
+                                you want to pass data from the hardware to front-end of the server, your devices.</p>
+                                <ul>
+                                    <li><kbd>driver.getRunningDevices()</kbd><br/>Returns an array of device objects, refer to the Device API what to do with them.</li>
+                                </ul>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Example getting a list of devices.</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+// Iterable list of devices
+for each(device in driver.getRunningDevices()){
+    LOG.info("At device with id: " + device.getId() + " width name " + device.getDeviceName() );
+}
+                                        </code></pre>
+                                    </div>
+                                </div>
+                                <h4>Send data to your hardware</h4>
+                                <p>The simplest function around, but certainly not the least important one. As the driver implementation is text based you will be sending strings to
+                                   your hardware. In the future binary data will also be available, but for now, it is just text</p>
+                                <ul>
+                                    <li><kbd>driver.sedData(String data) throws java.io.IOException</kbd><br/>Send data to hardware. Throws an java.io.IOException when there are initial communication problems</li>
+                                </ul>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">Example sending data to hardware</h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <pre><code class="javascript">
+/**
+* In case there is a problem with communication with the hardware this will come in handy as a global variable.
+**/
+var IOException = java.io.IOException;
+
+function sendData(){
+    // This is my data, without me my data is useless
+    var dataToSend = "hello hardware";
+    try {
+        driver.sendData(dataToSend);
+    } catch (err if err instanceof IOException){
+        // We can now log there is an issue with communication with the hardware.
+        LOG.error("Could not send '" + dataToSend + "' because of a communication error: " + err.message);
+    } catch (err){
+        /// Just in case another error rises
+        LOG.error("A different error then a communication occured: " + err.name + " with message: " + err.message);
+    }
+}
+                                        </code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="code-discovery">
+                            <div style="padding-left: 10px; padding-right:10px; height:400px; overflow-y: scroll;">
+                                <h3>Device discovery</h3>
+                                <p>Device discovery is used to scan for new devices by communicating with the hardware. A discovered device is triggered by receiving information from the 
+                                    hardware with a deviec address which is not known yet by using <kbd>for each(device in driver.getRunningDevices()){}</kbd>.
+                                <p>This functionality has not yet been completely finished in the server logics, but when ready you will be able to:</p>
+                                <ul>
+                                    <li>Add devices on the fly</li>
+                                    <li>Create a custom device skeleton and and add a device based on the skeleton</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</div>

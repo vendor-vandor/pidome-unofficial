@@ -1,0 +1,116 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<div id="pageinfotext">
+    Create or edit a macro here.<br/>
+    <br/>
+    To add an item to the list of items to be executed click the "Add item" button. A popup will be shown giving you a selection of items you can add to the list.<br/>
+    To delete an item from the list you can click the "Delete" button which stands in front of an item.<br/>
+    You can clear the whole list at once by clicking the "Clear list" button.
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Macro details</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" id="macroform">
+                            <div class="form-group">
+                                <label for="macro_name" class="col-sm-1 control-label">Name</label>
+                                <div class="col-sm-11">
+                                    <input type="text" data-type="alphanumeric" class="form-control" name="macro_name" id="macro_name" placeholder="Enter the macro's name" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="macro_description" class="col-sm-1 control-label">Description</label>
+                                <div class="col-sm-11">
+                                    <input type="text" class="form-control" name="macro_description" id="macro_description" placeholder="A short description of the macro" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-1 col-sm-11">
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" id="macro_favorite"> Favorite
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-sm-offset-1 col-sm-11">
+                                    <button type="submit" class="btn btn-info" id="save_macro">Save macro</button>
+                                    <button type="button" class="btn btn-danger" id="cancel_macro">Cancel</button>
+                                    <input type="hidden" name="macro_id" id="macro_id" value="${macroId}" />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2" style="min-height: 430px;">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Controls</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button id="add_exec" class="btn btn-info" type="button" style="width:130px;">Add item</button>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top:10px;">
+                            <div class="col-md-12">
+                                <button id="clear_exec" class="btn btn-danger" type="button" style="width:130px;">Clear list</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-10">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Macro execution list</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div id="macro_exec_list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(3, "page_macros", "Macros", "/desktop/macros.html", "Add/Edit macro");
+        setPageTitleDescription("Create, delete, edit and execute macros");
+        preparePageInfo();
+        $("#cancel_macro").on("click", function(e){
+            e.preventDefault();
+            quickMessage("info", "Macro add/edit cancelled", 1000);
+            refreshPageContent("/desktop/macros.html");
+        });
+        $.when(
+            $.getScript( "/shared/js/sitelibs/macroeditor.js" ),
+            $.Deferred(function( deferred ){
+                $( deferred.resolve );
+            })
+        ).done(function(){
+            
+        });
+    });
+    
+    function clearHandlers(){
+        clearInternalWidgetHandlers("#editormenu");
+        clearInternalWidgetHandlers("#editor");
+        clearInternalWidgetHandlers("#macroeditoractionlist");
+    }        
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

@@ -1,0 +1,2 @@
+ALTER TABLE clients_linked ADD COLUMN 'gps' BOOLEAN NOT NULL DEFAULT 0;
+PRAGMA user_version=28;

@@ -1,0 +1,303 @@
+<script>
+$(document).ready(function () {    
+    setPageBreadcrumbs(1, 'page_weatherview', "Weather", "/weather.html");
+});
+</script>
+<p class="defaultcontent">
+    When a weather plugin is activated weather information will appear below. This page is in early stage and only current conditions are displayed. This will be extended with forecast data.
+    The below data is currently available on the tablet web interface.
+    <span id="pluginremark"></span>
+</p>
+<div class="defaultcontent">
+    <div style="float:left; min-width: 370px;">
+        <div style="position: relative; min-height: 300px;">
+            <h2>Current</h2>
+            <div style="float:left;">
+                <img id="weathericon" style="width:148px;" src="/shared/images/icons/weather/-1.png" alt="Weather icon"/>
+            </div>
+            <div style="float:left; margin-left: 1em; font-size: 1.2em; line-height: 1.5em; margin-top: 15px;">
+                <div style="font-size: 1.5em; line-height: 1.1em; "><span id="weathertemp">0</span> °C</div>
+                <div style="font-size: 1.3em; margin-top:5px;"><span id="weathercityname"></span></div>
+                <div style="font-size: 1.3em;"><div id="weatherdescription"></div></div>
+            </div>
+            <div style="clear:left; float:left; width:100%; display:none;" id="weatherextreme">
+                <h2><img src="/shared/images/icons/warning.png" alt="Extreme Weather icon" style="float:left; width:1em;"/>&nbsp;Severe weather!</h2>
+                <p id="severeweathertext" style="font-size: 1.5em; padding-left: 5px;"></p>
+            </div>
+            <div style="clear:both"></div>
+            <div style="clear:left; float:left; width:100%; position: absolute; bottom: 0px;">
+                <p style="padding-left: 5px;">Data provided by: <span id="weatherprovider">Not provided</span></p>
+            </div>
+        </div>
+    </div>
+    <div style="float:left; margin-left: 25px; min-width: 573px;" id="weather3hforecast">
+        <h2 id="closeupcoming">Upcoming weather Forecast</h2>
+        <div id="3hforecastblock">
+            <div id="fch_1" style="min-width: 180px;max-width: 180px; float:left; margin-left: 5px; border-left: 1px solid #007acc; padding-left: 5px;">
+                <div style="position: relative; width: 148px; height:150px; margin: 0px auto;">
+                    <img id="weatherextreme_fch_1_icon" class="weatherWarningIcon" src="/shared/images/icons/warning.png" alt="Extreme Weather icon" style="cursor:pointer;display:none;position:absolute; left: 58px; top: 18px;"/>
+                    <img id="weathericon_fch_1" class="weatherpluginicon" src="/shared/images/icons/weather/-1.png" alt="Weather icon"/>
+                </div>
+                <div>
+                    <div class="nvp">
+                        <div class="n">Time</div><div class="v">: <span id="weathertime_fch_1"></span></div>
+                        <div class="n">Temp</div><div class="v">: <span id="weathertemp_fch_1"></span> °C</div>
+                        <div class="n">Desc</div><div class="v">: <span id="weatherdescriptiondetails_fch_1"></span></div>
+                        <div class="n">Humidity</div><div class="v">: <span id="weatherhumid_fch_1"></span> %</div>
+                        <div class="n">Pressure</div><div class="v">: <span id="weatherpressure_fch_1"></span></div>
+                        <div class="n">Wind</div><div class="v">: <span id="weatherwind_fch_1"></span>M/s <span id="weatherwinddirection_fch_1"></span></div>
+                    </div>
+                </div>
+            </div>
+            <div id="fch_2" style="min-width: 180px;max-width: 180px; float:left; margin-left: 5px; border-left: 1px solid #007acc; padding-left: 5px;">
+                <div style="position: relative; width: 148px; height:150px; margin: 0px auto;">
+                    <img id="weatherextreme_fch_2_icon" class="weatherWarningIcon" src="/shared/images/icons/warning.png" alt="Extreme Weather icon" style="cursor:pointer;display:none;position:absolute; left: 58px; top: 18px;"/>
+                    <img id="weathericon_fch_2" class="weatherpluginicon" src="/shared/images/icons/weather/-1.png" alt="Weather icon"/>
+                </div>
+                <div>
+                    <div class="nvp">
+                        <div class="n">Time</div><div class="v">: <span id="weathertime_fch_2"></span></div>
+                        <div class="n">Temp</div><div class="v">: <span id="weathertemp_fch_2"></span> °C</div>
+                        <div class="n">Desc</div><div class="v">: <span id="weatherdescriptiondetails_fch_2"></span></div>
+                        <div class="n">Humidity</div><div class="v">: <span id="weatherhumid_fch_2"></span> %</div>
+                        <div class="n">Pressure</div><div class="v">: <span id="weatherpressure_fch_2"></span></div>
+                        <div class="n">Wind</div><div class="v">: <span id="weatherwind_fch_2"></span>M/s <span id="weatherwinddirection_fch_2"></span></div>
+                    </div>
+                </div>
+            </div>
+            <div id="fch_3" style="min-width: 180px;max-width: 180px; float:left; margin-left: 5px; border-left: 1px solid #007acc; padding-left: 5px;">
+                <div style="position: relative; width: 148px; height:150px; margin: 0px auto;">
+                    <img id="weatherextreme_fch_3_icon" class="weatherWarningIcon" src="/shared/images/icons/warning.png" alt="Extreme Weather icon" style="cursor:pointer;display:none;position:absolute; left: 58px; top: 18px;"/>
+                    <img id="weathericon_fch_3" class="weatherpluginicon" src="/shared/images/icons/weather/-1.png" alt="Weather icon"/>
+                </div>
+                <div>
+                    <div class="nvp">
+                        <div class="n">Time</div><div class="v">: <span id="weathertime_fch_3"></span></div>
+                        <div class="n">Temp</div><div class="v">: <span id="weathertemp_fch_3"></span> °C</div>
+                        <div class="n">Desc</div><div class="v">: <span id="weatherdescriptiondetails_fch_3"></span></div>
+                        <div class="n">Humidity</div><div class="v">: <span id="weatherhumid_fch_3"></span> %</div>
+                        <div class="n">Pressure</div><div class="v">: <span id="weatherpressure_fch_3"></span></div>
+                        <div class="n">Wind</div><div class="v">: <span id="weatherwind_fch_3"></span>M/s <span id="weatherwinddirection_fch_3"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+    <div style="float:left; min-width: 370px;">
+        <h2>Current details</h2>
+        <div class="nvp">
+            <div class="n">Weather date</div>
+            <div class="v">: <span id="weatherdatedetails"></span></div>
+            <div class="n">City</div>
+            <div class="v">: <span id="weathercitynamedetails"></span></div>
+            <div class="n">Temperature</div>
+            <div class="v">: <span id="weathertempdetails">0</span> °C</div>
+            <div class="n">Description</div>
+            <div class="v">: <span id="weatherdescriptiondetails"></span></div>
+            <div class="n">Pressure</div>
+            <div class="v">: <span id="weatherpressure"></span></div>    
+            <div class="n">Humidity</div>
+            <div class="v">: <span id="weatherhumid">Unknown</span> %</div>
+            <div class="n">Wind</div>
+            <div class="v">: <span id="weatherwind">Unknown</span> M/s</div>
+            <div class="n">Wind direction</div>
+            <div class="v">: <span id="weatherwinddirection">Unknown</span> <span id="weatherwinddirectiondegrees"></span></div>
+        </div>
+    </div>
+    <div style="float:left; margin-left: 25px; min-width: 573px;" id="weather3hforecast">
+        <h2>3 Day Forecast</h2>
+        <div id="3dforecastblock">
+            <div id="fcd_1" style="min-width: 180px;max-width: 180px; float:left; margin-left: 5px; border-left: 1px solid #007acc; padding-left: 5px;">
+                <div style="position: relative; width: 148px; height:150px; margin: 0px auto;">
+                    <img id="weatherextreme_fcd_1_icon" class="weatherWarningIcon" src="/shared/images/icons/warning.png" alt="Extreme Weather icon" style="cursor:pointer;display:none;position:absolute; left: 58px; top: 18px;"/>
+                    <img id="weathericon_fcd_1" class="weatherpluginicon" src="/shared/images/icons/weather/-1.png" alt="Weather icon"/>
+                </div>
+                <div>
+                    <div class="nvp">
+                        <div class="n">Time</div><div class="v">: <span id="weathertime_fcd_1"></span></div>
+                        <div class="n">Temp</div><div class="v">: <span id="weathertemp_fcd_1"></span> °C</div>
+                        <div class="n">Desc</div><div class="v">: <span id="weatherdescriptiondetails_fcd_1"></span></div>
+                        <div class="n">Humidity</div><div class="v">: <span id="weatherhumid_fcd_1"></span> %</div>
+                        <div class="n">Pressure</div><div class="v">: <span id="weatherpressure_fcd_1"></span></div>
+                        <div class="n">Wind</div><div class="v">: <span id="weatherwind_fcd_1"></span>M/s <span id="weatherwinddirection_fcd_1"></span></div>
+                    </div>
+                </div>
+            </div>
+            <div id="fcd_2" style="min-width: 180px;max-width: 180px; float:left; margin-left: 5px; border-left: 1px solid #007acc; padding-left: 5px;">
+                <div style="position: relative; width: 148px; height:150px; margin: 0px auto;">
+                    <img id="weatherextreme_fcd_2_icon" class="weatherWarningIcon" src="/shared/images/icons/warning.png" alt="Extreme Weather icon" style="cursor:pointer;display:none;position:absolute; left: 58px; top: 18px;"/>
+                    <img id="weathericon_fcd_2" class="weatherpluginicon" src="/shared/images/icons/weather/-1.png" alt="Weather icon"/>
+                </div>
+                <div>
+                    <div class="nvp">
+                        <div class="n">Time</div><div class="v">: <span id="weathertime_fcd_2"></span></div>
+                        <div class="n">Temp</div><div class="v">: <span id="weathertemp_fcd_2"></span> °C</div>
+                        <div class="n">Desc</div><div class="v">: <span id="weatherdescriptiondetails_fcd_2"></span></div>
+                        <div class="n">Humidity</div><div class="v">: <span id="weatherhumid_fcd_2"></span> %</div>
+                        <div class="n">Pressure</div><div class="v">: <span id="weatherpressure_fcd_2"></span></div>
+                        <div class="n">Wind</div><div class="v">: <span id="weatherwind_fcd_2"></span>M/s <span id="weatherwinddirection_fcd_2"></span></div>
+                    </div>
+                </div>
+            </div>
+            <div id="fcd_3"  style="min-width: 180px;max-width: 180px; float:left; margin-left: 5px; border-left: 1px solid #007acc; padding-left: 5px;">
+                <div style="position: relative; width: 148px; height:150px; margin: 0px auto;">
+                    <img id="weatherextreme_fcd_3_icon" class="weatherWarningIcon" src="/shared/images/icons/warning.png" alt="Extreme Weather icon" style="cursor:pointer;display:none;position:absolute; left: 58px; top: 18px;"/>
+                    <img id="weathericon_fcd_3" class="weatherpluginicon" src="/shared/images/icons/weather/-1.png" alt="Weather icon"/>
+                </div>
+                <div>
+                    <div class="nvp">
+                        <div class="n">Time</div><div class="v">: <span id="weathertime_fcd_3"></span></div>
+                        <div class="n">Temp</div><div class="v">: <span id="weathertemp_fcd_3"></span> °C</div>
+                        <div class="n">Desc</div><div class="v">: <span id="weatherdescriptiondetails_fcd_3"></span></div>
+                        <div class="n">Humidity</div><div class="v">: <span id="weatherhumid_fcd_3"></span> %</div>
+                        <div class="n">Pressure</div><div class="v">: <span id="weatherpressure_fcd_3"></span></div>
+                        <div class="n">Wind</div><div class="v">: <span id="weatherwind_fcd_3"></span>M/s <span id="weatherwinddirection_fcd_3"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="clear:both;"></div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function() {
+        
+        $(".weatherWarningIcon").on("click", function(){
+            showWarningMessage("Severe weather", $(this).attr("alt"));
+        });
+        
+        function updateWeatherData(pluginId, capabilities){
+            if(pluginId!==undefined){
+                if(capabilities.indexOf("CURRENT_WEATHER") > -1) {
+                    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "WeatherService.getCurrentWeather", "params": {"id":'+pluginId+'} "id":"WeatherService.getCurrentWeather"}').done(function(data) {
+                        setWeatherData(data.result.data, false);
+                        if((capabilities.indexOf("THREEHOURS_FORECAST") > -1) || (capabilities.indexOf("UPCOMING_FORECAST") > -1)) {
+                            if(capabilities.indexOf("THREEHOURS_FORECAST") > -1){
+                                $("#closeupcoming").text("3 Hours forecast");
+                                $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "WeatherService.getThreeHoursForecast", "params": {"id":'+pluginId+'} "id":"WeatherService.getThreeHoursForecast"}').done(function(data) {
+                                    setForecastWeatherData('fch',data.result.data);
+                                });
+                            } else if(capabilities.indexOf("UPCOMING_FORECAST") > -1) {
+                                $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "WeatherService.getUpcomingForecast", "params": {"id":'+pluginId+'} "id":"WeatherService.getUpcomingForecast"}').done(function(data) {
+                                    setForecastWeatherData('fch',data.result.data);
+                                });
+                            }
+                        } else {
+                            $("#3hforecastblock").html("This plugin does not support upcoming weather");
+                        }
+                        if(capabilities.indexOf("THREEDAY_FORECAST") > -1) {
+                            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "WeatherService.getThreeDaysForecast", "params": {"id":'+pluginId+'} "id":"WeatherService.getThreeDaysForecast"}').done(function(data) {
+                                setForecastWeatherData('fcd',data.result.data);
+                            });
+                        } else {
+                            $("#3dforecastblock").html("This plugin does not support 3 days forecast");
+                        }
+                    });
+                }
+            } else {
+                $("#pluginremark").text("Plugin seems not to be running.");
+            }
+        }
+        
+        function setForecastWeatherData(type, weatherPluginData){
+            for(var i=0;i<weatherPluginData.length;i++){
+                var data = weatherPluginData[i];
+                var idName = '_'+type+'_' + (i+1);
+                try {
+                    var d = new Date(data.weatherdate * 1000);
+                    if(type==="fch"){
+                        $("#weathertime" + idName).text(d.toLocaleTimeString());
+                    } else {
+                        $("#weathertime" + idName).text(d.toLocaleDateString());
+                    }
+                    $("#weathericon" + idName).attr("src", "/shared/images/icons/weather/" + data.iconimage);
+                    try {
+                        $("#weathertemp" + idName).text(data.temperature.toFixed(2));
+                    } catch (err) {}
+                    $("#weatherdescriptiondetails" + idName).text(data.text);
+                    $("#weatherhumid" + idName).text(data.humidity);
+                    $("#weatherpressure" + idName).text(data.pressure);
+                    try {
+                        $("#weatherwind" + idName).text(data.windspeed.toFixed(2));
+                    } catch (err) {}
+                    $("#weatherwinddirection" + idName).text(data.winddirection);
+                    if(data.extremes!==""){
+                        $("#weatherextreme" + idName + "_icon").show();
+                        $("#weatherextreme" + idName + "_icon").attr("alt", data.extremes);
+                    } else {
+                        $("#weatherextreme" + idName + "_icon").hide();
+                    }
+                } catch (err){
+                    $("#weathertime" + idName).text("No data");
+                    $("#weathericon" + idName).attr("src", "/shared/images/icons/weather/-1png");
+                }
+            }
+        }
+        
+        function setWeatherData(weatherPluginData, rtupdate){
+            try {
+                $("#weathercityname").text(weatherPluginData.location);
+                try {
+                    $("#weathertemp").text(weatherPluginData.temperature.toFixed(2));
+                } catch (err) {}
+                $("#weathercitynamedetails").text(weatherPluginData.location);
+                try {
+                    $("#weathertempdetails").text(weatherPluginData.temperature.toFixed(2));
+                } catch (err) {}
+                $("#weatherhumid").text(weatherPluginData.humidity);
+                try {
+                    $("#weatherwind").text(weatherPluginData.windspeed.toFixed(2));
+                } catch (err) {}
+                $("#weathericon").attr("src", "/shared/images/icons/weather/" + weatherPluginData.iconimage);
+                $("#weatherdescription").text(weatherPluginData.text);
+                $("#weatherdescriptiondetails").text(weatherPluginData.text);
+                $("#weatherpressure").text(weatherPluginData.pressure);
+                $("#weatherwinddirection").text(weatherPluginData.winddirection);
+                $("#weatherwinddirectiondegrees").text("(" + weatherPluginData.winddirectiondegrees + "°)");
+                if(weatherPluginData.extremes!==""){
+                    $("#weatherextreme").show();
+                } else {
+                    $("#weatherextreme").hide();
+                }
+                $("#severeweathertext").text(weatherPluginData.extremes);
+                var d = new Date(weatherPluginData.weatherdate * 1000);
+                $("#weatherdatedetails").text(d.toLocaleString());
+                $("#pluginremark").text("");
+                if(weatherPluginData.ownername!=='' && weatherPluginData.ownerurl!==""){
+                    $("#weatherprovider").html('<a href="'+weatherPluginData.ownerurl+'" target="_blank">'+weatherPluginData.ownername+'</a>');
+                } else if (weatherPluginData.ownerurl!==""){
+                    $("#weatherprovider").html('<a href="'+weatherPluginData.ownerurl+'" target="_blank">'+weatherPluginData.ownerurl+'</a>');
+                } else if (weatherPluginData.ownername!==""){
+                    $("#weatherprovider").html(weatherPluginData.ownername);
+                }
+            } catch (err){
+                if(!rtupdate){
+                    $("#weathercityname").text("No data");
+                    $("#weathertemp").text("No data");
+                }
+            }
+        }
+
+        function updateAllData(){
+            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "WeatherService.getPlugins", "id":"WeatherService.getPlugins"}').done(function(data) {
+                try {
+                    var weatherPlugin = data.result.data[0];
+                    updateWeatherData(weatherPlugin.id, data.result.data[0].capabilities);
+                } catch (err) {
+
+                }
+            });
+        }
+
+        updateAllData();
+
+        pidomeRPCSocket.addCallback(function(thingy) {
+            updateAllData();
+        }, "WeatherService.getCurrentWeather");
+    });
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

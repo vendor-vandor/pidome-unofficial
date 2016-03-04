@@ -1,0 +1,197 @@
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_settingsremotes", "Remote settings", "/settingsremotes.html");
+    });
+</script>
+<button class="addNewRemote" id="addNewRemote" name="addNewRemote" style="margin-top: 10px;">Add new remote</button><p></p>
+<div id="remoteseditpanel">
+    <div class="splitter-panel">
+        <table id="remotes_edittable" class="edittable">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Available</th>
+                    <th>Type</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="splitter-panel">
+        <div id="remoteseditcontent" class="itemeditor"><span class="initialmessage">Click add remote, or click on a remote to edit.</span></div>
+    </div>
+</div>
+
+<button class="addNewRemote" id="addNewRemote" name="addNewRemote" style="margin-top: 10px;">Add new remote</button><p></p>
+<div id="innerscrollmargin"></div>
+<div id="dialog-confirm-delete" title="Confirm" style="display:none;">
+    <div>Confirm remote delete</div>
+    <div></div>
+</div>
+
+<script>
+    
+    var allRemotesSourceData;
+    
+    $(document).ready(function () {
+
+        $("#dialog-confirm-delete").jqxWindow({
+            width: 400,
+            height: 150,
+            theme: siteSettings.getTheme(),
+            autoOpen: false,
+            isModal: true
+        });
+
+        var allRemotesSource = {
+            datatype: "json",
+            datafields: [
+                { name: 'id', type: 'int'},
+                { name: 'name', type: 'string'},
+                { name: 'available', type: 'boolean'},
+                { name: 'type', type: 'boolean'},
+                { name: 'description', type: 'string'}
+            ],
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "RemotesService.getRemotes", "id":"RemotesServiceService.getRemotes"}',
+            root: "result>data"
+        };
+        allRemotesSourceData = new $.jqx.dataAdapter(allRemotesSource);
+        
+        $("#remoteseditcontent").jqxPanel({ width: '100%', height: '100%', autoUpdate: true, theme: siteSettings.getTheme()}); 
+        $('#remoteseditpanel').jqxSplitter({ width: 1000, height: 678,  panels: [{ size: 425, collapsible: false }, { size: 575, collapsed: true }], theme: siteSettings.getTheme() });
+        $("#remotes_edittable").jqxDataTable({ source: allRemotesSourceData, filterable: true, filtermode: 'simple', selectionMode: "none", height: '100%', width: 1000, sortable: true, pageable: true, pageSize: 9, pagerButtonsCount: 10, theme: siteSettings.getTheme(),
+            columns: [
+                {text: 'id', dataField: 'id', hidden:true},
+                {text: 'Name', dataField: 'name', width: 200},
+                {text: 'Description', dataField: 'description'},
+                {text: 'Available', dataField: 'available', width: 75,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return value===true?"Yes":"No";
+                    }      
+                },
+                {text: 'Type', dataField: 'type', width: 150,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return value===true?"Universal":"Default";
+                    }      
+                },
+                {text: 'Action', width: 150,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return '<button class="assignRemoteButtons" name="assignRemoteButtons" id="assignRemoteButtons-'+rowData.id+'" value="'+rowData.id+'">Assign</button>' + 
+                               '&nbsp;' + 
+                               '<button class="deleteRemote" name="deleteRemote" id="deleteRemote-'+rowData.id+'-'+row+'" value="'+rowData.id+'">Delete</button>'
+                    }      
+                }
+            ],
+            rendering: function(){
+                    // destroys all buttons.
+                    if ($(".assignRemoteButtons").length > 0) {
+                        $(".assignRemoteButtons").jqxButton('destroy');
+                    }
+                    if ($(".deleteRemote").length > 0) {
+                        $(".deleteRemote").jqxButton('destroy');
+                    }
+            },
+            rendered: function () {
+                try {
+                    $(".assignRemoteButtons").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".assignRemoteButtons").on('click', function () {
+                        var remoteId = $(this).attr('id').split("-")[1];
+                        clearInternalWidgetHandlers("#remoteeditcontent");
+                        refreshPageContent("/settingsremoteseditor.html?remote=" + remoteId);
+                    });
+                    $(".deleteRemote").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".deleteRemote").on('click', function () {
+                        var remote = $(this).attr('id').split("-")[1];
+                        var row = $(this).attr('id').split("-")[2];
+                        var remoteName = $("#remotes_edittable").jqxDataTable('getCellValue', row, 'name');
+                        var remoteType = ($("#remotes_edittable").jqxDataTable('getCellValue', row, 'type')===true)?"Universal":"Default";
+
+                        $("#dialog-confirm-delete").jqxWindow('setTitle','Delete: ' + remoteName);
+                        $("#dialog-confirm-delete").jqxWindow('setContent','<p style="text-align:center;">Are you sure you want to delete '+remoteType+' remote "'+remoteName+'"</p>' + 
+                                                                           '<div style="text-align:center;">'+
+                                                                           '    <input type="button" id="dialog-do-delete" value="Yes delete" />'+
+                                                                           '    <input type="button" id="dialog-do-cancel" value="No cancel" />'+
+                                                                           '</div>');
+                        $("#dialog-do-delete").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                        $("#dialog-do-delete").on('click', function () {
+                            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "RemotesService.deleteRemote", "params":{"id": '+remote+'}, "id":"RemotesServiceService.deleteRemote"}')
+                                .done(function(data) {
+                                        $("#pleaseWaitProgress").dialog("close");
+                                        if (data.success !== true) {
+                                            showErrorMessage("Remote delete error", "Could not delete remote: " + data.message);
+                                        } else {
+                                            showInfoMessage("Remote delete", remoteType + " remote " + remoteName + " has been deleted.");
+                                            allRemotesSourceData.dataBind();
+                                        }
+                                }, "json");
+                            $("#dialog-confirm-delete").jqxWindow('close');
+                        });
+                        $("#dialog-do-cancel").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                        $("#dialog-do-cancel").on('click', function () {
+                            $("#dialog-confirm-delete").jqxWindow('close');
+                        });
+                        $("#dialog-confirm-delete").jqxWindow('open');
+
+                    });
+                } catch(error){
+                    /// Nothing to edit.
+                }
+            }
+        });
+        $(".addNewRemote").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+        $(".addNewRemote").on('click', function () {
+            $('#remoteseditpanel').jqxSplitter('expand');
+            clearInternalWidgetHandlers("#remoteeditcontent");
+            $('#remoteseditcontent').empty();
+            $('#remoteseditcontent').load("/remoteseditor.xhtml?ajax=true" );
+        });
+        
+    });
+    
+    function saveRemotePlugin(){
+        var postData = {};
+        var urlString = "";
+        if($("#installed_id").val()!== undefined && $("#installed_id").val()!=="0"){
+            postData["installed_id"] = $("#installed_id").val();
+            urlString = "?installed_id=" + $("#installed_id").val();
+        } else {
+            postData["remote_id"] = $("#remote_id").val();
+            urlString = "?remote_id=" + $("#remote_id").val();
+        }
+        postData["plugin_name"] = $("#plugin_name").val();
+        postData["plugin_desc"] = $("#plugin_desc").val();
+        postData["plugin_location"] = $("#plugin_location").val();
+        postData["plugin_fav"] = $("#plugin_fav").val();
+        $("#optionCollection input").each(function(){
+            postData[$(this).attr("id")] = $(this).val();
+        });
+        $.post("/remoteseditor.xhtml" + urlString, postData)
+                .done(function(data) {
+                    var obj = jQuery.parseJSON( data );
+                    if (obj.result.exec !== true) {
+                        showErrorMessage("Remote plugin error", "Could not add/modify remote: " + obj.result.reason);
+                    } else {
+                        showInfoMessage("Remote plugin added/modified", "Remote " + postData["plugin_name"] + " has been added/modified");
+                        $('#remoteseditpanel').jqxSplitter('collapse');
+                        clearInternalWidgetHandlers("#remoteseditcontent");
+                        allRemotesSourceData.dataBind();
+                    }
+                }, "json").fail(function( jqXHR, textStatus, errorThrown ) {
+                    showErrorMessage("Remote plugin error", "Could not add/modify remote: Request error - " + textStatus + ", " + errorThrown);
+                });
+    }
+    
+    function clearHandlers(){
+        clearInternalWidgetHandlers("#remoteseditcontent");
+        $(".addNewRemote").jqxButton('destroy');
+        $("#remoteseditcontent").jqxPanel('destroy');
+        $("#remotesedittable").jqxDataTable('destroy');
+        $("#remoteseditpanel").jqxSplitter('destroy');
+        $("#dialog-confirm-delete").jqxWindow('destroy');
+    }
+</script>

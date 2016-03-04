@@ -1,0 +1,51 @@
+<div id="scenedisplay">
+    <div id="sceneeditormenu" class="defaultcontent" style="padding:0px;">
+        <fieldset id="scenemenubasicinfo">
+            <legend>Basic information</legend>
+            <div class="nvp" style="padding: 5px; float:left;">
+                <div class="n"><label for="scene_name">Name</label></div>
+                <div class="v"><input type="text" name="scene_name" id="scene_name" value="" /></div>
+            </div>
+            <div class="nvp" style="padding: 5px; float:left;">
+                <div class="n"><label for="scene_description">Description</label></div>
+                <div class="v"><input type="text" name="scene_description" id="scene_description" value="" /></div>
+            </div>
+            <div class="nvp" style="padding: 5px; float:left;">
+                <div class="n">&nbsp;</div>
+                <div class="v"><button id="save_scene">Save Scene</button></div>
+            </div>
+            <input type="hidden" name="scene_id" id="scene_id" value="${sceneId}" />
+        </fieldset>
+    </div>
+    <p class="defaultcontent" style="font-size: 1.4em; text-align:center;">Currently only devices are supported in scenes.</p>
+    <div id="sceneeditoractionlist" class="defaultcontent" style="padding:0px;">
+        <fieldset id="scenemenuexeclist">
+            <legend>Execution list</legend>
+            <div class="nvp" style="width:100%">
+                <div class="n" style="width:125px;"><button id="add_exec" style="margin:3px;">Add item</button><br/><button id="clear_exec" style="margin:3px;">Clear list</button></div>
+                <div class="v" id="scene_exec_list" style="width: 860px;">
+
+                </div>
+            </div>
+        </fieldset>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    function clearHandlers(){
+        clearInternalWidgetHandlers("#sceneeditormenu");
+        clearInternalWidgetHandlers("#scenemenuexeclist");
+        clearInternalWidgetHandlers("#sceneeditoractionlist");
+    }
+    $(document).ready(function() {
+        setPageBreadcrumbs(3, "page_scenes", "Scenes", "/scene.html", "Add/Edit scene");
+        $.when(
+            $.getScript( "/shared/js/sitelibs/sceneeditor.js" ),
+            $.Deferred(function( deferred ){
+                $( deferred.resolve );
+            })
+        ).done(function(){
+            
+        });
+    });
+</script>

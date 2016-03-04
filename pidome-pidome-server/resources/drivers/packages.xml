@@ -1,0 +1,34 @@
+<packagesfiles>
+    <packagefile file="PiDome.Peripherals">
+        <delivers>
+            <peripherals>
+                <peripheral vid="PiDome" pid="GPIOSerial">org.pidome.driver.peripherals.pidomeNativeSerial</peripheral>
+                <peripheral vid="PiDome" pid="GPIOI2C">org.pidome.driver.peripherals.pidomeNativeI2CBus</peripheral>
+                <peripheral vid="2341" pid="0043">org.pidome.driver.peripherals.pidomeNativeArduino</peripheral>
+                <peripheral vid="PiDome" pid="ServerDevicePeripheral">org.pidome.driver.peripherals.pidomeServerPeripheral</peripheral>
+            </peripherals>
+        </delivers>
+    </packagefile>
+    <packagefile file="PiDome.Drivers">
+        <delivers>
+            <drivers>
+                <driver id="ARD_RF_ELROBCLONES_NATIVE" peripheral="org.pidome.driver.peripherals.pidomeNativeArduino">org.pidome.driver.driver.nativePT2262BasicDriver</driver>
+                <driver id="NATIVE_RF_DRIVER" peripheral="org.pidome.driver.peripherals.pidomeNativeArduino">org.pidome.driver.driver.nativeRfDriver</driver>
+                <driver id="NATIVE_PIDOMEI2C_DRIVER" peripheral="org.pidome.drivers.peripherals.pidomeRaspI2CBus">org.pidome.driver.driver.nativeDefaultI2CDriver</driver>
+                <driver id="NATIVE_PIDOMESERVERDEVICE_DRIVER" peripheral="org.pidome.driver.peripherals.pidomeServerPeripheral">org.pidome.driver.driver.nativeServerDriver</driver>
+            </drivers>
+        </delivers>
+    </packagefile>
+    <packagefile file="PiDome.Devices">
+        <delivers>
+            <devices>
+                <device driver="org.pidome.driver.driver.nativePT2262BasicDriver">org.pidome.driver.device.nativeAB400S</device>
+                <device driver="org.pidome.driver.driver.nativePT2262BasicDriver">org.pidome.driver.device.nativeSelectRemoteAL7901</device>
+                <device driver="org.pidome.driver.driver.nativeRfDriver">org.pidome.driver.device.aidenGedenkPlek</device>
+                <device driver="org.pidome.driver.driver.nativeDefaultI2CDriver">org.pidome.driver.device.i2cLtsLc</device>
+                <device driver="org.pidome.driver.driver.nativeDefaultI2CDriver">org.pidome.driver.device.bareboneI2CDevice</device>
+                <device driver="org.pidome.driver.driver.nativeServerDriver">org.pidome.driver.device.pidomeServerDevice</device>
+            </devices>
+        </delivers>
+    </packagefile>
+</packagesfiles>

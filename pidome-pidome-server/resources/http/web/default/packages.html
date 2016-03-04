@@ -1,0 +1,375 @@
+<div id="pageinfotext">
+    <div class="alert alert-info" role="alert">Packages are validated automatically as the permission system is not enabled on this moment!!</div>
+    As preparation of future install-able packages we have started implementing a permission based system.<br/>
+    <br/> 
+    This page currently only shows the permissions required by the installed packages. The permission system is not 
+    yet in use but it is possible it suddenly is. <br/>
+    <br/>
+    The mechanism in place notifies you as user what actions packages want to acquire. Authors of these packages are forced to supply these
+    because if they won't the system will not let them perform these actions. Example:<br/>
+    If you would install a package which handles access to for example a keypad you have installed, and the package requires a connection to 
+    a website, you should think twice before allowing this package. Maybe it sends your security codes to it!<br/>
+    <br/>
+    These permissions will be active for every package developer. This means it is also active for us as PiDome. No exceptions made.<br/>
+    <br/>
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-2">
+                        <table id="packagestable" class="table table-striped table-hover"
+                               data-toggle="table" 
+                               data-show-refresh="true" 
+                               data-search="true"
+                               data-single-select="true"
+                               data-search-align="left">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-visible="false">id</th>
+                                    <th data-field="auth" data-visible="false">Valid</th>
+                                    <th data-field="name" data-formatter="validPackageFormatter">Package</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h3 style="margin-left: 0px;">Package information/permissions</h3>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="panel panel-default">
+                                            <div class="panel-heading">Package information</div>
+                                            <div class="panel-body" id="packagedetailscontent">
+                                                <h4 class="whiteheader devicegroup" id="packagename" style="margin:-7px 0px 3px 0px;">Click a package to view</h4>
+                                                <table>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td class="name">Author</td><td>: <span id="packageauthor"></span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="name">Website</td><td>: <span id="packagewebsite"></span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="name">Email</td><td>: <span id="packageemail"></span></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="name">Version</td><td>: <span id="packageversion"></span></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="panel panel-default" style="height: 470px;">
+                                            <div class="panel-heading">Package permissions</div>
+                                            <div class="panel-body" id="packagerightscontent" style="height: 371px; overflow-y:auto;">
+                                                
+                                            </div>
+                                            <div class="panel-footer">
+                                                <button id="approvepackage-ok" class="btn btn-success" style="visibility:hidden">Set/Update permissions</button>
+                                                <button id="approvepackage-nok" class="btn btn-danger" style="visibility:hidden">Revoke all permissions</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="row">
+                                    <h3 style="margin-left: 0px;">Package contents</h3>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div role="tabpanel" id="packagecontentstabpanel">
+                                                <ul class="nav nav-tabs">
+                                                    <li id="packagedevicetab" role="presentation" class="active"><a href="#packagedevicescontent" aria-controls="packagedevicescontent" role="tab" data-toggle="tab">Devices <span class="badge">0</span></a></li>
+                                                    <li id="packagedrivertab" role="presentation"><a href="#packagedriverscontent" aria-controls="packagedriverscontent" role="tab" data-toggle="tab">Drivers <span class="badge">0</span></a></li>
+                                                    <li id="packageperipheraltab" role="presentation"><a href="#packageperipheralscontent" aria-controls="packageperipheralscontent" role="tab" data-toggle="tab">Peripherals <span class="badge">0</span></a></li>
+                                                    <li id="packageplugintab" role="presentation"><a href="#packagepluginscontent" aria-controls="packagepluginscontent" role="tab" data-toggle="tab">Plugins <span class="badge">0</span></a></li>
+                                                </ul>
+                                                <div class="tab-content">
+                                                    <div role="tabpanel" class="tab-pane active" id="packagedevicescontent">
+                                                        <div class="panel panel-default">
+                                                          <div class="panel-body">
+                                                            <table id="packagedevicestable"class="table table-striped"
+                                                                   data-show-refresh="false" 
+                                                                   data-search="false"
+                                                                   data-toolbar-align="left">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th data-field="name">Name</th>
+                                                                        <th data-field="version" data-width="175">Version</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+
+                                                                </tbody>
+                                                            </table>
+                                                          </div>
+                                                        </div>
+                                                    </div>
+                                                    <div role="tabpanel" class="tab-pane" id="packagedriverscontent">
+                                                        <div class="panel panel-default">
+                                                          <div class="panel-body">
+                                                            <table id="packagedriverstable"class="table table-striped"
+                                                                   data-show-refresh="false" 
+                                                                   data-search="false"
+                                                                   data-toolbar-align="left">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th data-field="name">Name</th>
+                                                                        <th data-field="version" data-width="175">Version</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+
+                                                                </tbody>
+                                                            </table>
+                                                          </div>
+                                                        </div>
+                                                    </div>
+                                                    <div role="tabpanel" class="tab-pane" id="packageperipheralscontent">
+                                                        <div class="panel panel-default">
+                                                          <div class="panel-body">
+                                                            <table id="packageperipheralstable"class="table table-striped"
+                                                                   data-show-refresh="false" 
+                                                                   data-search="false"
+                                                                   data-toolbar-align="left">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th data-field="name">Name</th>
+                                                                        <th data-field="version" data-width="175">Version</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+
+                                                                </tbody>
+                                                            </table>
+                                                          </div>
+                                                        </div>
+                                                    </div>
+                                                    <div role="tabpanel" class="tab-pane" id="packagepluginscontent">
+                                                        <div class="panel panel-default">
+                                                          <div class="panel-body">
+                                                            <table id="packagepluginstable"class="table table-striped"
+                                                                   data-show-refresh="false" 
+                                                                   data-search="false"
+                                                                   data-toolbar-align="left">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th data-field="name">Name</th>
+                                                                        <th data-field="version" data-width="175">Version</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+
+                                                                </tbody>
+                                                            </table>
+                                                          </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    
+    function openPackage(id){
+        var url = '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PackageService.getPackageDetails", "id":"PackageService.getPackageDetails", "params":{"id":' + id + '}}';
+        $.get(url)
+            .done(function(data) {
+                try {
+                    var packageData = data.result.data;
+                    var deliverData = packageData.delivers;
+                    
+                    $("#packagename").text(packageData.name);
+                    $("#packageauthor").text(packageData.author);
+                    $("#packagewebsite").text(packageData.website);
+                    $("#packageemail").text("N/A");
+                    $("#packageversion").text("N/A");
+                    
+                    $("#packagedevicetab span.badge").text(deliverData.devices.length);
+                    $("#packagedrivertab span.badge").text(deliverData.drivers.length);
+                    $("#packageperipheraltab span.badge").text(deliverData.peripherals.length);
+                    $("#packageplugintab span.badge").text(deliverData.plugins.length);
+                    
+                    if(deliverData.devices.length>0){
+                        $("#packagedevicetab").show();
+                    } else {
+                        $("#packagedevicetab").hide();
+                    }
+                    if(deliverData.drivers.length>0){
+                        $("#packagedrivertab").show();
+                    } else {
+                        $("#packagedrivertab").hide();
+                    }
+                    if(deliverData.peripherals.length>0){
+                        $("#packageperipheraltab").show();
+                    } else {
+                        $("#packageperipheraltab").hide();
+                    }
+                    if(deliverData.plugins.length>0){
+                        $("#packageplugintab").show();
+                    } else {
+                        $("#packageplugintab").hide();
+                    }
+                    if(deliverData.devices.length>0){
+                        $('#packagecontentstabpanel a[href="#packagedevicescontent"]').tab('show');
+                    } else if(deliverData.drivers.length>0){
+                        $('#packagecontentstabpanel a[href="#packagedriverscontent"]').tab('show');
+                    } else if(deliverData.peripherals.length>0){
+                        $('#packagecontentstabpanel a[href="#packageperipheralscontent"]').tab('show');
+                    } else if(deliverData.plugins.length>0){
+                        $('#packagecontentstabpanel a[href="#packagepluginscontent"]').tab('show');
+                    }
+                    $('#packagedevicestable').bootstrapTable('load', deliverData.devices);
+                    $('#packagedriverstable').bootstrapTable('load', deliverData.drivers);
+                    $('#packageperipheralstable').bootstrapTable('load', deliverData.peripherals);
+                    $('#packagepluginstable').bootstrapTable('load', deliverData.plugins);
+                    
+                    $('#packagedetailscontent').html();
+            } catch (err){
+                showErrorMessage("Server/interface error", "Could not get package details. Reported: " + err);
+            }
+                try {
+                    var packageData = data.result.data;
+                    var approvedPackage = false;
+
+                    var currentPermissionData = packageData.currentpermissions;
+                    var currentPermissions;
+                    if(currentPermissionData.error!==undefined && (packageData.restrictionenabled!==undefined && packageData.restrictionenabled===false)){
+                        currentPermissions = '<div class="alert alert-warning" role="alert"><strong>Package is automatically validated as security seems to be turned off.</strong></div>';
+                    } else if(currentPermissionData.error!==undefined){
+                        currentPermissions = '<div class="alert alert-danger" role="alert"><strong>' + currentPermissionData.error + '</strong></div>';
+                    } else {
+                        currentPermissions = '<div class="alert alert-success" role="alert">Permissions are up to date</div>';
+                    }
+                    var newPermissionData = packageData.definedpermissions;
+                    var newPermissions = '<h3 class="whiteheader devicegroup">Needed permissions</h3>';
+                    
+                    var objCount = 0;
+                    for (var k in newPermissionData){
+                        if (newPermissionData.hasOwnProperty(k)) {
+                            ++objCount;
+                            break;
+                        }
+                    }
+                    if(objCount === 0){
+                        newPermissions += '<div class="alert alert-warning" role="alert">This package has no permissions set. These are missing or not known. If this package causes problems contact author.</div>';
+                    } else if(newPermissionData.error!==undefined){
+                        newPermissions += '<div class="alert alert-danger" role="alert">' + newPermissionData.error + '</div>';
+                    } else {
+                        newPermissions += '<ul style="padding-left: 0px; list-style-type:none;">';
+                        $.each(newPermissionData, function(key,val){
+                            var subPermissions = '<ul>';
+                            for(var i=0; i<val.collection.length; i++){
+                                subPermissions += '<li><span style="font-weight:bold;">'+val.collection[i].reason+'</span><br/><span>'+val.collection[i].detailed+'</span></li>';
+                            }
+                            subPermissions += '</ul>';
+                            newPermissions += '<li style="padding-bottom:7px;"><span style="font-weight:bold;">' + val.name + '</span><br/><span>' + val.description + '</span>'+subPermissions+'</li>';
+                        });
+                        newPermissions += '</ul>';
+                    }
+                    approvedPackage = packageData.auth;
+                    try {
+                        $("#approvepackage-ok").off("click");
+                        $("#approvepackage-ok").destroy();
+                    } catch (err){}
+                    try {
+                        $("#approvepackage-nok").off("click");
+                        $("#approvepackage-nok").destroy();
+                    } catch (err){}
+                    if(!approvedPackage && packageData.restrictionenabled){
+                        $('#approvepackage-nok').hide();
+                        $('#approvepackage-ok').show();
+                        $('#approvepackage-ok').on("click", function(){
+                            var url = '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PackageService.setPackageApproved", "params": {"id":' + packageData.id + '} "id":"PackageService.setPackageApproved"}';
+                            $.get(url).done(function(data) {
+                                $('#packagestable').bootstrapTable("refresh",{ silent: true });
+                            });
+                        });
+                    } else if (packageData.restrictionenabled) {
+                        $('#approvepackage-ok').hide();
+                        $('#approvepackage-nok').show();
+                        $('#approvepackage-nok').on("click", function(){
+                            var url = '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PackageService.setPackageDisApproved", "params": {"id":' + packageData.id + '} "id":"PackageService.setPackageDisApproved"}';
+                            $.get(url).done(function(data) {
+                                $('#packagestable').bootstrapTable("refresh",{ silent: true });
+                            });
+                        });
+                    } else {
+
+                    }
+                    $('#packagerightscontent').html('\n\
+<div class="nvp">\n\
+    <div style="padding-right: 3px; clear:left;">\n\
+        '+currentPermissions+'\n\
+        '+newPermissions+'\n\
+    </div>\n\
+</div>');
+            } catch (err){
+                showErrorMessage("Server/interface error", "Could not get package details. Reported: " + err);
+            }
+        }, "json");
+    }
+    
+    function validPackageFormatter(value, row){
+        if(row.auth===true){
+            return '<span class="label label-success">Valid</span> ' + value;
+        } else {
+            return '<span class="label label-danger">Invalid</span> ' + value;
+        }
+    }
+    
+    $('#packagestable').bootstrapTable({
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "PackageService.getPackages", "id":"PackageService.getPackages"}',
+        cache: false,
+        height: 700,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        },
+        onClickRow: function (row) {
+            openPackage(row.id);
+        }
+    });
+    $('#packagedevicestable').bootstrapTable({
+        height: 571
+    });
+    $('#packagedriverstable').bootstrapTable({
+        height: 571
+    });
+    $('#packagepluginstable').bootstrapTable({
+        height: 571
+    });
+    $('#packageperipheralstable').bootstrapTable({
+        height: 571
+    });
+    
+    $(document).ready(function () {
+        
+        setPageBreadcrumbs(8, "page_packages", "Packages", "/packages.html");
+        setPageTitleDescription("Install, uninstall, approve and unapprove packages.");
+        preparePageInfo();
+        
+    });
+    
+</script>

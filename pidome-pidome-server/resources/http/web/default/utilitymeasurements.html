@@ -1,0 +1,202 @@
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(1, "page_utilitymcview", "Utility measurements", "/utilitymeasurements.html");
+    });
+</script>
+<div class="defaultcontent" id="utilitiescontent" style="max-width:1000px;">
+<#if CurrentUsageValues??>
+    <fieldset style="margin-top: 10px">
+        <legend>Usages</legend>
+        <p>Below you will see the current utility usages. These usages are calculated based on the options given in the Utility Measurement plugin settings page. 
+            These measurements will be updated as often as the measuring device delivers data to the plugin and therefore are as real time as the device can deliver. On this moment only the gauges are live updated.</p>
+    </fieldset>
+<#else>
+    <fieldset style="margin-top: 10px">
+        <legend>Oh dear, no measurements?</legend>
+        <p>It seems like there is no utility measurement plugin running at the moment. This is a default feature of the server but you need a <a href="/devicesedit.html">device added</a> which can deliver measurements to the integrated <a href="/utilityedit.html">plugin</a></p>
+        </#if>
+    </fieldset>
+    <div style="width:33%; float:left; text-align:center;">
+        <h3>Today's electricity usage</h3>
+        <canvas id="todaykWh" style="margin-left:auto; margin-right:auto"></canvas>
+    </div>
+    <div style="width:33%; float:left; text-align:center;">
+        <h3>Today's water usage</h3>
+        <canvas id="todayWater" style="margin-left:auto; margin-right:auto"></canvas>
+    </div>
+    <div style="width:33%; float:left; text-align:center;">
+        <h3>Today's gas usage</h3>
+        <canvas id="todayGas" style="margin-left:auto; margin-right:auto"></canvas>
+    </div>
+    <div style="clear:both;"></div>
+    <div style="width:33%; float:left; text-align:center;">
+        <h3>Current electricity usage</h3>
+        <canvas id="currentWatt"></canvas>
+    </div>
+    <div style="width:66%; float:left; text-align:center;">
+        <h3>Historic electricity average usages.</h3>
+        <div style="float: left;" id="historicelectricity"></div>
+    </div>
+    <div style="clear:both;"></div>
+    <h3>Historic electricity total usages.</h3>
+    <div style="width:100%; float:left; text-align:center;">
+        <div style="float: left;" id="historicelectricitykwh"></div>
+    </div>
+    <div style="clear:both;"></div>
+    <h3>Historic water total usages.</h3>
+    <div style="width:100%; float:left; text-align:center;">
+        <div style="float: left;" id="historicwater"></div>
+    </div>
+    <div style="clear:both;"></div>
+    <h3>Historic gas total usages.</h3>
+    <div style="width:100%; float:left; text-align:center;">
+        <div style="float: left;" id="historicgas"></div>
+    </div>
+    <div style="clear:both;"></div>
+</div>
+<div id="innerscrollmargin"></div>
+<script src="../shared/js/sitelibs/gauge.js"></script>
+<script>
+    $(document).ready(function() {
+        
+        <#if CurrentUsageValues??>
+        
+        new Graphing("historicelectricity", "${_SERVER.hostname}:${_SERVER.hostport?c}", ${utilityMeasurementPluginId}, "UTILITY", "WATT", "${CurrentUsageValues.POWER.unitcurrent.name}", "${CurrentUsageValues.POWER.unitcurrent.name}", "PLUGIN", "time-totals",2).createGraph(643, 250);
+        new Graphing("historicelectricitykwh", "${_SERVER.hostname}:${_SERVER.hostport?c}", ${utilityMeasurementPluginId}, "UTILITY", "KWH", "${CurrentUsageValues.POWER.current.name}", "${CurrentUsageValues.POWER.current.name}", "PLUGIN", "time-totals",3).createGraph(963, 300);
+        new Graphing("historicwater", "${_SERVER.hostname}:${_SERVER.hostport?c}", ${utilityMeasurementPluginId}, "UTILITY", "WATER", "${CurrentUsageValues.WATER.current.name}", "${CurrentUsageValues.WATER.current.name}", "PLUGIN", "time-totals",3).createGraph(963, 300);
+        new Graphing("historicgas", "${_SERVER.hostname}:${_SERVER.hostport?c}", ${utilityMeasurementPluginId}, "UTILITY", "GAS", "${CurrentUsageValues.GAS.current.name}", "${CurrentUsageValues.GAS.current.name}", "PLUGIN", "time-totals",3).createGraph(963, 300);
+        
+        </#if>
+        
+        var gaugeColors = {
+                            plate      : '#222',
+                            title      : '#fff',
+                            units      : '#ccc',
+                            numbers    : '#eee',
+                            needle     : { start : 'rgba(240, 128, 128, 1)', end : 'rgba(255, 160, 122, .9)' }
+                          };
+        
+        var powerThreshold = <#if CurrentUsageValues??>${CurrentUsageValues.POWER.today.threshold?c}<#else>30</#if>;
+        var powerSteps     = Math.round(powerThreshold/5);
+
+        var currentKWhGauge = new Gauge({   renderTo   : 'todaykWh',
+                                            minValue   : 0,
+                                            maxValue   : powerSteps*7,
+                                            title      : 'Used today',
+                                            units      : '<#if CurrentUsageValues??>${CurrentUsageValues.POWER.current.name}<#else>kW/h</#if>',
+                                            valueFormat: { int : 2, dec : 3 },
+                                            majorTicks : [0, powerSteps, powerSteps*2, powerSteps*3, powerSteps*4, powerSteps*5, powerSteps*6, powerSteps*7],
+                                            animation  : { delay : 10, duration : 400, fn : 'linear' },
+                                            highlights : [
+                                                { from : 0, to : powerSteps*4,color : '#aceeaa' },
+                                                { from : powerSteps*4,to : powerSteps*5,color : '#eedaaa' },
+                                                { from : powerSteps*5,to : powerSteps*7,color : '#eeb0aa' }
+                                            ],
+                                            colors     : gaugeColors
+                                        });
+        currentKWhGauge.draw();
+        currentKWhGauge.onready = function() {
+            currentKWhGauge.setValue( <#if CurrentUsageValues??>${CurrentUsageValues.POWER.today.value?c}<#else>0</#if> );
+        };
+
+
+        var curPowerThreshold = (1000 * powerThreshold) / 24;
+        var curPowerSteps     = Math.round(curPowerThreshold/5);
+        
+        var currentWattGauge = new Gauge({  renderTo   : 'currentWatt', 
+                                            maxValue   : curPowerSteps*14,
+                                            title      : 'Current',
+                                            units      : '<#if CurrentUsageValues??>${CurrentUsageValues.POWER.unitcurrent.name}<#else>Watt</#if>',
+                                            animation  : { delay : 10, duration : 400, fn : 'elastic' },
+                                            majorTicks : [0,curPowerSteps*2,curPowerSteps*4,curPowerSteps*6,curPowerSteps*8,curPowerSteps*10,curPowerSteps*12,curPowerSteps*14],
+                                            valueFormat: { int : 4, dec : 2 },
+                                            highlights : [
+                                                { from : 0, to : curPowerSteps*4,color : '#aceeaa' },
+                                                { from : curPowerSteps*4,to : curPowerSteps*5,color : '#eedaaa' },
+                                                { from : curPowerSteps*5,to : curPowerSteps*14,color : '#eeb0aa' }
+                                            ],
+                                            colors     : gaugeColors,
+                                        });
+        currentWattGauge.draw();
+        currentWattGauge.onready = function() {
+            currentWattGauge.setValue( <#if CurrentUsageValues??>${CurrentUsageValues.POWER.unitcurrent.value?c}<#else>0</#if> );
+        };
+
+
+        var waterThreshold = <#if CurrentUsageValues??>${CurrentUsageValues.WATER.today.threshold?c}<#else>1.5</#if>;
+        var waterSteps     = (waterThreshold/5).toFixed(3);
+
+        var currentWaterGauge = new Gauge({ renderTo   : 'todayWater',
+                                            minValue   : 0,
+                                            maxValue   : (waterSteps*7).toFixed(1),
+                                            title      : 'Used today',
+                                            units      : '<#if CurrentUsageValues??>${CurrentUsageValues.WATER.current.name}<#else>Liter³</#if>',
+                                            valueFormat: { int : 2, dec : 3 },
+                                            majorTicks : [0, (waterSteps*1).toFixed(1), (waterSteps*2).toFixed(1), (waterSteps*3).toFixed(1), (waterSteps*4).toFixed(1), (waterSteps*5).toFixed(1), (waterSteps*6).toFixed(1), (waterSteps*7).toFixed(1)],
+                                            animation  : { delay : 10, duration : 400, fn : 'linear' },
+                                            highlights : [
+                                                { from : 0, to : (waterSteps*4).toFixed(1),color : '#aceeaa' },
+                                                { from : (waterSteps*4).toFixed(1),to : (waterSteps*5).toFixed(1),color : '#eedaaa' },
+                                                { from : (waterSteps*5).toFixed(1),to : (waterSteps*7).toFixed(1),color : '#eeb0aa' }
+                                            ],
+                                            colors     : gaugeColors
+                                        });
+        currentWaterGauge.draw();
+        currentWaterGauge.onready = function() {
+            currentWaterGauge.setValue( <#if CurrentUsageValues??>${CurrentUsageValues.WATER.today.value?c}<#else>0</#if> );
+        };
+
+        var gasThreshold = <#if CurrentUsageValues??>${CurrentUsageValues.GAS.today.threshold?c}<#else>1.2</#if>;
+        var gasSteps     = (gasThreshold/5).toFixed(3);
+
+        var currentGasGauge = new Gauge({ renderTo   : 'todayGas',
+                                          minValue   : 0,
+                                          maxValue   : (gasSteps*7).toFixed(1),
+                                          title      : 'Used today',
+                                          units      : '<#if CurrentUsageValues??>${CurrentUsageValues.GAS.current.name}<#else>M³</#if>',
+                                          valueFormat: { int : 2, dec : 3 },
+                                          majorTicks : [0, (gasSteps*1).toFixed(1), (gasSteps*2).toFixed(1), (gasSteps*3).toFixed(1), (gasSteps*4).toFixed(1), (gasSteps*5).toFixed(1), (gasSteps*6).toFixed(1), (gasSteps*7).toFixed(1)],
+                                          minorTicks : 5,
+                                          animation  : { delay : 10, duration : 400, fn : 'linear' },
+                                          highlights : [
+                                                { from : 0, to : (gasSteps*4).toFixed(1),color : '#aceeaa' },
+                                                { from : (gasSteps*4).toFixed(1),to : (gasSteps*5).toFixed(1),color : '#eedaaa' },
+                                                { from : (gasSteps*5).toFixed(1),to : (gasSteps*7).toFixed(1),color : '#eeb0aa' }
+                                          ],
+                                          colors     : gaugeColors
+                                      });
+        currentGasGauge.draw();
+        currentGasGauge.onready = function() {
+            currentGasGauge.setValue( <#if CurrentUsageValues??>${CurrentUsageValues.GAS.today.value?c}<#else>0</#if> );
+        };
+
+        pidomeRPCSocket.addCallback(function(thingy) {
+            switch(thingy.params.type){
+                case "POWER":
+                    $("#currentUtilityPowerUsage").html(thingy.params.values.unitcurrent.value.toFixed(2) + " "+thingy.params.values.unitcurrent.name+" (" + thingy.params.values.current.value.toFixed(4) + " " + thingy.params.values.current.name+")");
+                    if(currentWattGauge!==undefined){
+                        currentWattGauge.setValue( thingy.params.values.unitcurrent.value.toFixed(2) );
+                    }
+                    if(currentKWhGauge!==undefined){
+                        currentKWhGauge.setValue( thingy.params.values.today.value.toFixed(3) );
+                    }
+                break;
+                case "GAS":
+                    $("#currentUtilityGasUsage").html(thingy.params.values.current.value.toFixed(3) + " " + thingy.params.values.current.name);
+                    if(currentGasGauge!==undefined){
+                        currentGasGauge.setValue( thingy.params.values.today.value.toFixed(3) );
+                    }
+                break;
+                case "WATER":
+                    $("#currentUtilityWaterUsage").html(thingy.params.values.current.value.toFixed(3) + " " + thingy.params.values.current.name);
+                    if(currentWaterGauge!==undefined){
+                        currentWaterGauge.setValue( thingy.params.values.today.value.toFixed(3) );
+                    }
+                break;
+            }
+        }, "UtilityMeasurementService.getCurrentUsage");
+    });
+    function clearHandlers(){
+        clearInternalWidgetHandlers("#utilitiescontent");
+    }
+</script>

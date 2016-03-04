@@ -1,0 +1,6 @@
+CREATE TABLE [arbitrarydata] (
+  [varname] VARCHAR NOT NULL, 
+  [varcontent] TEXT NOT NULL, 
+  CONSTRAINT [] PRIMARY KEY ([varname]) ON CONFLICT FAIL);
+INSERT INTO arbitrarydata ('varname','varcontent') values ('DashBoard.grid','[{"col":1,"size_y":2,"size_x":3,"row":1,"config":{"data-type":"time","class":"dashboard-tile"}},{"col":1,"size_y":2,"size_x":3,"row":3,"config":{"data-type":"weather","class":"dashboard-tile"}},{"col":4,"size_y":3,"size_x":5,"row":1,"config":{"data-group":"values","data-control":"cpuusage","data-id":"1","data-type":"device","data-visual":"graph","class":"dashboard-tile"}},{"col":9,"size_y":2,"size_x":2,"row":1,"config":{"data-group":"values","data-control":"memusage","data-id":"1","data-type":"device","data-visual":"gauge","class":"dashboard-tile"}},{"col":9,"size_y":1,"size_x":1,"row":3,"config":{"data-group":"values","data-control":"procheat","data-id":"1","data-type":"device","data-visual":"text","class":"dashboard-tile"}},{"col":10,"size_y":1,"size_x":1,"row":3,"config":{"data-group":"values","data-control":"diskspace","data-id":"1","data-type":"device","data-visual":"text","class":"dashboard-tile"}}]');
+PRAGMA user_version=43;

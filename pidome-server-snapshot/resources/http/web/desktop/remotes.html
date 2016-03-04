@@ -1,0 +1,211 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(1, "page_remotecontrol", "Remotes", "/desktop/remotes.html");
+    });
+</script>
+<div id="remotesshowpanel">
+    <div class="splitter-panel">
+        <table id="remotes_showtable" class="edittable">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>name</th>
+                    <th>description</th>
+                    <th>available</th>
+                    <th>type</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="splitter-panel">
+        <div id="remoteshowcontent" class="itemeditor" style="overflow-y: auto;"><span class="initialmessage">Click on a remote to show and use it.</span></div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    var allRemotesSource = {
+        datatype: "json",
+        datafields: [
+            { name: 'id', type: 'int'},
+            { name: 'name', type: 'string'},
+            { name: 'available', type: 'boolean'},
+            { name: 'type', type: 'boolean'},
+            { name: 'description', type: 'string'}
+        ],
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "RemotesService.getRemotes", "id":"RemotesServiceService.getRemotes"}',
+        root: "result>data"
+    };
+    
+    $(document).ready(function () {
+        
+        var allRemotesSourceData = new $.jqx.dataAdapter(allRemotesSource);
+        var notifyLedLooper = null;
+        
+        $("#remoteshowcontent").jqxPanel({ width: '100%', height: '100%', autoUpdate: true, theme: siteSettings.getTheme()}); 
+        $('#remotesshowpanel').jqxSplitter({ width: 1000, height: 780,  panels: [{ size: 425, collapsible: false }, { size: 575, collapsed: true }], theme: siteSettings.getTheme() });
+        $("#remotes_showtable").jqxDataTable({ source: allRemotesSourceData, filterable: true, filtermode: 'simple', selectionMode: "none", height: '100%', width: 1000, sortable: true, pageable: true, pageSize: 9, pagerButtonsCount: 10, theme: siteSettings.getTheme(),
+            columns: [
+                {text: 'id', dataField: 'id', hidden:true},
+                {text: 'Name', dataField: 'name', width: 200},
+                {text: 'Description', dataField: 'description'},
+                {text: 'Available', dataField: 'available', width: 75,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return value===true?"Yes":"No";
+                    }      
+                },
+                {text: 'Type', dataField: 'type', width: 150,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return value===true?"Universal":"Default";
+                    }      
+                }
+            ]
+        });
+        $("#remotes_showtable").on('rowClick', function (event) {
+            var args = event.args;
+            var row = args.row;
+            //alert(row.Id);
+            $('#remotesshowpanel').jqxSplitter('expand');
+            clearInternalWidgetHandlers("#remoteshowcontent");
+            clearRemoteClickHandlers();
+            $('#remoteshowcontent').empty();
+            $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"RemotesService.getRemote\", \"params\":{\"id\":"+row.id+"},\"id\":\"RemotesService.getRemote\"}")
+                .done(function(data) {
+                    try {
+                        if(data.result.success !== true){
+                            showErrorMessage("Triggers", data.result.message);
+                        } else {
+                            buildRemote(data.result.data);
+                        }
+                    } catch(err){
+                            var message = "<strong>Message</strong>:<br/>";
+                            if(data.result.data.trace!==undefined){
+                                message += data.result.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                                showErrorMessage("Server error: " + data.error.message, message);
+                            } else if (data.result.data.message!==undefined){
+                                message += data.result.data.message;
+                                showErrorMessage("Server error: " + data.error.message, message);
+                            } else {
+                                showErrorMessage("Interface error: ", err);
+                            }
+                    }
+                }, "json");
+        });
+        
+        function buildRemote(remoteData){
+            $('<div id="remotecontainervisual">'+
+                '<div id="remote">'+
+                    '<div id="titlerow">'+
+                        '<div id="remotetitle"></div><div id="remoteredled" class=""></div>'+
+                        '<div style="clear:both"></div>'+
+                    '</div>'+
+                '</div>'+
+            '</div>').appendTo("#remoteshowcontent");
+            $("#remotetitle").html(remoteData.name);
+            var senderdevice = remoteData.sendtestdevice;
+            $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"DeviceService.getDeclaredDevice\", \"params\":{\"id\":"+senderdevice+"},\"id\":\"DeviceService.getDeclaredDevice\"}")
+                .done(function(data) {
+                try {
+                    if(data.result.success !== true){
+                        showErrorMessage("Remotes", data.result.message);
+                    }
+                } catch(err){
+                    var message = "<strong>Message</strong>:<br/>";
+                    if(data.error.data.trace!==undefined){
+                        message += data.error.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                    } else {
+                        message += data.error.data.message;
+                    }
+                    showErrorMessage("Server error: " + data.error.message, message);
+                }
+            }, "json");
+
+            var remote = remoteData.remotevisuals;
+            try {
+                for (var i = 0; i < remote.sections.length; i++) {
+                    var section = remote.sections[i].section;
+                    var sectionId = section.id;
+                    $('<div id="section_'+sectionId+'" class="remotesection"></div>').appendTo("#remote");
+                    for (var j = 0; j < section.rows.length; j++) {
+                        var buttonRow = section.rows[j].row;
+                        var rowId = buttonRow.id;
+                        if(buttonRow.cells===4){
+                            $('<div class="remoterow buttons4" id="row_'+sectionId+'_'+rowId+'"><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_0"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_1"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_2"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_3"> </div></div>' + 
+                              '<div style="clear:both;"></div>').appendTo('#section_'+sectionId);
+                        } else {          
+                            $('<div class="remoterow buttons3" id="row_'+sectionId+'_'+rowId+'"><div style="width:194px; margin-left:auto; margin-right:auto;"><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_0" style="margin-left:13px;"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_1"> </div><div class="remotecell" id="cell_'+sectionId+'_'+rowId+'_2"> </div></div>' + 
+                              '</div><div style="clear:both;"></div>').appendTo('#section_'+sectionId);
+                        }
+                        for (var k = 0; k < buttonRow.buttons.length; k++) {
+                            var button = buttonRow.buttons[k];
+                            if(button.type!=="btn_none"){
+                                var workItemId = '#cell_'+sectionId+'_'+rowId+'_' + button.pos;
+                                $('<img src="/shared/images/remotes/'+button.cat+'/'+button.type+'.png" id="'+button.id+'" style="cursor:pointer;" class="imgworkitem" alt="'+button.sdesc+'" />').appendTo(workItemId);
+                                $('<input id="'+button.id+'-signal" name="'+button.id+'-signal" type="hidden" value="'+button.signal+'" />').appendTo(workItemId);
+                                switch(button.type){
+                                    case "btn_def":
+                                        $('<div id="'+button.id+'-label" class="buttonlabel" style="font-weight:bold; width:31px; height:24px; top:10px; left:7px; position:absolute;cursor:pointer;">'+button.label+'</div>').appendTo(workItemId);
+                                    break;
+                                    case "btn_col":
+                                        $('<div id="'+button.id+'-color" class="buttoncolor" style="width:31px; height:24px; background-color: '+button.color+'; top:7px; left:7px; position:absolute;cursor:pointer;">&nbsp;</div>').appendTo(workItemId);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+                $(".imgworkitem").on("click", function(){
+                    sendSignal($(this).attr("id"));
+                });
+                
+                function sendSignal(buttonId){
+                    notifyLedColor();
+                    $.get("/jsonrpc.json?rpc={\"jsonrpc\": \"2.0\", \"method\": \"RemotesService.pressButton\", \"params\": ["+remoteData.id+", \""+ buttonId +"\"] \"id\": \"RemotesService.pressButton\"}")
+                        .done(function(data) {
+                                try {
+                                    if(data.result.success !== true){
+                                        showErrorMessage("Remote send error", "Could not send signal: " + data.result.message + " (is the send device loaded/added/selected?)");
+                                    }
+                                } catch(err){
+                                    showErrorMessage("Web interface error", "Could not display result: " + err);
+                                }
+                        }, "json");
+                }
+                
+                function notifyLedColor(){
+                    if(notifyLedLooper === null || notifyLedLooper === undefined){
+                        notifyLedLooper = setInterval(function(){
+                            if($("#remoteredled").hasClass("remoteredledon")){
+                                clearInterval(notifyLedLooper);
+                                notifyLedLooper = null;
+                                $("#remoteredled").removeClass("remoteredledon");
+                            } else {
+                                $("#remoteredled").addClass("remoteredledon");
+                            }
+                        },100);
+                    }
+                }
+                
+            } catch (err){}
+        }
+        
+    });
+    
+    function clearRemoteClickHandlers(){
+        $(".imgworkitem").off("click");
+    }
+    
+    function clearHandlers(){
+        clearRemoteClickHandlers();
+        clearInternalWidgetHandlers("#remoteshowcontent");
+    }
+    
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

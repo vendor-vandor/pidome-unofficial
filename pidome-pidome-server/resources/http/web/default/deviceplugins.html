@@ -1,0 +1,246 @@
+<button class="mutationAddNewPlugin" name="mutationAddNewPlugin" style="margin-top: 10px;">Add a new plugin</button><p></p>
+<div id="pluginspanel">
+    <div class="splitter-panel">
+        <table id="pluginstable">
+            <thead>
+                <tr>
+                    <th align="left">Name</th>
+                    <th align="left">Description</th>
+                    <th align="left">Plugin</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="splitter-panel">
+        <div style="position: relative; height: 695px; overflow-y: auto;">
+            <img src="/shared/images/refresh.png" style="position:absolute; right:5px; top:5px;cursor: pointer;" id="devicepluginPageRefresh" alt="refresh"/>
+            <div id="pluginscontent" class="itemeditor" style="float:left;"></div>            
+        </div>
+    </div>
+</div>
+<button class="mutationAddNewPlugin" name="mutationAddNewPlugin" style="margin-top: 10px;">Add a new plugin</button><p></p>
+<div id="innerscrollmargin"></div>
+<div id="dialog-confirm-delete" title="Confirm" style="display:none;">
+    <div>Confirm plugin delete</div>
+    <div></div>
+</div>
+<script>
+    
+    var pluginRefreshPage = "";
+    
+    function refresh(){
+        try {
+            viewPlugin(pluginRefreshPage.split("-")[0], pluginRefreshPage.split("-")[1]);
+        } catch (err){}
+    }
+    
+    var allPluginsSource = {
+        datatype: "json",
+        datafields: [
+            { name: 'id', type: 'int'},
+            { name: 'name', type: 'string'},
+            { name: 'description', type: 'string'},
+            { name: 'pluginname', type: 'string'},
+            { name: 'fixed', type: 'bool'},
+            { name: 'active', type: 'bool'}
+        ],
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DevicePluginService.getPlugins", "id":"DevicePluginService.getPlugins"}',
+        root: "result>data"
+    };
+
+    var allPluginsSourceData = new $.jqx.dataAdapter(allPluginsSource);
+    
+    $(document).ready(function () {
+        
+        $("#devicepluginPageRefresh").on("click", function(){
+            refresh();
+        });
+        
+        $("#dialog-confirm-delete").jqxWindow({
+            width: 400,
+            height: 150,
+            theme: siteSettings.getTheme(),
+            autoOpen: false,
+            isModal: true
+        });
+        
+        $('#pluginspanel').jqxSplitter({ width: 1000, height: 695,  panels: [{ size: 340, collapsible: false }, { size: 660, collapsed: true }], theme: siteSettings.getTheme() });
+        $("#pluginstable").jqxDataTable({ source: allPluginsSourceData, filterable: true, filtermode: 'simple', selectionMode: "singleRow", height: 695, width: 995, sortable: true, pageable: true, pageSize: 5, pagerButtonsCount: 5, theme: siteSettings.getTheme(),
+            columns: [
+                {text: 'id', dataField: 'id', hidden: true},
+                {text: '', width: 70, 
+                    cellsRenderer: function (row, column, value, rowData) {
+                        var container = '<div>'
+                                + '<button class="mutationViewPlugin" name="mutationViewPlugin" id="mutationViewPlugin-'+rowData.id+'" value="'+rowData.id+'-'+row+'">View</button>'
+                                + '</div>';
+                        return container;
+                    }
+                },
+                {text: 'Name', dataField: 'name'},
+                {text: 'Description', dataField: 'description', width: 300},
+                {text: 'Plugin', dataField: 'pluginname'},
+                {text: 'Active', dataField: 'active', width: 60,
+                    cellsRenderer: function (row, column, value, rowData) {
+                        return value===true?"Yes":"No";
+                    }      
+                },
+                {text: 'Action', width: 170, 
+                    cellsRenderer: function (row, column, value, rowData) {
+                        var container = '<div>'
+                                + '<button class="mutationEditPlugin" name="mutationEditPlugin" id="mutationEditPlugin-'+rowData.id+'" value="'+rowData.id+'">Edit</button>'
+                        if(rowData.fixed===false){
+                            container += '<button style="margin-left: 5px;" class="mutationDeletePlugin" name="mutationDeletePlugin" id="mutationDeletePlugin-'+rowData.id+'-'+row+'" value="'+rowData.id+'">Remove</button>';
+                        }
+                        container += '</div>';
+                        return container;
+                    }
+                }
+            ],
+            rendering: function(){
+                    // destroys all buttons.
+                    if ($(".mutationEditPlugin").length > 0) {
+                        $(".mutationEditPlugin").jqxButton('destroy');
+                    }
+                    if ($(".mutationDeletePlugin").length > 0) {
+                        $(".mutationDeletePlugin").jqxButton('destroy');
+                    }
+                    if ($(".mutationViewPlugin").length > 0) {
+                        $(".mutationViewPlugin").jqxButton('destroy');
+                    }
+            },
+            rendered: function () {
+                try {
+                    
+                    $(".mutationViewPlugin").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".mutationViewPlugin").on('click', function () {
+                        var pluginItem = $(this).attr('id').split("-")[1];
+                        var pluginRow = $(this).attr('value').split("-")[1];
+                        viewPlugin(pluginItem, pluginRow);
+                        pluginRefreshPage = pluginItem + "-" + pluginRow;
+                    });
+                    
+                    
+                    $(".mutationEditPlugin").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".mutationEditPlugin").on('click', function () {
+                        var pluginItem = $(this).attr('id').split("-")[1];
+                        $('#pluginspanel').jqxSplitter('expand');
+                        clearInternalWidgetHandlers("#pluginscontent");
+                        $('#pluginscontent').empty();
+                        $('#pluginscontent').load("/pluginDeviceSettingsRenderer.xhtml?plugin_id=" + pluginItem + "&ajax=true" );
+                    });
+                    
+                    $(".mutationDeletePlugin").jqxButton({ width: '50', theme: siteSettings.getTheme()});
+                    $(".mutationDeletePlugin").on('click', function () {
+                        var pluginId = $(this).attr('id').split("-")[1];
+                        var row = $(this).attr('id').split("-")[2];
+                        var pluginName = $("#pluginstable").jqxDataTable('getCellValue', row, 'name');
+                        $("#dialog-confirm-delete").jqxWindow('setTitle','Delete: ' + pluginName);
+                        $("#dialog-confirm-delete").jqxWindow('setContent','<p style="text-align:center;">Are you sure you want to delete plugin "'+pluginName+'"? Any device associated with it will also be removed."</p>' + 
+                                                                           '<div style="text-align:center;">'+
+                                                                           '    <input type="button" id="dialog-do-delete" value="Yes delete" />'+
+                                                                           '    <input type="button" id="dialog-do-cancel" value="No cancel" />'+
+                                                                           '</div>');
+                        $("#dialog-do-delete").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                        $("#dialog-do-delete").on('click', function () {
+                            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DevicePluginService.deletePlugin", "params": {"id":'+pluginId+'} "id":"DevicePluginService.deletePlugin"}')
+                                .done(function(data) {
+                                        $("#pleaseWaitProgress").dialog("close");
+                                        showInfoMessage("Plugin delete", "Plugin " + pluginName + " has been deleted.");
+                                        allPluginsSourceData.dataBind();
+                                }, "json");
+                            $("#dialog-confirm-delete").jqxWindow('close');
+                        });
+                        $("#dialog-do-cancel").jqxButton({ width: '100', theme: siteSettings.getTheme()});
+                        $("#dialog-do-cancel").on('click', function () {
+                            $("#dialog-confirm-delete").jqxWindow('close');
+                        });
+                        $("#dialog-confirm-delete").jqxWindow('open');
+                    });
+                } catch (err){}
+            }
+        });
+        
+        $(".mutationAddNewPlugin").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+        $(".mutationAddNewPlugin").on('click', function () {
+            $('#pluginspanel').jqxSplitter('expand');
+            clearInternalWidgetHandlers("#pluginscontent");
+            $('#pluginscontent').empty();
+            $('#pluginscontent').load("/pluginDeviceSettingsRenderer.xhtml?ajax=true" );
+        });
+        
+    });
+    
+    function viewPlugin(pluginItem, pluginRow){
+        $('#pluginspanel').jqxSplitter('expand');
+        clearInternalWidgetHandlers("#pluginscontent");
+        $('#pluginscontent').empty();
+
+        var presentation = new WebPresentation();
+        var getUrl = '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DevicePluginService.getPresentation", "params": {"id":'+pluginItem+'} "id":"DevicePluginService.getPresentation"}';
+        var devicesUrl = '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DevicePluginService.getPluginDevices", "params": {"id":'+pluginItem+'} "id":"DevicePluginService.getPluginDevices"}';
+
+        var callBackCustomFunction = function(funcData){
+            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DevicePluginService.pluginFunction", "params": {"id":'+pluginItem+',"params":'+JSON.stringify(funcData)+'} "id":"DevicePluginService.pluginFunction"}').done(function(resultData) {
+                showInfoMessage("Function", "Done");
+                $('#pluginspanel').jqxSplitter('collapse');
+                clearInternalWidgetHandlers("#pluginscontent");
+                $('#pluginscontent').empty();
+                refresh();
+            });
+        };
+
+        var callBackDeviceFunction = function(funcData){
+            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DevicePluginService.pluginFunction", "params": {"id":'+pluginItem+',"params":'+JSON.stringify(funcData)+'} "id":"DevicePluginService.pluginFunction"}').done(function(resultData) {
+                showInfoMessage("Device add", "Device added");
+                $('#pluginspanel').jqxSplitter('collapse');
+                clearInternalWidgetHandlers("#pluginscontent");
+                $('#pluginscontent').empty();
+                refresh();
+            });
+        };
+        presentation.createDataSet(allPluginsSourceData.records[pluginRow].name,getUrl,devicesUrl,'pluginscontent',callBackCustomFunction,callBackDeviceFunction);
+    }
+    
+    
+    function saveDevicesPlugin(){
+        var postData = {};
+        var urlString = "";
+        if($("#installed_id").val()!== undefined && $("#installed_id").val()!=="0"){
+            postData["installed_id"] = $("#installed_id").val();
+            urlString = "?installed_id=" + $("#installed_id").val();
+        } else {
+            postData["plugin_id"] = $("#plugin_id").val();
+            urlString = "?plugin_id=" + $("#plugin_id").val();
+        }
+        postData["plugin_name"] = $("#plugin_name").val();
+        postData["plugin_desc"] = $("#plugin_desc").val();
+        $("#optionCollection input").each(function(){
+            postData[$(this).attr("id")] = $(this).val();
+        });
+        $("#optionCollection select").each(function(){
+            postData[$(this).attr("id")] = $(this).val();
+        });
+        $.post("/pluginDeviceSettingsRenderer.xhtml" + urlString, postData)
+                .done(function(data) {
+                    var obj = jQuery.parseJSON( data );
+                    if (obj.result.exec !== true) {
+                        showErrorMessage("Plugin error", "Could not add/modify plugin: " + obj.result.reason);
+                    } else {
+                        showInfoMessage("Plugin added/modified", "Plugin " + postData["plugin_name"] + " has been added/modified");
+                        $('#pluginspanel').jqxSplitter('collapse');
+                        clearInternalWidgetHandlers("#pluginscontent");
+                        allPluginsSourceData.dataBind();
+                    }
+                }, "json").fail(function( jqXHR, textStatus, errorThrown ) {
+                    showErrorMessage("Plugin error", "Could not add/modify plugin: Request error - " + textStatus + ", " + errorThrown);
+                });
+    }
+    
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_editdeviceplugins", "Device plutgins", "/deviceplugins.html");
+    });
+    
+</script>

@@ -1,0 +1,481 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Mar 11, 2015, 1:09:43 PM
+    Author     : John
+    purpose    : main skeleton.
+*/
+
+/*
+Global app styles
+*/
+
+.check-box *.box {
+    -fx-padding: 0;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0em 0em .4em 0em;
+}
+
+.check-box>.box {
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-width: 0px;
+}
+
+.check-box>.box>.mark {
+    -fx-background-repeat: stretch;
+    -fx-background-position: center;
+    -fx-min-width: 2em;
+    -fx-min-height: 2.4em;
+    -fx-background-size: 2em;
+}
+
+.radio-button .radio {
+    -fx-border-width: 1px;
+    -fx-border-insets: 4, 0;
+    -fx-border-radius: 2em;
+    -fx-padding: 4px;
+}
+
+.radio-button .dot {
+    -fx-padding: .5em;
+}
+
+/*
+Lets mimic a slider with a track
+*/
+.tracked-slider .slider {
+    -fx-min-height: 3em;
+}
+
+.tracked-slider .slider *.thumb {
+    -fx-background-radius: 1.8em;
+    -fx-background-insets: 0;
+    -fx-padding: 1.8em;
+}
+
+.progress-bar {
+    -fx-padding: 0;
+    -fx-indeterminate-bar-length: 60;
+    -fx-indeterminate-bar-escape: true;
+    -fx-indeterminate-bar-flip: true;
+}
+
+.progress-bar *.bar {
+    -fx-padding: 2 0 2 0;
+    -fx-background-insets: 0, 1;
+}
+/*
+Button styles 
+*/
+.button {
+    -fx-border: 0;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-margin: 0em;
+    -fx-padding: 0em;
+}
+
+.bottom-button-bar { ///Application style buttons
+                     -fx-min-height: 4em;
+                     -fx-pref-height: 4em;
+                     -fx-max-height: 4em;
+}
+
+.bottom-button-bar .button {
+    -fx-padding: 1em;
+    -fx-alignment: center;
+    -fx-font-size: 1.4em;
+}
+
+/*
+Body styles
+*/
+.custom-list-view {
+} 
+
+.custom-list-view .list-item {
+    -fx-padding: .3em;
+} 
+
+.custom-list-view .undecorated-list-item {
+    -fx-font-size: 1.4em;
+}
+
+.custom-list-view .list-item-button {
+    -fx-padding: 0em 1em 0em .7em;
+}
+
+.custom-list-view .sub-title {
+    -fx-font-size: .6em;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane:focused {
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .corner {
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .scroll-bar:horizontal {
+    -fx-background-color:transparent;
+}
+.scroll-pane .scroll-bar:horizontal .increment-button, .scroll-pane .scroll-bar:horizontal .decrement-button {
+    -fx-background-color:transparent;
+    -fx-border-color: transparent;
+}
+.scroll-pane .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0em;
+}
+.scroll-pane .scroll-bar:horizontal .thumb {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0, 0, 0;
+    -fx-background-radius: 0em;
+
+}
+
+.combo-box {
+    -fx-border-width: 0px 0px 1px 0px;
+}
+
+.combo-box > .list-cell {
+    -fx-padding: 0.2em 0.5em 0.2em 0.5em;
+}
+
+.combo-box-base > .arrow-button {
+    -fx-background-radius: 0 5 5 0, 0 4 4 0, 0 3 3 0;
+    -fx-padding: 0.5em 0.833333em 0.5em 0.833333em; /* 6 10 6 10 */
+    -fx-background-insets: 1 1 1 0, 1, 2;
+}
+
+/* 
+Header styles 
+*/
+.appTitle {
+    -fx-font-family: "QuicksandBold-Regular";
+    -fx-font-size: 5.3em;
+}
+
+.appTitleDesc {
+    -fx-font-family: "QuicksandBold-Regular";
+    -fx-font-size: 2em;
+}
+
+.appPartHeader {
+    -fx-font-size: 1.4em;
+}
+
+.top-left-menu {
+    -fx-border-width: 2px, 1px;
+    -fx-border-insets: 0,2;
+}
+
+.top-left-menu .header {
+    -fx-font-size: 1.6em;
+    -fx-padding: .3em;
+    -fx-alignment : center-left;
+}
+
+.top-left-menu .header .title {
+    -fx-padding: 0em 0em 0em .5em;
+}
+
+.top-left-menu .header .close-icon {
+    -fx-alignment : center-right;
+    -fx-padding: 0em 0em 0em .5em;
+}
+
+.top-left-menu .visual-scene-icon {
+    -fx-padding: .3em;
+}
+
+.top-left-menu .visual-scene-name {
+    -fx-padding: .3em;
+    -fx-font-size: 1.2em;
+}
+
+.top-left-menu .visual-user-icon {
+    -fx-padding: .5em;
+}
+
+.full-device .controls-group-name {
+    -fx-insets: 0 0 5 0;
+    -fx-font-size: 1.4em;
+}
+
+.scene-header {
+    -fx-alignment : center-left;
+}
+
+.scene-header-text {
+    -fx-font-size: 1.6em;
+}
+
+.scene-header-text-padding {
+    -fx-padding: 0em 0em 0em .5em;
+}
+
+.header-icon {
+    -fx-graphic-text-gap: 0px;
+    -fx-font-size: 1.8em;
+}
+
+.entities-menu {
+    -fx-padding: 0.3em 0em 0em 0em;
+}
+
+#dashboard {
+    -fx-padding: .5em;
+}
+
+#dashboard-devices-gridpane {
+    -fx-hgap: .5em;
+    -fx-vgap: .5em;
+    -fx-padding: .5em 0em 0em 0em;
+}
+
+.popup {
+    -fx-min-width: 18em;
+    -fx-pref-width: 18em;
+    -fx-max-width: 80%;
+}
+
+.popup .header {
+    -fx-padding: .5em 1em .5em .5em;
+}
+
+.popup .header .text {
+    -fx-font-size: 1.4em;
+}
+
+.popup .popup-content {
+    -fx-font-size: 1.4em;
+    -fx-padding: .5em 1em .5em .5em;
+}
+
+.popup-content .label {
+    -fx-padding: .5em 0em .5em 0em;
+}
+
+.text-field {
+    -fx-font-size: 1.4em;
+    -fx-padding: 0em .3em 0em .3em;
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+}
+
+.popup-menu {
+    -fx-padding: 0em;
+}
+
+.popup-menu .menu-item {
+    -fx-padding: .5em;
+    -fx-border-width: 1px 10px 1px 10px;
+    -fx-alignment:center-left;
+}
+
+.popup-menu .menu-header {
+    -fx-border-width: 1px 10px 2px 10px;
+}
+
+.popup-menu.main-menu {
+    -fx-max-width: 12em;
+    -fx-max-height: 4.9em;
+}
+
+.popup-menu.presence-menu {
+    -fx-min-width: 18em;
+    -fx-pref-width: 18em;
+    -fx-max-width: 18em;
+}
+
+.item-field {}
+
+.item-field .header {
+    -fx-padding: .2em;
+}
+
+.item-field.app-header {
+    -fx-padding: .3em;
+}
+.item-field.app-header .content {
+    -fx-spacing: .5em;
+}
+
+.item-field.app-header .content .button.menu {
+    -fx-padding: 0em .5em 0em 0em;
+}
+
+.item-field.app-header .content .button.presence {
+    -fx-padding: 0em 0em 0em .5em;
+}
+
+.item-field.app-header .menu {
+    -fx-pref-width: 2em;
+    -fx-alignment: center;
+}
+
+.item-field.app-header .button.quickmenu {
+    -fx-padding: 0em .2em 0em 0em;
+}
+
+.item-field.app-header .button.back {
+    -fx-padding: 0em .2em 0em .2em;
+}
+
+.full-device {
+    -fx-padding: 0em .5em 0em .5em;
+}
+
+.device-control {
+    -fx-padding: .5em;
+    -fx-alignment:center-left;
+}
+
+.device-control .glyph-icon {
+    -fx-text-origin: top;
+    -fx-font-size: 1.5em;
+}
+
+.device-control .control-name {
+    -fx-font-size: 1.4em;
+}
+
+.device-control .device-control-data {
+    -fx-alignment:top-right;
+}
+.device-control .device-control-data .control-data {
+    -fx-font-size: 1.4em;
+}
+.device-control .device-control-data .control-prefix {}
+.device-control .device-control-data .control-suffix {
+    -fx-font-size: 1em;
+}
+
+.device-control .device-control-toggle,
+.device-control .button {
+    -fx-padding: 3 10 2 10;
+    -fx-background-insets: 0;
+    -fx-vpos: CENTER;
+    -fx-graphic-vpos: CENTER;
+    -fx-min-width: 4em;
+    -fx-border-width: 1px;
+}
+
+.device-control-colorpicker {
+    -fx-padding: 3 2em 2 2em;
+    -fx-background-radius: 5;
+}
+
+.my-custom-color {
+    //-fx-min-width: 15em;
+    //-fx-pref-width: 15em;
+    -fx-padding: .3em 0em 0em 0em;
+}
+
+.my-custom-color > .color-rect-pane {
+    -fx-spacing: 1em;
+    -fx-pref-height: 16.666667em;
+    -fx-alignment: top-left;
+    -fx-fill-height: true;
+}
+
+.my-custom-color .color-rect-pane .color-rect {
+    -fx-min-width: 16em;
+    -fx-min-height: 16em;
+}
+
+.my-custom-color > .color-rect-pane #color-rect-indicator {
+    -fx-border-radius: 0.4166667em;
+    -fx-translate-x: -0.4166667em;
+    -fx-translate-y: -0.4166667em;
+    -fx-pref-width: 0.833333em;
+    -fx-pref-height: 0.833333em;
+}
+
+.my-custom-color > .color-rect-pane > .color-bar {
+    -fx-min-height: 1.666667em;
+    -fx-min-width: 16em;
+    -fx-max-height: 1.666667em;
+}
+
+.my-custom-color > .color-rect-pane > .color-bar > #color-bar-indicator {
+    ////-fx-border-radius: 0.333333em;
+    -fx-pref-height: 2em;
+    -fx-pref-width: 0.933333em;
+    -fx-translate-y: -0.1666667em;
+    -fx-translate-x: -0.4166667em;
+}
+
+.my-custom-color .color-new-rect {
+    -fx-min-width: 10.666667em;
+    -fx-min-height: 2em;
+    -fx-pref-width: 10.666667em;
+    -fx-pref-height: 2em;
+    -fx-padding: 0.1em;
+}
+
+
+.media-interface-pane {
+}
+
+.media-navigation-pane {
+    -fx-hgap: 1em;
+    -fx-vgap: 1em;
+    -fx-padding: 1.5em 0px 1.5em 0px;
+}
+
+.media-volume-pane {
+    -fx-spacing: 1em;
+    -fx-padding: 1.5em .5em 1.5em 0px;
+}
+
+.media-extras-pane {
+    -fx-spacing: 1em;
+    -fx-padding: 1.5em 0px 1.5em .5em;
+}
+
+.media-player-pane {
+    -fx-padding: 1.5em .5em 2em .5em;
+    -fx-spacing: 1em;
+}
+
+.media-navigation-pane .media-nav-button,
+.media-volume-pane .media-nav-button,
+.media-extras-pane .media-nav-button,
+.media-player-pane .media-nav-button {
+    -fx-pref-width: 2.8em;
+    -fx-pref-height: 2.8em;
+}
+
+.media-interface-pane .media-item-visualizer {
+    -fx-padding: .5em .5em 1.5em .5em;
+    -fx-pref-height: 5em;
+}
+
+.media-interface-pane .media-item-visualizer .media-item-title {
+    -fx-font-size: 1.6em;
+}
+
+.utilities-dashboard {
+    -fx-padding: .5em 0em 0em 0em;
+}
+.utilities-dashboard .utilities-power-meter {
+    -fx-pref-height: 4.7em;
+}
+.utilities-dashboard .utilities-water-meter,
+.utilities-dashboard .utilities-gas-meter {
+    -fx-pref-height: 2.2em;
+}

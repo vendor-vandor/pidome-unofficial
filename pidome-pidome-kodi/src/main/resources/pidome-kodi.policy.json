@@ -1,0 +1,5 @@
+{"permissions": [
+        {"type":"java.net.SocketPermission", "name":"0.0.0.0:0-", "action":"connect, resolve", "reason":"To be able to connect to any XBMC/Kodi media service"},
+        {"type":"java.net.URLPermission", "name":"*:*/-", "action":"POST,GET", "reason":"To be able to retrieve thumbnails of playing media"}
+    ]
+}

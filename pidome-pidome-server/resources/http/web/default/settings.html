@@ -1,0 +1,405 @@
+<div class="defaultcontent" style="max-width:1000px;">
+    <fieldset>
+        <legend>Settings</legend>
+        <p style="margin: 5px;">All the below settings can be modified and will instantly be activated. All these settings are also persistent between restarts of the server</p>
+        <div style="padding:0px 5px 5px 5px;">
+            <h3 style="margin-top: 10px;">Time zone settings</h3>
+            <section>
+                <p>Because the server does calculations based on time zone (Sunrise and Sunset for example) and geographical data, you can change the time zone here.<br/>
+                    This change is persistent, meaning it will stay this setting across server restarts.<br/>
+                    To get your positions latitude or longitude (your exact location) you can search this up for example at <a href="http://askgeo.com/" target="_blank">askgeo.com</a> or let the web interface guess the position by "asking" it your device/browser.<br/>
+                    <strong>We can assure you that this information will never ever be sent to us or whoever/whatever.</strong>
+                </p>
+                <div class="nvp" style="width:500px;">
+                    <div class="n" style="width:198px;">Change timezone</div>
+                    <div class="p">
+                        <div id="timezone"></div>
+                    </div>
+                </div>
+                <div class="nvp" style="width:500px;">
+                    <div class="n" style="width:198px;">Change locale</div>
+                    <div class="p">
+                        <div id="locale"></div>
+                    </div>
+                </div>
+                <div class="nvp" style="width:400px;">
+                    <div class="n">Latitude</div>
+                    <div class="p"><input type="text" name="latitude" id="latitude" value="${latitude}" /></div>
+                    <div class="n">Longitude</div>
+                    <div class="p"><input type="text" name="longitude" id="longitude" value="${longitude}" /></div>
+                    <div class="n">&nbsp;</div>
+                    <div class="p"><input type="button" id="geoguessbutton" value="Ask browser/device" /></div>
+                </div>
+                <button name="saveTimezone" id="saveTimezone">Save timezone/Locale settings</button>
+            </section>
+            <h3 style="margin-top: 10px;">Clients authorization</h3>
+            <section>
+                <p>
+                    Clients authorization can be turned on which causes clients whom connecting need approval via the web interface before they can interact with the server.<br/>
+                    This change is persistent meaning it will stay this setting across restarts.
+                </p>
+                <div class="nvp" style="width:400px;">
+                    <div class="n">Clients authorization</div>
+                    <div class="p"><strong id="clientAuth"><#if client_auth=="false">Disabled<#else>Enabled</#if></strong></div>
+                    <div class="n">Enable/Disable Authorization</div>
+                    <div class="p"><div id="runClientAuth"></div></div>
+                </div>
+            </section>
+            <h3>Debug logging</h3>
+            <section>
+                <p>Here you can change debug logging from off to on and vice versa. Be aware if running on a pi or other low end system turning on debug logging causes a lot of disk stress and can possible slow down the server.<br/>
+                    This change is NOT persistent and is lost during server restarts.
+                    <strong>Only turn on when it is really needed!</strong><br/>
+                   The log file is found at "&lt;Installation dir&gt;/logs/system/appLog.txt".
+                </p>
+                <div class="nvp" style="width:400px;">
+                    <div class="n">Debug logging</div>
+                    <div class="p"><strong id="debugLevel"><#if log_level=="INFO">Disabled<#else>Enabled</#if></strong></div>
+                    <div class="n">Enable/Disable debug logging</div>
+                    <div class="p"><div id="setDebug"></div></div>
+                </div>
+                <#if _SERVER.heapdumpsEnabled==true>
+                    <h4>Perform heap dump</h4>
+                    <p>
+                        This is a dangerous tool, it dumps the complete system to file to be read by a profiling application. When performing a Heap Dump The server will PAUSE until the dump is completed. This is only needed to perform memory analysis.
+                        To be able to do memory analizing two memory dumps are needed one taken before and one after a amount of time when excessive memory usage is observed.<br/>
+                        <br/>
+                        <strong>Do not press this button twice in a row, wait for the message the system is done!</strong>
+                    </p>
+                    <div class="nvp" style="width:400px;">
+                        <div class="n">Perform an Heap dump</div>
+                        <div class="p"><input type="button" id="performHeapDump" value="DUMP" /></div>
+                    </div>
+                </#if>
+            </section>
+        <div>
+    </fieldset>
+</div>
+<div class="defaultcontent" style="margin-top:15px;max-width:1000px;">
+    <fieldset>
+        <legend>Server shutdown</legend>
+        <p style="margin: 5px;">This is the safest way to shutdown the server.</p>
+        <div style="padding:0px 5px 5px 5px;">
+            <div class="nvp" style="width:400px;">
+                <div class="n">Shutdown</div>
+                <div class="p"><button name="runShutdown" id="setShutdown">Shutdown server</button></div>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<div id="dialog-getgeo" class="popupwindowshadow">
+    <div>Server automatic location</div>
+    <div>
+        <p>By pressing the button below we will try to guess you're location by asking the browser/device for it.<br/>If you are using this web interface on a mobile device, be sure to be home ;).<br/>Your location does not have to be extremely exact, an approximate will work fine.<br/><br/>This process will take a maximum of 10 seconds.</p>
+        <div style="text-align:center;"><input type="button" id="guesslocation-getgeo" value="Guess" /></div>
+        <div style="width:562px; height:222px; margin-top:10px;">
+            <div style="float:left; width:240px; height:222px;">
+                <div id="getgeo-status"><p style="padding: 0px; margin:0px;">Status: Awaiting user action</p></div>
+            </div>
+            <div style="float:left; width:320px; height:220px; border: 1px solid #1f1f1f;">
+                <div id="locationmap" class="smallmap" style="width:320px; height:220px;"></div>
+            </div>
+        </div>
+        <input type="hidden" name="hidden-lat" id="hidden-lat" value="" />
+        <input type="hidden" name="hidden-lon" id="hidden-lon" value="" />
+        <div style="text-align:center; margin-top: 10px;">
+            <input type="button" id="usevalues-getgeo" value="Use this" style="visibility:hidden;" />
+            <input type="button" id="closedialog-getgeo" value="Close" />
+        </div>
+    </div>
+</div>
+<div id="dialog-confirm-shutdown" title="Confirm" style="display:none;">
+    <div>Server shut down</div>
+    <div><p style="text-align:center;">Are you sure you want to shut down the server?</p>
+        <div style="text-align:center;">
+            <input type="button" id="dialog-do-shutdown" value="Yes, shut down" />
+            <input type="button" id="dialog-cancel-shutdown" value="Close/Cancel" />
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+$(document).ready(function() {
+
+$.when(
+    $.getScript( "/shared/js/libs/openstreetmap/OpenLayers.light.js" ),
+    $.getScript( "/shared/js/libs/openstreetmap/Control.js" ),
+    $.getScript( "/shared/js/libs/openstreetmap/MousePosition.js" ),
+    $.getScript( "/shared/js/libs/openstreetmap/Navigation.js" ),
+    $.getScript( "/shared/js/libs/openstreetmap/DragPan.js" ),
+    $.getScript( "/shared/js/libs/openstreetmap/ZoomBox.js" ),
+    $.Deferred(function( deferred ){
+        $( deferred.resolve );
+    })
+).done(function(){
+
+    var mapProjectionType = new OpenLayers.Projection("EPSG:4326");
+
+    var map = new OpenLayers.Map('locationmap', { displayProjection: mapProjectionType, documentDrag:true });
+    var layer = new OpenLayers.Layer.OSM( "Simple OSM Map");
+    var vector = new OpenLayers.Layer.Vector('vector');
+    map.addLayers([layer, vector]);
+    ///map.addControl(new OpenLayers.Control.MousePosition());
+    
+    map.events.register("click", map, function(e) {
+       var position = map.getLonLatFromPixel(e.xy).transform(map.getProjectionObject(), mapProjectionType);
+       $('#maplat').html(position.lat.toFixed(5));
+       $('#maplon').html(position.lon.toFixed(5));
+       $('#hidden-lat').val(position.lat.toFixed(5));
+       $('#hidden-lon').val(position.lon.toFixed(5));
+    });
+    
+    $("#guesslocation-getgeo").on('click', function () {
+        $('#getgeo-status').html('<p style="padding: 0px; margin:0px;">Status: Please wait, guessing location...</p>');
+        new geoLocation().getBrowserDeviceGeoData(function (lat, lon){
+            $('#getgeo-status').html('<p style="padding: 0px; margin:0px;">Status: Done.<br/>Reported values are:<br/>Latitute: <span id="maplat">'+lat+'</span><br/>Longitude: <span id="maplon">'+lon+'</span>.<br/>Do you want to use these values?<br/><br/>If not then use the map. Zoom in and out and use the mouse to move/drag the map. Click once to use that point and press "Use this" when happy.</p>');
+            
+            map.setCenter(
+                new OpenLayers.LonLat(lon, lat).transform(
+                    mapProjectionType,
+                    map.getProjectionObject()
+                ), 12, true
+            );
+            $("#usevalues-getgeo").css("visibility", "visible");
+        });
+    });
+});
+   
+   $("#guesslocation-getgeo").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+   
+    $("#usevalues-getgeo").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+    $("#usevalues-getgeo").on('click', function () {
+        $('#latitude').val($('#hidden-lat').val());
+        $('#longitude').val($('#hidden-lon').val());
+    });
+   
+    $("#geoguessbutton").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+    $("#geoguessbutton").on('click', function () {
+        $('#dialog-getgeo').jqxWindow('open');
+    });
+    
+    try {
+        $("#performHeapDump").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+        $("#performHeapDump").off('click').on('click', function () {
+            simpleDialog("Heap dump", '<p id="dumpfileprogress">Please wait, creating heap dump.<br/><br/><strong>Do not close popup until the system is done!</strong></p>', function(){}, "Close");
+            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "SystemService.performHeapDump","id":"SystemService.performHeapDump"}')
+            .done(function(data) {
+                $("#dumpfileprogress").text("Dump file has been written to disk, you can close the popup.");
+            });
+        });
+    } catch (err){
+    }
+    
+    $("#dialog-getgeo").jqxWindow({
+        width: 600,
+        height: 440,
+        theme: siteSettings.getTheme(),
+        autoOpen: false,
+        isModal: false,
+        okButton: $('#closedialog-getgeo'),
+        initContent: function() {
+            $('#closedialog-getgeo').jqxButton({
+                width: '150px',
+                theme: siteSettings.getTheme()
+            });
+        }
+    });
+    
+    var timezoneData = [<#list timezones as zone>{"name": "${zone}", "value": "${zone}"},</#list>];
+    var timezoneSource = {
+        datatype: "json",
+        datafields: [
+            { name: 'name' },
+            { name: 'value' }
+        ],
+        localdata: timezoneData
+    };
+    var timezoneDataAdapter = new $.jqx.dataAdapter(timezoneSource);
+    $("#timezone").jqxComboBox({ 
+        source: timezoneDataAdapter, 
+        width: '250', 
+        height: '25px',
+        displayMember: "name", 
+        valueMember: "value", 
+        searchMode:'containsignorecase',
+        autoComplete:true,
+        theme: siteSettings.getTheme()
+    });
+    $("#timezone").jqxComboBox('val',"${timezone}");	
+    var localeData = [<#list locales as locale>{"name": "${locale}", "value": "${locale}"},</#list>];
+    var localeSource = {
+        datatype: "json",
+        datafields: [
+            { name: 'name' },
+            { name: 'value' }
+        ],
+        localdata: localeData
+    };
+    var localeDataAdapter = new $.jqx.dataAdapter(localeSource);
+    $("#locale").jqxComboBox({ 
+        source: localeDataAdapter, 
+        width: '250', 
+        height: '25px',
+        displayMember: "name", 
+        valueMember: "value", 
+        searchMode:'containsignorecase',
+        autoComplete:true,
+        theme: siteSettings.getTheme()
+    });
+    $("#locale").jqxComboBox('val',"${locale}");
+    
+    $("#setDebug").jqxSwitchButton({ height: 15, width: 50,  checked: <#if log_level=="INFO">false<#else>true</#if>, theme: siteSettings.getTheme() });
+    $("#setDebug").on('checked', function (event) {
+        $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "SystemService.setServerSetting", "id":"SystemService.setServerSetting", "params": {"setting":"setdebug", "values": {"value":false}}}')
+            .done(function(data) {
+                try {
+                    if(data.result.success !== true){
+                        showErrorMessage("Set configuration error", "Could not disable debuging: " + data.result.message);
+                    } else {
+                        $("#debugLevel").html("Disabled");
+                        showInfoMessage("Configuration", "Debugging disabled");
+                    }
+                } catch(err){
+                    var message = "<strong>Message</strong>:<br/>";
+                    if(data.error.data.trace!==undefined){
+                        message += data.error.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                    } else {
+                        message += data.error.data.message;
+                    }
+                    showErrorMessage("Server error: " + data.error.message, message);
+                }
+            }, "json");
+    });
+    $("#setDebug").on('unchecked', function (event) {
+         $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "SystemService.setServerSetting", "id":"SystemService.setServerSetting", "params": {"setting":"setdebug", "values": {"value":true}}}')
+            .done(function(data) {
+                try {
+                    if(data.result.success !== true){
+                        showErrorMessage("Set configuration error", "Could not enable debugging: " + data.result.message);
+                    } else {
+                        $("#debugLevel").html("Enabled");
+                        showInfoMessage("Configuration", "Debugging enabled");
+                    }
+                } catch(err){
+                    var message = "<strong>Message</strong>:<br/>";
+                    if(data.error.data.trace!==undefined){
+                        message += data.error.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                    } else {
+                        message += data.error.data.message;
+                    }
+                    showErrorMessage("Server error: " + data.error.message, message);
+                }
+            }, "json");
+    });
+    $( "#runClientAuth" ).jqxSwitchButton({ height: 15, width: 50,  checked: <#if client_auth=="false">false<#else>true</#if>, theme: siteSettings.getTheme() });
+    $("#runClientAuth").on('checked', function (event) {
+        $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "SystemService.setServerSetting", "id":"SystemService.setServerSetting", "params": {"setting":"setclientsauth", "values": {"value":false}}}')
+            .done(function(data) {
+                try {
+                    if(data.result.success !== true){
+                        showErrorMessage("Set configuration error", "Could not disable client authorization: " + data.result.message);
+                    } else {
+                        $("#clientAuth").html("Disabled");
+                        showInfoMessage("Configuration", "Clients authorization disabled");
+                    }
+                } catch(err){
+                    var message = "<strong>Message</strong>:<br/>";
+                    if(data.error.data.trace!==undefined){
+                        message += data.error.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                    } else {
+                        message += data.error.data.message;
+                    }
+                    showErrorMessage("Server error: " + data.error.message, message);
+                }
+            }, "json");
+    });
+    $("#runClientAuth").on('unchecked', function (event) {
+         $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "SystemService.setServerSetting", "id":"SystemService.setServerSetting", "params": {"setting":"setclientsauth", "values": {"value":true}}}')
+            .done(function(data) {
+                try {
+                    if(data.result.success !== true){
+                        showErrorMessage("Set configuration error", "Could not enable client authorization: " + data.result.message);
+                    } else {
+                        $("#clientAuth").html("Enabled");
+                        showInfoMessage("Configuration", "Clients authorization enabled");
+                    }
+                } catch(err){
+                    var message = "<strong>Message</strong>:<br/>";
+                    if(data.error.data.trace!==undefined){
+                        message += data.error.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                    } else {
+                        message += data.error.data.message;
+                    }
+                    showErrorMessage("Server error: " + data.error.message, message);
+                }
+            }, "json");
+    });
+    $("#saveTimezone").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+    $("#saveTimezone").on('click', function () {
+        $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "SystemService.setServerSetting", "id":"SystemService.setServerSetting", "params": {"setting":"settimezone", "values": {"locale":"'+$("#locale").val()+'", "timezone":"'+$("#timezone").val()+'", "latitude":"'+$("#latitude").val()+'","longitude":"'+$("#longitude").val()+'"}}}')
+            .done(function(data) {
+                try {
+                    if(data.result.success !== true){
+                        showErrorMessage("Set configuration error", "Could not set new localized data: " + data.result.message);
+                    } else {
+                        showInfoMessage("Configuration", "Timezone settings applied");
+                    }
+                } catch(err){
+                    var message = "<strong>Message</strong>:<br/>";
+                    if(data.error.data.trace!==undefined){
+                        message += data.error.data.message + "<br/><br/><strong>Trace</strong>:<br/>" + data.error.data.trace;
+                    } else {
+                        message += data.error.data.message;
+                    }
+                    showErrorMessage("Server error: " + data.error.message, message);
+                }
+            }, "json");
+    });    
+    $("#setShutdown").jqxButton({ width: '150', theme: siteSettings.getTheme()});
+    $("#setShutdown").on('click', function () {
+        $("#dialog-confirm-shutdown").jqxWindow('open');
+    });
+    
+    $("#dialog-confirm-shutdown").jqxWindow({
+        width: 400,
+        height: 120,
+        theme: siteSettings.getTheme(),
+        autoOpen: false,
+        isModal: false,
+        okButton: $('#dialog-cancel-shutdown'),
+        initContent: function() {
+            $('#dialog-cancel-shutdown').jqxButton({
+                width: '150px',
+                theme: siteSettings.getTheme()
+            });
+            $('#dialog-do-shutdown').jqxButton({
+                width: '150px',
+                theme: siteSettings.getTheme()
+            });
+            $("#dialog-do-shutdown").on('click', function () {
+                $.get("settings.html?setShutdown=true")
+                    .done(function(data) {
+                        if(data.result[0].exec !== true){
+                            alert("Could not shut down: " + data.result[0].reason);
+                        } else {
+                            alert("Bye");
+                        }
+                    }, "json");
+                    $("#dialog-confirm-shutdown").jqxWindow('close');
+            });
+        }
+    });
+});
+
+    
+    function clearHandlers(){
+        $("#dialog-getgeo").jqxWindow('destroy');
+        $("#dialog-confirm-shutdown").jqxWindow('destroy');
+        $("#timezone").jqxComboBox('destroy');
+    }
+
+    $(document).ready(function() {    
+        setPageBreadcrumbs(7, "page_serversettings", "Server settings", "/settings.html");    
+    });
+
+</script>

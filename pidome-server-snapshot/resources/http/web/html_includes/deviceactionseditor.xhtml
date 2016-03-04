@@ -1,0 +1,124 @@
+    <script>
+            function createMacroslider(sliderParam, sliderInputField, min, max, command){
+                var tmpValue = new String(command);
+                var sliderSplitted = tmpValue.split("!");
+                $( "#" + sliderParam).slider({
+                    range: "min",
+                    value: sliderSplitted[1],
+                    min: min,
+                    max: max,
+                    slide: function( event, ui ) {
+                        $( "#"+sliderInputField ).val( ui.value );
+                    },
+                    stop: function( event, ui ) {
+                        ui.value;
+                    }
+                });
+                $( "#"+sliderInputField ).val( $( "#"+sliderParam ).slider( "value" ) );
+            }
+            
+            function createColorPicker(fieldId, commandField, selectField, command){
+                var setColor = "#ffffff";
+                var curColorSplitted;
+                if($(this).attr('value')!=="Unknown"){
+                    try {        
+                        curColorSplitted = command.split("!");
+                        setColor = curColorSplitted[1];
+                        $("#"+selectField).val(curColorSplitted[2]);
+                    } catch(err){
+                        setColor = "#ffffff";
+                    }
+                } else {
+                    setColor = "#ffffff";
+                }
+                if(setColor===undefined){
+                    setColor = "#ffffff";
+                }
+                $("#"+selectField).change(function () {
+                    $("#" + commandField).val( "hex!" +  $("#" + fieldId).val() + "!" + $("#"+selectField+" option:selected").val() );
+                });
+                $("#" + fieldId).val(setColor);
+                $("#" + commandField).val(command);
+                $("#" + fieldId).minicolors({
+                        control: 'wheel',
+                        defaultValue: setColor,
+                        letterCase: 'uppercase',
+                        position: 'default',
+                        styles: '',
+                        swatchPosition: 'left',
+                        theme: 'default',
+                        change: function(hex, opacity) {
+                            $("#" + commandField).val("hex!" + hex.toUpperCase() + "!" + $("#"+selectField+" option:selected").val());
+                        }
+                });
+                $("#" + commandField).val("hex!" +  $("#" + fieldId).val() + "!" + $("#"+selectField+" option:selected").val() );
+            }
+    </script>
+<div id="deviceActionsEditor">
+        <table id="macroDeviceTable">
+            <thead>
+                <tr>
+                    <th class="location">Location</th>
+                    <th class="device">Device</th>
+                    <th collspan="3" class="command">Command</th>
+                    <th class="action">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <#list deviceList as cmd>
+                 ${cmd}
+                </#list>
+            </tbody>
+        </table>
+    <button class="addNewNacroDevice" id="addNewNacroDevice" name="addNewNacroDevice" style="margin-top: 10px;">Add a device</button>
+    <div id="allDevicesModal">
+        <p>Click on an device to add.</p>
+        <table id="allDevicesList">
+            <thead>
+                <th>Location</th><th>Device</th>
+            </thead>
+            <tbody>
+                 <#list allDevices as device>
+                <tr style="padding: 3px; cursor:pointer;" id="addDevice|${device.id}|${device.location}|${device.device}" class="addToMacro">
+                    <td>${device.locationname}</td><td>${device.name}</td>
+                </tr>
+                 </#list>
+            </tbody>
+        </table>
+        <button class="injectNewDeviceClose" id="injectNewDeviceClose" name="injectNewDeviceClose" style="margin-top: 10px;">Close</button>
+    </div>
+</div>
+    <script>
+        $( "button.addNewNacroDevice" ).button({icons: { primary: "ui-icon-document" }})
+        .click(function() {
+            $("#allDevicesModal").dialog( "open" );
+            return false;
+        });
+        $( "button.injectNewDeviceClose" ).button()
+        .click(function() {
+            $("#allDevicesModal").dialog( "close" );
+            return false;
+        });
+        $( ".addToMacro" ).click ( function(){
+            addToMacro($(this).attr("id"));
+        });
+        function addToMacro(device){
+            $("#pleaseWaitProgress").dialog( "open" );
+            deviceSet = device.split("|");
+            $.get( "edit_macros_getDeviceMacroRender.xhtml?device_id="+deviceSet[1]+"&location_id="+deviceSet[2]+"&device="+deviceSet[3], function( data ) {
+              $( "table#macroDeviceTable tbody" ).append( data );
+              $("#pleaseWaitProgress").dialog( "close" );
+            });
+        }
+        function removeDeviceFromMacro(deviceId){
+            remove = deviceId.split("_");
+            $( "table#macroDeviceTable tbody tr#row_" + remove[1]+"_"+remove[2] ).remove();
+            return false;
+        }
+        $("#allDevicesModal").dialog({
+            autoOpen: false,
+            resizable: false,
+            modal: true,
+            width:'auto'
+        });
+    </script>

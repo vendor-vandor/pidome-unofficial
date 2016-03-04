@@ -1,0 +1,70 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'org.javafxports:jfxmobile-plugin:1.0.0-b9'
+    }
+}
+
+apply plugin: 'org.javafxports.jfxmobile'
+
+configurations.all {
+    resolutionStrategy.cacheDynamicVersionsFor 1, 'minutes'
+    resolutionStrategy.cacheChangingModulesFor 1, 'minutes'
+}
+
+mainClassName = 'org.pidome.client.phone.PhoneMain'
+preloaderClassName = 'org.pidome.client.phone.AppPreloader'
+
+repositories {
+    jcenter()
+    maven {
+        url "http://builder.pidome.org:9000/repository/pidome-client-libraries/"
+    }
+    maven {
+        url "http://builder.pidome.org:9000/repository/third-parties-dependencies/"
+    }
+}
+
+dependencies {
+    compile files('lib/fontawesomefx-8.3-SNAPSHOT.jar', \
+                  'lib/Enzo_Gauge.jar', \
+                  'lib/Enzo_Common.jar', \
+                  'lib/Enzo_Fonts.jar', \
+                  'lib/android-support-v4.jar')
+    compile ("org.pidome.client:pidome-client-backend:1.0-SNAPSHOT") { exclude group: 'junit', module: 'junit' }
+}
+
+jfxmobile {
+    ios {
+        forceLinkClasses = [ 'org.javafxports.**.*' ]
+    }
+    android {
+        File pubPropFile = new File("../../private/app-sign.properties")
+        if(pubPropFile.exists()) {
+            Properties deployProps = new Properties()
+            deployProps.load(new FileInputStream(pubPropFile))
+            File keyFile = new File(deployProps['file'])
+            if(pubPropFile.exists()) {
+                signingConfig {
+                    storeFile keyFile
+                    storePassword deployProps['filepass']
+                    keyAlias deployProps['alias']
+                    keyPassword deployProps['pass']
+                }
+            } else {
+                println 'Prop found, keystore not, will be debug signing'
+            }
+        } else {
+            println 'Will be not able to official sign result, will be debug signing'
+        }
+        manifest="platformconfig/android/AndroidManifest.xml"
+        applicationPackage="PiDome client"
+        androidSdk='C:\\android-sdk-win'
+        resDirectory = 'src/android/resources'
+    }
+}

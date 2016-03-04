@@ -1,0 +1,4 @@
+PiDomeSimpleRgbLedStripController	KEYWORD1
+execCommand	KEYWORD2
+setRGB	KEYWORD2
+setSingleColor KEYWORD2

@@ -1,0 +1,687 @@
+* { margin: 0; padding: 0; font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif; font-size: 11px; }
+.ui-widget { font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif; font-size: 11px; }
+body { background-color: #eaeaea; font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif; font-size: 11px; }
+#topBar { margin: 0px; padding: 0px; }
+#pagemenu { margin: 0 0 1em; }
+.ui-menubar { list-style: none; margin: 0; padding-left: 0; }
+.ui-menubar-item { float: left; }
+.ui-menubar .ui-button { float: left; font-weight: normal; border-top-width: 0 !important; border-bottom-width: 0 !important; margin: 0; outline: none; }
+.ui-menubar .ui-menubar-link { border-right: 1px dashed transparent; border-left: 1px dashed transparent; }
+.ui-menubar .ui-menu { width: 200px; position: absolute; z-index: 9999; font-weight: normal; }
+
+
+/* Globals */
+#contentBody {margin: 1em; }
+h1 { margin-bottom: 1em; font-size: 1.8em; }
+h2 { margin-bottom: 1em; font-size: 1.6em; }
+h3 { margin-bottom: 1em; font-size: 1.4em; }
+h4 { margin-bottom: 1em; font-size: 1.2em; }
+p { margin-bottom: 1em; }
+h4.headerLine { border-bottom: lightgrey 1px solid; padding-bottom: 1px; }
+.clearFloat { clear: left; }
+
+/* Name - Value pairs */
+.nvp { width: 100%; }
+.nvp .n { width: 49%; float:left; clear:left; }
+.nvp .v { width: 50%; float:left; }
+
+/* Slider code */
+#scroll-pane,.scroll-pane{position:relative}
+.scroll-content {position:absolute;top:0;left:0}
+.slider-wrap{position:absolute;right:0;top:0;background-color:lightgrey;width:20px;border-left:1px solid gray;}
+.slider-vertical{position:relative;height:100%}
+.ui-slider-handle{width:20px;height:10px;margin:0 auto;background-color:darkgray;display:block;position:absolute}
+.ui-slider-handle img{border:none}
+.scrollbar-top{position:absolute;top:0;}
+.scrollbar-bottom{position:absolute;bottom:0;}
+.scrollbar-grip{position:absolute;top:50%;margin-top:-6px;}
+.ui-slider-range{position:absolute;width:100%;background-color:lightgrey}
+
+fieldset { margin: 10px; padding: 5px; }
+fieldset legend { padding: 3px; }
+
+/* Homepage */
+.homepageSystemStateTable { background-color: #ffffff; border: 2px groove threedface; float:left; margin: 5px; font-size: 11px; margin-right: 15px; }
+.homepageSystemStateTable tr { margin: 3px; }
+.homepageSystemStateTable th { border-bottom: 2px groove threedface; font-weight: bold; text-align: left; }
+.homepageSystemStateTable th,.homepageSystemStateTable td { padding: 2px; }
+.homepageSystemStateTable .devicePointer { cursor: pointer;}
+.homepageSystemStateTable .simpleCellHeader { font-weight: bold;}
+#blogContent .active { font-weight: bold; }
+
+/* Simple Device WYSIWYG */
+#simpleDeviceEditForm .n { width: 75px; margin-bottom: 3px; }
+#simpleDeviceEditForm .n, #simpleDeviceEditForm .v { padding:2px; margin-bottom: 3px; }
+#deviceActionsMenu ul { list-style-type: none; margin: 0; padding: 0; margin-bottom: 10px; }
+#deviceActionsMenu li { margin: 5px; padding: 5px; width: 150px; cursor: move; }
+#deviceActionsMenu { clear: left; float:left; }
+#deviceActionsComposer #deviceActionsField { border: 1px solid #000000; padding:5px; width:100%; min-height: 300px; }
+#simpleDeviceEditForm .vis-group { position: relative; margin-bottom: 15px;  }
+#simpleDeviceEditForm .deviceActionsContent {padding: 5px; }
+#simpleDeviceEditForm .vis-button-desc { float: left; margin-right: 3px; padding-right: 3px; border-right: 1px solid #000000; }
+#simpleDeviceEditForm .vis-button-editor { padding: 5px; margin-bottom: 10px; width: 99%; }
+#simpleDeviceEditForm .vis-button-editor .header { font-size: 1.1em; font-weight: bold; with: 100%; border-bottom: 1px solid #000000; margin-bottom: 3px; }
+#simpleDeviceEditForm .vis-button-editor .miniheader { font-weight: bold; }
+#simpleDeviceEditForm .vis-button-editor .vis-colorpicker-button-row { float: left; clear:left; border-top: 1px solid #000000; }
+
+
+/*The components in the WYSIWYG*/
+#vis-selectComponents.fixed{
+    position:fixed;
+    top:100;
+}
+
+/* System Events classes */
+#systemEventList .active { font-weight: bold; color: #009900; }
+#systemEventList .eventDetails { width: 30%; float: left; margin-right: 3%; }
+#systemEventList .eventDetails .nvp .n { width: 30%;}
+#systemEventList .eventDetails .nvp .v { width: 69%;}
+#systemEventList button { clear:left; margin-top: 10px; }
+
+
+/* Packages overview */
+.packageListPartContainer { width: 23%; margin-right: 2%; float:left; }
+.packageListPartContainer .ui-selecting { background: #FECA40; }
+.packageListPartContainer .ui-selected { background: #F39814; color: white; }
+.packageListPartContainer ol { list-style-type: none; margin: 0; padding: 0; height: 300px; border: 1px solid #000; }
+.packageListPartContainer ol li { margin: 3px; padding: 0.4em; height: 18px; cursor: pointer;}
+.packageListPartContainer .nvp .n {text-transform:capitalize; width: 82px; }
+.packageListPartContainer .nvp .v { display: inline-block; }
+
+/* Devices */
+#devicetable td { font-size: 11px; cursor:pointer; }
+#deviceTable thead {font-size: 11px; text-align: left; }
+.toggleButtonOn { border-color: green !important; }
+/* device modal css rules */
+#deviceModal p { max-width: 500px; }
+#deviceModal label, #deviceModal select, #deviceModal input { font-size: 11px; }
+#deviceModal table { width: 100%; }
+#deviceModal td { width: 50%; padding: 2px; font-size: 11px; }
+
+/* Locations overview */
+.locationlist,.categorylist,.subcategorylist { width: 23%; margin-right: 2%; float:left; clear:left; }
+.locationlist .ui-selecting,.categorylist .ui-selecting,.subcategorylist .ui-selecting { background: #FECA40; }
+.locationlist .ui-selected,.categorylist .ui-selected,.subcategorylist .ui-selected { background: #F39814; color: white; }
+.locationlist ol,.categorylist ol,.subcategorylist ol { list-style-type: none; margin: 0; padding: 0; height: 300px; border: 1px solid #000; }
+.locationlist ol li,.categorylist ol li,.subcategorylist ol li { margin: 3px; padding: 0.4em; height: 18px; cursor: pointer;}
+#locationeditor .nvp .n,#categoryeditor .nvp .n,#subcategoryeditor .nvp .n,#categoryMessage .nvp .n {text-transform:capitalize; width: 82px; }
+#locationeditor .nvp .v,#categoryeditor .nvp .v,#subcategoryeditor .nvp .v,#categoryMessage .nvp .v { display: inline-block; width: 200px; }
+#locationeditor,#categoryeditor,#subcategoryeditor,#categoryMessage,#subcategoryMessage { float : left;}
+
+#editScheduledEvent fieldset { padding: 5px; }
+#editScheduledEvent fieldset legend,
+#editScheduledEvent fieldset p,
+#editScheduledEvent fieldset label { padding: 2px; }
+
+#macroDeviceTable { padding : 5px;}
+#macroDeviceTable thead, #macroDeviceTable tbody { font-size: 11px; text-align: left; }
+#macroDeviceTable th, #macroDeviceTable td { padding-right: 10px; } 
+
+#timedEventTable { padding : 5px;}
+#timedEventTable thead, #timedEventTable tbody { font-size: 11px; text-align: left; }
+#timedEventTable th, #timedEventTable td { padding-right: 10px; } 
+
+#macroEditForm fieldset { padding: 5px; }
+#macroEditForm fieldset legend,
+#macroEditForm fieldset p,
+#macroEditForm fieldset label { padding: 2px; }
+
+#allDevicesList { padding : 5px;}
+#allDevicesList thead, #allDevicesList tbody { font-size: 11px; text-align: left; }
+#allDevicesList th, #allDevicesList td { padding-right: 5px; } 
+
+
+/*
+* rules table
+*/
+#ruleActionsTable { padding : 5px;}
+#ruleActionsTable thead, ruleActionsTable tbody { font-size: 11px; text-align: left; }
+#ruleActionsTable th, ruleActionsTable td { padding-right: 10px; } 
+
+
+
+/*/////////////////////////////// These are the table settings for the jquery.dataTables
+/*
+ * jQuery UI specific styling
+ */
+
+.sortableDataTable .paging_two_button .ui-button { float: left; cursor: pointer; cursor: pointer; }
+.sortableDataTable .paging_full_numbers .ui-button { padding: 2px 6px; margin: 0; cursor: pointer; cursor: pointer; color: #333 !important; }
+.sortableDataTable .dataTables_paginate .ui-button { margin-right: -0.1em !important; }
+.sortableDataTable .paging_full_numbers { width: 350px !important; }
+.sortableDataTable .dataTables_wrapper .ui-toolbar { padding: 5px; }
+.sortableDataTable .dataTables_paginate { width: auto; }
+.sortableDataTable .dataTables_info { padding-top: 3px; }
+.sortableDataTable table.display thead th { padding: 3px 0px 3px 10px; cursor: pointer; }
+.sortableDataTable div.dataTables_wrapper .ui-widget-header { font-weight: normal; }
+/*
+ * Sort arrow icon positioning
+ */
+.sortableDataTable table.display thead th div.DataTables_sort_wrapper { position: relative; padding-right: 20px; }
+.sortableDataTable table.display thead th div.DataTables_sort_wrapper span { position: absolute; top: 50%;  margin-top: -8px; right: 0; }
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ * Everything below this line is the same as demo_table.css. This file is
+ * required for 'cleanliness' of the markup
+ *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables features
+ */
+.sortableDataTable .dataTables_wrapper { position: relative; clear: both; }
+.sortableDataTable .dataTables_processing { position: absolute; top: 0px; left: 50%; width: 250px; margin-left: -125px; border: 1px solid #ddd; text-align: center; color: #999; font-size: 11px; padding: 2px 0; }
+.sortableDataTable .dataTables_length { width: 40%; float: left; }
+.sortableDataTable .dataTables_filter { width: 50%; float: right; text-align: right; }
+.sortableDataTable .dataTables_info { width: 50%; float: left; }
+.sortableDataTable .dataTables_paginate { float: right; text-align: right; }
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables display
+ */
+.sortableDataTable table.display { margin: 0 auto;	width: 100%; clear: both; border-collapse: collapse; }
+.sortableDataTable table.display tfoot th { padding: 3px 0px 3px 10px; font-weight: bold; font-weight: normal; }
+.sortableDataTable table.display tr.heading2 td { border-bottom: 1px solid #aaa; }
+.sortableDataTable table.display td { padding: 3px 10px; }
+.sortableDataTable table.display td.center { text-align: center; }
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables sorting
+ */
+.sortableDataTable .sorting_asc { background: url('../images/sort_asc.png') no-repeat center right; }
+.sortableDataTable .sorting_desc { background: url('../images/sort_desc.png') no-repeat center right; }
+.sortableDataTable .sorting { background: url('../images/sort_both.png') no-repeat center right; }
+.sortableDataTable .sorting_asc_disabled { background: url('../images/sort_asc_disabled.png') no-repeat center right; }
+.sortableDataTable .sorting_desc_disabled { background: url('../images/sort_desc_disabled.png') no-repeat center right; }
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables row classes
+ */
+.sortableDataTable tr.odd { background-color: #E2E4FF; }
+.sortableDataTable tr.even { background-color: white; }
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Misc
+ */
+.sortableDataTable .dataTables_scroll { clear: both; }
+.sortableDataTable .dataTables_scrollBody {-webkit-overflow-scrolling: touch;}
+.sortableDataTable .top, .bottom { padding: 15px; background-color: #F5F5F5; border: 1px solid #CCCCCC;}
+.sortableDataTable .top .dataTables_info { float: none;}
+.sortableDataTable .clear { clear: both; }
+.sortableDataTable .dataTables_empty { text-align: center;}
+.sortableDataTable tfoot input { margin: 0.5em 0; width: 100%; color: #444;}
+.sortableDataTable tfoot input.search_init { color: #999;}
+.sortableDataTable td.group { background-color: #d1cfd0; border-bottom: 2px solid #A19B9E; border-top: 2px solid #A19B9E;}
+.sortableDataTable td.details { background-color: #d1cfd0; border: 2px solid #A19B9E;}
+.sortableDataTable .example_alt_pagination div.dataTables_info { width: 40%;}
+.sortableDataTable .paging_full_numbers a.paginate_button,
+ 	.sortableDataTable .paging_full_numbers a.paginate_active { border: 1px solid #aaa; -webkit-border-radius: 5px; -moz-border-radius: 5px; padding: 2px 5px; margin: 0 3px; cursor: pointer; *cursor: hand; color: #333 !important;}
+.sortableDataTable .paging_full_numbers a.paginate_button { background-color: #ddd;}
+.sortableDataTable .paging_full_numbers a.paginate_button:hover { background-color: #ccc; text-decoration: none !important;}
+.sortableDataTable .paging_full_numbers a.paginate_active { background-color: #99B3FF;}
+.sortableDataTable table.display tr.even.row_selected td { background-color: #B0BED9;}
+.sortableDataTable table.display tr.odd.row_selected td { background-color: #9FAFD1;}
+/*
+ * Sorting classes for columns
+ */
+/* For the standard odd/even */
+.sortableDataTable tr.odd td.sorting_1 { background-color: #D3D6FF;}
+.sortableDataTable tr.odd td.sorting_2 { background-color: #DADCFF;}
+.sortableDataTable tr.odd td.sorting_3 { background-color: #E0E2FF;}
+.sortableDataTable tr.even td.sorting_1 { background-color: #EAEBFF;}
+.sortableDataTable tr.even td.sorting_2 { background-color: #F2F3FF;}
+.sortableDataTable tr.even td.sorting_3 { background-color: #F9F9FF;}
+/*
+ * Row highlighting example
+ */
+.sortableDataTable tbody tr.even:hover { background-color: #ECFFB3; }
+.sortableDataTable tbody tr.odd:hover { background-color: #E6FF99; }
+
+
+
+.minicolors {
+	position: relative;
+	display: inline-block;
+	z-index: 1;
+}
+
+.minicolors-focus {
+	z-index: 2;
+}
+
+.minicolors.minicolors-theme-default .minicolors-input {
+    margin: 0;
+	border: solid 1px #CCC;
+	font: 14px sans-serif;
+	width: 65px;
+	height: 16px;
+	border-radius: 0;
+	box-shadow: inset 0 2px 4px rgba(0, 0, 0, .04);
+	padding: 2px;
+	margin-right: -1px;
+}
+
+.minicolors-theme-default.minicolors .minicolors-input {
+	vertical-align: middle;
+	outline: none;
+}
+
+.minicolors-theme-default.minicolors-swatch-left .minicolors-input {
+    margin-left: -1px;
+    margin-right: auto;
+}
+
+.minicolors-theme-default.minicolors-focus .minicolors-input,
+.minicolors-theme-default.minicolors-focus .minicolors-swatch {
+	border-color: #999;
+}
+
+.minicolors-hidden {
+	position: absolute;
+	left: -9999em;
+}
+
+.minicolors-swatch {
+	position: relative;
+	width: 20px;
+	height: 20px;
+	text-align: left;
+	background: url(../images/jquery.minicolors.png) -80px 0;
+	border: solid 1px #CCC;
+	vertical-align: middle;
+	display: inline-block;
+}
+
+.minicolors-swatch SPAN {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: none;
+	box-shadow: inset 0 9px 0 rgba(255, 255, 255, .1);
+	display: inline-block;
+}
+
+/* Panel */
+.minicolors-panel {
+	position: absolute;
+	top: 26px;
+	left: 0;
+	width: 173px;
+	height: 152px;
+	background: white;
+	border: solid 1px #CCC;
+	box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+	display: none;
+}
+
+.minicolors-position-top .minicolors-panel {
+	top: -156px;
+}
+
+.minicolors-position-left .minicolors-panel {
+	left: -83px;
+}
+
+.minicolors-position-left.minicolors-with-opacity .minicolors-panel {
+	left: -104px;
+}
+
+.minicolors-with-opacity .minicolors-panel {
+	width: 194px;
+}
+
+.minicolors .minicolors-grid {
+	position: absolute;
+	top: 1px;
+	left: 1px;
+	width: 150px;
+	height: 150px;
+	background: url(../images/jquery.minicolors.png) -120px 0;
+	cursor: crosshair;
+}
+
+.minicolors .minicolors-grid-inner {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 150px;
+	height: 150px;
+	background: none;
+}
+
+.minicolors-slider-saturation .minicolors-grid {
+	background-position: -420px 0;
+}
+
+.minicolors-slider-saturation .minicolors-grid-inner {
+	background: url(../images/jquery.minicolors.png) -270px 0;
+}
+
+.minicolors-slider-brightness .minicolors-grid {
+	background-position: -570px 0;
+}
+
+.minicolors-slider-brightness .minicolors-grid-inner {
+	background: black;
+}
+
+.minicolors-slider-wheel .minicolors-grid {
+	background-position: -720px 0;
+}
+
+.minicolors-slider,
+.minicolors-opacity-slider {
+	position: absolute;
+	top: 1px;
+	left: 152px;
+	width: 20px;
+	height: 150px;
+	background: white url(../images/jquery.minicolors.png) 0 0;
+	cursor: crosshair;
+}
+
+.minicolors-slider-saturation .minicolors-slider {
+	background-position: -60px 0;
+}
+
+.minicolors-slider-brightness .minicolors-slider {
+	background-position: -20px 0;
+}
+
+.minicolors-slider-wheel .minicolors-slider {
+	background-position: -20px 0;
+}
+
+.minicolors-opacity-slider {
+	left: 173px;
+	background-position: -40px 0;
+	display: none;
+}
+
+.minicolors-with-opacity .minicolors-opacity-slider {
+	display: block;
+}
+
+/* Pickers */
+.minicolors-grid .minicolors-picker {
+	position: absolute;
+	top: 70px;
+	left: 70px;
+	width: 10px;
+	height: 10px;
+	border: solid 1px black;
+	border-radius: 10px;
+	margin-top: -6px;
+	margin-left: -6px;
+	background: none;
+}
+
+.minicolors-grid .minicolors-picker SPAN {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 6px;
+	height: 6px;
+	border-radius: 6px;
+	border: solid 2px white;
+}
+
+.minicolors-picker {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 18px;
+	height: 2px;
+	background: white;
+	border: solid 1px black;
+	margin-top: -2px;
+}
+
+/* Inline controls */
+.minicolors-inline .minicolors-input,
+.minicolors-inline .minicolors-swatch {
+	display: none;
+}
+
+.minicolors-inline .minicolors-panel {
+	position: relative;
+	top: auto;
+	left: auto;
+	display: inline-block;
+}
+
+
+/*
+ * Bootstrap Theme (theme: 'bootstrap')
+ *
+ */
+ 
+/* Input styles */
+.minicolors-theme-bootstrap .minicolors-input {
+	padding: 4px 6px;
+	padding-left: 30px;
+	background-color: white;
+	border: 1px solid #CCC;
+	border-radius: 3px;
+	color: #555;
+	font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
+	font-size: 14px;
+	height: 19px;
+	margin: 0;
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+
+/* When the input has focus */
+.minicolors-theme-bootstrap.minicolors-focus .minicolors-input {
+	border-color: #6fb8f1;
+	box-shadow: 0 0 10px #6fb8f1;
+	outline: none;
+}
+
+/* Swatch styles */
+.minicolors-theme-bootstrap .minicolors-swatch {
+	position: absolute;
+	left: 4px;
+	top: 4px;
+	z-index: 2;
+}
+
+/* Handle swatch position (left = default / right) */
+.minicolors-theme-bootstrap.minicolors-swatch-position-right .minicolors-input {
+	padding-left: 6px;
+	padding-right: 30px;
+}
+
+.minicolors-theme-bootstrap.minicolors-swatch-position-right .minicolors-swatch {
+	left: auto;
+	right: 4px;
+}
+
+/* Panel styles */
+.minicolors-theme-bootstrap .minicolors-panel {
+	top: 28px;
+	z-index: 3;
+}
+
+/* Handle panel positions (top / left) */
+.minicolors-theme-bootstrap.minicolors-position-top .minicolors-panel {
+	top: -154px;
+}
+
+.minicolors-theme-bootstrap.minicolors-position-left .minicolors-panel {
+	left: -63px;
+}
+
+/* Don't forget to adjust the left position in case the opacity slider is visible! */
+.minicolors-theme-bootstrap.minicolors-position-left.minicolors-with-opacity .minicolors-panel {
+	left: -84px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+.colorpicker {
+	width: 356px;
+	height: 176px;
+	overflow: hidden;
+	position: absolute;
+	background: url(../images/custom_background.png);
+	font-family: Arial, Helvetica, sans-serif;
+	display: none;
+}
+.colorpicker_color {
+	width: 150px;
+	height: 150px;
+	left: 14px;
+	top: 13px;
+	position: absolute;
+	background: #f00;
+	overflow: hidden;
+	cursor: crosshair;
+}
+.colorpicker_color div {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 150px;
+	height: 150px;
+	background: url(../images/colorpicker_overlay.png);
+}
+.colorpicker_color div div {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 11px;
+	height: 11px;
+	overflow: hidden;
+	background: url(../images/colorpicker_select.gif);
+	margin: -5px 0 0 -5px;
+}
+.colorpicker_hue {
+	position: absolute;
+	top: 13px;
+	left: 171px;
+	width: 35px;
+	height: 150px;
+	cursor: n-resize;
+}
+.colorpicker_hue div {
+	position: absolute;
+	width: 35px;
+	height: 9px;
+	overflow: hidden;
+	background: url(../images/custom_indic.gif) left top;
+	margin: -4px 0 0 0;
+	left: 0px;
+}
+.colorpicker_new_color {
+	position: absolute;
+	width: 60px;
+	height: 30px;
+	left: 213px;
+	top: 13px;
+	background: #f00;
+}
+.colorpicker_current_color {
+	position: absolute;
+	width: 60px;
+	height: 30px;
+	left: 283px;
+	top: 13px;
+	background: #f00;
+}
+.colorpicker input {
+	background-color: transparent;
+	border: 1px solid transparent;
+	position: absolute;
+	font-size: 10px;
+	font-family: Arial, Helvetica, sans-serif;
+	color: #898989;
+	top: 4px;
+	right: 11px;
+	text-align: right;
+	margin: 0;
+	padding: 0;
+	height: 11px;
+}
+.colorpicker_hex {
+	position: absolute;
+	width: 72px;
+	height: 22px;
+	background: url(../images/custom_hex.png) top;
+	left: 212px;
+	top: 142px;
+}
+.colorpicker_hex input {
+	right: 6px;
+}
+.colorpicker_field {
+	height: 22px;
+	width: 62px;
+	background-position: top;
+	position: absolute;
+}
+.colorpicker_field span {
+	position: absolute;
+	width: 12px;
+	height: 22px;
+	overflow: hidden;
+	top: 0;
+	right: 0;
+	cursor: n-resize;
+}
+.colorpicker_rgb_r {
+	background-image: url(../images/custom_rgb_r.png);
+	top: 52px;
+	left: 212px;
+}
+.colorpicker_rgb_g {
+	background-image: url(../images/custom_rgb_g.png);
+	top: 82px;
+	left: 212px;
+}
+.colorpicker_rgb_b {
+	background-image: url(../images/custom_rgb_b.png);
+	top: 112px;
+	left: 212px;
+}
+.colorpicker_hsb_h {
+	background-image: url(../images/custom_hsb_h.png);
+	top: 52px;
+	left: 282px;
+}
+.colorpicker_hsb_s {
+	background-image: url(../images/custom_hsb_s.png);
+	top: 82px;
+	left: 282px;
+}
+.colorpicker_hsb_b {
+	background-image: url(../images/custom_hsb_b.png);
+	top: 112px;
+	left: 282px;
+}
+.colorpicker_submit {
+	position: absolute;
+	width: 22px;
+	height: 22px;
+	background: url(../images/custom_submit.png) top;
+	left: 322px;
+	top: 142px;
+	overflow: hidden;
+}
+.colorpicker_focus {
+	background-position: center;
+}
+.colorpicker_hex.colorpicker_focus {
+	background-position: bottom;
+}
+.colorpicker_submit.colorpicker_focus {
+	background-position: bottom;
+}
+.colorpicker_slider {
+	background-position: bottom;
+}

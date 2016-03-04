@@ -1,0 +1,127 @@
+        <h3>${playername} at ${playerlocation}</h3>
+        <div style="float:left; width: 500px;">        
+            <div style="padding-top:3px;">
+                ${pluginControl}
+            </div>
+            <div id="mediaplaylists" style="width: 500px;">
+                <h3>Available Playlists/Channels</h3>
+                <div style="text-align: center; width: 500px;">
+                    <button id="getAudioPlaylists" name="getAudioPlaylists" value="Audio playlists" style="float:left; margin-left:5px;">Audio playlists</button>
+                    <button id="getVideoPlaylists" name="getVideoPlaylists" value="Video playlists" style="float:left; margin-left:10px;">Video playlists</button>
+                    <button id="getPVRPlaylist" name="getPVRPlaylist" value="PVR channels" style="float:left; margin-left:10px;">PVR Channels</button>
+                </div>
+                <div id="playliststableholder">
+                    <table style="width:500px;" id="playliststable">
+                        <tbody>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>    
+            <div id="mediaplaylistplaylist" style="float:left; width: 500px;">
+                <h3>Playlist</h3>
+                <table style="width:500px;">
+                    <tbody style="overflow:auto;height:290px;display:block;width:500px;">
+                        <#if playlist?has_content>
+                            <#list playlist?keys as key>
+                            <#assign item = playlist[key]>
+                            <tr id="player_${mediaid}_item_${item.PLAYLIST_POS}">
+                                <td align="center" style="width:36px;">
+                                    <img height="25" src="../shared/images/icons/media/<#if item.ITEM_TYPE=='AUDIO'>audio.png" alt="Audio<#elseif item.ITEM_TYPE=='VIDEO'>video.png" alt="Video<#elseif item.ITEM_TYPE=='PVR'>pvr.png" alt="PVR</#if>" />
+                                </td>
+                                <td style="width:478px;">${item.TITLE}</td>
+                                <td style="width:90px;">
+                                    <button style="float: left;" class="mediacontrol enabled" value="PlayerCommand.PLAYLISTITEM||${item.PLAYLIST_POS}||${item.PLAYLIST_ID}||${item.ITEM_TYPE}"><img src="../shared/images/icons/media/play.png" alt="Play" /></button>
+                                    <#if item.ITEM_TYPE!='PVR'><button style="float: left;" class="mediacontrol enabled" value="PlaylistCommand.REMOVE||${item.PLAYLIST_POS}||${item.PLAYLIST_ID}"><img src="../shared/images/icons/media/delete.png" alt="Delete" /></button></#if>
+                                </td>
+                            </tr>
+                            </#list>
+                        </#if>
+                    </tbody>
+                </table>
+            </div>
+        <input type="hidden" name="mediaid" id="mediaid" value="${mediaid}"/>
+        <script>
+            function createplaylistlist(data){
+                $('#playliststable tbody').empty();
+                $.each(data, function(i, item) {
+                    var execItem;
+                    var listType = item.type;
+                    if(item.id!==null){
+                        execItem = 'id||' + item.id;
+                    } else {
+                        execItem = 'file||' + item.file;
+                    }
+                    $('#playliststable tbody').append('<tr><td align="center" style="width:36px;"><button class="mediacontrol enabled" value="'+execItem+'" id="playplaylist_'+i+'"><img src="../shared/images/icons/media/play.png" alt="Play playlist" /></button></td><td>'+item.title+'</td></tr>');
+                    $('#playplaylist_'+i).jqxButton({ width: 30,height: 25, theme: siteSettings.getTheme()});
+                    $('#playplaylist_'+i).on('click', function () {
+                        try {                
+                            var itemWorkWith = $("#" + $( this ).attr("id")).attr("value");
+                            var request;
+                            var params = itemWorkWith.split("||");
+                            if(params[0]==="file"){
+                                request = '{"jsonrpc": "2.0", "method": "MediaService.playPlaylist", "params":{"id":${mediaid}, "type": "'+listType+'", "playlistid": null, "playlistfile":"'+params[1]+'"}, "id":"iets"}';
+                            } else {
+                                request = '{"jsonrpc": "2.0", "method": "MediaService.playPlaylist", "params":{"id":${mediaid}, "type": "'+listType+'", "playlistid": '+params[1]+', "playlistfile":null}, "id":"iets"}';
+                            }
+                            $.get('/jsonrpc.json?rpc=' + request)
+                                .done(function(data) {
+
+                            });
+                        } catch(err) {
+                            
+                        }
+                    });
+                });
+            }
+            $(document).ready(function() {
+                
+                $("#getAudioPlaylists").jqxButton({ width: 125,height: 25, theme: siteSettings.getTheme()});
+                $("#getAudioPlaylists").on('click', function () {
+                    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MediaService.getAudioPlaylists", "params":{"id":${mediaid}}, "id":"iets"}') 
+                        .done(function(data) {
+                            createplaylistlist(data.result.data);
+                    });
+                });
+                $("#getVideoPlaylists").jqxButton({ width: 125,height: 25, theme: siteSettings.getTheme()});
+                $("#getVideoPlaylists").on('click', function () {
+                    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MediaService.getVideoPlaylists", "params":{"id":${mediaid}}, "id":"iets"}') 
+                        .done(function(data) {
+                            createplaylistlist(data.result.data);
+                    });
+                });
+                $("#getPVRPlaylist").jqxButton({ width: 125,height: 25, theme: siteSettings.getTheme()});
+                $("#getPVRPlaylist").on('click', function () {
+                    $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MediaService.getPVRChannelSets", "params":{"id":${mediaid}}, "id":"iets"}') 
+                        .done(function(data) {
+                            createplaylistlist(data.result.data);
+                    });
+                });
+                $(".mediacontrol.disabled").addClass("jqx-rc-all jqx-rc-all-metrodark jqx-button jqx-button-metrodark jqx-widget jqx-widget-metrodark jqx-fill-state-normal jqx-fill-state-normal-metrodark");
+                try {
+                    $(".mediacontrol.enabled").jqxButton({ width: 30,height: 25, theme: siteSettings.getTheme()});
+                    $(".mediacontrol.enabled").on('click', function () {
+                        var itemWorkWith = $("#" + $( this ).attr("id")).attr("value");
+                        if(itemWorkWith.startsWith("PlayerCommand.PLAYLISTITEM")){
+                            var splittedWork = itemWorkWith.split("||");
+                            $.get("/mediaExecutor.json?mediaid=" + $( "#mediaid" ).val() + "&action=PlayerCommand.PLAYLISTITEM&itemid=" + splittedWork[1] + "&playlistid=" + splittedWork[2] + "&type=" + splittedWork[3])
+                                .done(function(data) {
+                                });
+                        } else if(itemWorkWith.startsWith("PlaylistCommand.REMOVE")){
+                            var splittedWork = itemWorkWith.split("||");
+                            $.get("/mediaExecutor.json?mediaid=" + $( "#mediaid" ).val() + "&action=PlaylistCommand.REMOVE&itemid=" + splittedWork[1] + "&playlistid=" + splittedWork[2]) 
+                                .done(function(data) {
+                                });
+                        } else {
+                            $.get("/mediaExecutor.json?mediaid=" + $( "#mediaid" ).val() + "&action=" + itemWorkWith) 
+                                .done(function(data) {
+                                });
+                        }
+                    });
+                } catch (err) {}
+                try {
+                    $(".mediacontrol.disabled").jqxButton({ disabled: true, width: 30,height: 25, theme: siteSettings.getTheme()});
+                } catch (err) {}
+            });
+        </script>

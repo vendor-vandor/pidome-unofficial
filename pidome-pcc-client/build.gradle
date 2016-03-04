@@ -1,0 +1,201 @@
+apply plugin: 'java'
+
+sourceCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+// NetBeans will automatically add "run" and "debug" tasks relying on the
+// "mainClass" property. You may however define the property prior executing
+// tasks by passing a "-PmainClass=<QUALIFIED_CLASS_NAME>" argument.
+//
+// Note however, that you may define your own "run" and "debug" task if you
+// prefer. In this case NetBeans will not add these tasks but you may rely on
+// your own implementation.
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'org.pidome.client.PiDomeClient'
+}
+
+//// Add a built time.
+def buildTime() {
+    def date = new Date()
+    def formattedDate = date.format('yyyy-MM-dd HH:mm:ss')
+    return formattedDate
+}
+
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots/"
+        }
+    }
+    dependencies {
+        classpath 'org.javafxports:jfxmobile-plugin:1.0.6'
+    }
+}
+
+apply plugin: 'org.javafxports.jfxmobile'
+
+configurations.all {
+    resolutionStrategy.cacheDynamicVersionsFor 1, 'minutes'
+    resolutionStrategy.cacheChangingModulesFor 1, 'minutes'
+}
+
+mainClassName = 'org.pidome.client.PiDomeClient'
+
+repositories {
+    jcenter()
+    maven {
+        url "http://builder.pidome.org:9000/repository/pidome-client-libraries/"
+    }
+    maven {
+        url "http://builder.pidome.org:9000/repository/third-parties-dependencies/"
+    }
+}
+
+/// Enzo libraries by hansolo
+List enzo = ['lib/enzo/Enzo_Gauge.jar',
+             'lib/enzo/Enzo_Common.jar',
+             'lib/enzo/Enzo_Fonts.jar',
+             'lib/enzo/CanvasLed.jar']
+/// Font awesome by jens deters
+List fntaws = ['lib/fontawesomefx-8.6.jar']
+/// opendv for desktop compiles used for image processing
+List opencv = ['lib/opencv/opencv-249.jar', 'lib/cern/colt.jar']
+/// These are always needed.
+List allcmpl= ["org.pidome.client:pidome-client-backend:1.0-SNAPSHOT"]
+/// Add android v4 support. Used by some android specific code.
+List andrspec = ['lib/android-support-v4.jar']
+/// Files used for arm build (runtime).
+List armojfx  = ["javafx/rt/lib/jfxswt.jar", "javafx/rt/lib/ext/jfxrt.jar"]
+/// Files, repo for special arm based build requirements
+List desktopArmSpecials = ["com.pi4j:pi4j-core:1.0"]
+
+configurations {
+    enzo 
+    fntaws 
+    opencv
+    allcmpl
+    compile.exclude group: 'junit', module: 'junit' 
+}
+
+dependencies {
+    compile files(enzo)
+    compile files(fntaws)
+    compile allcmpl
+    desktopCompile files(opencv), desktopArmSpecials
+    androidCompile files(andrspec)
+}
+
+jfxmobile {
+    ios {
+        forceLinkClasses = [ 'org.javafxports.**.*' ]
+        propertiesFile="platformconfig/ios/robovm/robovm.properties"
+        configFile="platformconfig/ios/robovm/config.xml"
+        infoPList=file('platformconfig/ios/Info.plist')
+    }
+    android {
+        File pubPropFile = new File("../../private/app-sign.properties")
+        if(pubPropFile.exists()) {
+            Properties deployProps = new Properties()
+            deployProps.load(new FileInputStream(pubPropFile))
+            File keyFile = new File(deployProps['file'])
+            if(pubPropFile.exists()) {
+                signingConfig {
+                    storeFile keyFile
+                    storePassword deployProps['filepass']
+                    keyAlias deployProps['alias']
+                    keyPassword deployProps['pass']
+                }
+            } else {
+                println 'Prop found, keystore not, will be debug signing'
+            }
+        } else {
+            println 'Will be not able to official sign result, will be debug signing'
+        }
+        manifest="platformconfig/android/AndroidManifest.xml"
+        applicationPackage="PiDome Full Client"
+        androidSdk='C:\\android-sdk-win'
+        resDirectory = 'src/android/resources'
+    }
+}
+
+///// Lets do some desktop specific building. Run exists, but not any kind of desktopInstall etc..
+
+jar.doFirst {
+    manifest {
+        attributes('Manifest-Version': '1.0',
+               'Sealed': true,
+               'Main-Class': mainClass,
+               'Created-By': System.getProperty('java.version') + ' (' + System.getProperty('java.vendor') + ')',
+               'Built-With': "gradle-${project.getGradle().getGradleVersion()}",
+               'Build-Time': buildTime(),
+               'Built-By': System.getProperty('user.name'),
+               'Implementation-Title': 'pidome-client',
+               'Implementation-Version': System.getenv("ENV_CUSTOM_BUILD_VERSION") ?: "NO-PROD-CUSTOM-BUILD",
+               'Implementation-Vendor': System.getenv("ENV_CUSTOM_VENDOR") ?: "Unknown",
+        )
+    }
+}
+
+task createDesktopInstall(type:Zip){ 
+    baseName = "pidome-desktop-client"
+    from "build/install/PiDome-Client/"
+    destinationDir = new File(project.buildDir.path + "/publish/desktop/")
+    includeEmptyDirs = true
+}
+
+task createAndroidInstall(type:Copy){ 
+    from "build/javafxports/android/"
+    into new File(project.buildDir.path + "/publish/android/")
+    includeEmptyDirs = true
+}
+
+//// This one should only be used locally and not on build.
+task createAndroidDebugInstall(type:Copy){ 
+    from "build/javafxports/android/"
+    into new File(project.buildDir.path + "/publish/android/")
+    includeEmptyDirs = true
+}
+
+///copy arm jre and jfx
+task copyArmJREJFXAndSettings(type:Copy, dependsOn: 'installDist'){
+    from "build/install/PiDome-Client/"
+    into "build/install/PiDome-Client-arm/"
+    from ("c:/jdk-arm-hf-8-u-60/jre/") {
+        into "jre/"
+    }
+    from ("c:/javafxbin-armhf/") {
+        into "javafx/"
+    }
+    from ("settings/") {
+        into "settings/"
+    }
+    from (configurations.desktopCompile){
+        into "lib/"
+    }
+    includeEmptyDirs = true
+}
+/// Create distro for download.
+task installArm(type:Zip, dependsOn: 'copyArmJREJFXAndSettings'){ 
+    baseName = "pidome-arm67-client"
+    from "build/install/PiDome-Client-arm/"
+    destinationDir = new File(project.buildDir.path + "/publish/desktop-arm/")
+    includeEmptyDirs = true
+}
+
+task createDesktopArmInstall(dependsOn: 'installArm') {
+    if(!project.gradle.startParameter.taskNames.empty && project.gradle.startParameter.taskNames.get(0) == "createDesktopArmInstall"){
+        startScripts {
+            classpath.add(configurations.desktopCompile)
+            doLast {
+                unixScript.text = unixScript.text.replaceFirst(/CLASSPATH=(.*)/) {all, classpath -> "CLASSPATH="+ classpath + ":" + armojfx.join(":") + "\n\nexport JAVA_HOME=\$APP_HOME/jre/\n\nchmod 755 \$APP_HOME/jre/bin/java" }
+                unixScript.text = unixScript.text.replace("exec","exec sudo")
+            }
+        }
+        applicationDefaultJvmArgs = ["-Djava.library.path=javafx/rt/lib/arm/","-Dcom.sun.javafx.isEmbedded=true","-Dcom.sun.javafx.touch=true","-Dcom.sun.javafx.virtualKeyboard=javafx"]
+    }
+}
+
+tasks.createDesktopInstall.dependsOn installDist
+tasks.createAndroidInstall.dependsOn androidRelease
+tasks.createAndroidDebugInstall.dependsOn android

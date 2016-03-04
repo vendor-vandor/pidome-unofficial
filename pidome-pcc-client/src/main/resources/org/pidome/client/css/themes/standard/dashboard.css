@@ -1,0 +1,264 @@
+/******************************************************************
+ * 
+ * Define dashboard root vars
+ *
+ *****************************************************************/
+.root {
+    
+    ///-fx-background-color: #000;
+    
+    -fx-default-dashboard-text-color: #d5d6d7;
+    -fx-default-dashboard-text-shadow: dropshadow(one-pass-box, rgba(0,0,0,0.7), 2, 1.0 , 1, 1);
+    
+    -fx-default-dashboard-item-active: #349b5a;
+    -fx-default-dashboard-item-inactive: #b95142;
+    -fx-default-dashboard-item-highlight: #426fb9;
+    
+    -fx-default-tile-background-color: #262728;
+    
+}
+
+.dashboard .dashboard-tile {
+    -fx-background-color: -fx-default-tile-background-color;
+}
+
+/******************************************************************
+ * 
+ * Dashboard time item
+ *
+ *****************************************************************/
+.dashboard .dashboard-tile.dashboard-time {
+    -fx-background-color: #1166c5;
+}
+
+.dashboard .dashboard-tile.dashboard-time .date {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-time .time {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-time .sunriseset {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+/******************************************************************
+ * 
+ * Dashboard weather item
+ *
+ *****************************************************************/
+.dashboard .dashboard-tile.dashboard-weather {
+    -fx-background-color: #ad440b;
+}
+
+.dashboard .dashboard-tile.dashboard-weather .locationtext{
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-weather .descriptiontext{
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-weather .temperature {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-weather .detailstext {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+/******************************************************************
+ * 
+ * Dashboard device item
+ *
+ *****************************************************************/
+.dashboard .dashboard-tile.dashboard-device {
+    -fx-background-color: #262728;
+}
+////// Toggle stuff
+.dashboard .dashboard-tile.dashboard-device.toggle-control .control-text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+.dashboard .dashboard-tile.dashboard-device.toggle-control {
+    -fx-background-color: -fx-default-dashboard-item-inactive;
+}
+
+.dashboard .dashboard-tile.dashboard-device.toggle-control.active {
+    -fx-background-color: -fx-default-dashboard-item-active;
+}
+////// Data stuff
+.dashboard .dashboard-tile.dashboard-device.data-control .control-text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-device.data-control .boolean-true {
+    -fx-background-color: -fx-default-dashboard-item-active;
+}
+
+.dashboard .dashboard-tile.dashboard-device.data-control .boolean-false {
+    -fx-background-color: -fx-default-dashboard-item-inactive;
+}
+////// Gauges stuff
+.dashboard .dashboard-tile.dashboard-device.data-control .one-eighty-gauge {
+    -fx-skin             : "eu.hansolo.enzo.gauge.skin.OneEightyGaugeSkin";
+    -bar-color           : green;
+    -title-color         : -fx-default-dashboard-text-color;
+    -value-color         : -fx-default-dashboard-text-color;
+    -unit-color          : -fx-default-dashboard-text-color;
+    -min-text-color      : -fx-default-dashboard-text-color;
+    -max-text-color      : -fx-default-dashboard-text-color;
+}
+.dashboard .dashboard-tile.dashboard-device.data-control .one-eighty-gauge .text {
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+////// sliders stuff
+.dashboard .dashboard-tile.dashboard-device.slider-control {
+
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .slider-background {
+    -fx-fill: whitesmoke;
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .slider {
+    -fx-fill: #6fa9c0;
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .slider-highlight {
+    -fx-fill: derive(#6fa9c0, 25%);
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .slider-cutout {
+    -fx-fill: -fx-default-tile-background-color;
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .control-text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+.dashboard .dashboard-tile.dashboard-device.slider-control .control-text.value {
+    -fx-fill: #6fa9c0;
+}
+
+///// Single button stuff
+.dashboard .dashboard-tile.dashboard-device.button-control {
+    ///-fx-background-color: #b94272;
+}
+.dashboard .dashboard-tile.dashboard-device.button-control.active {
+    -fx-background-color: -fx-default-dashboard-item-highlight;
+}
+.dashboard .dashboard-tile.dashboard-device.button-control .control-text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+///// Color picker stuff
+.dashboard .dashboard-tile.dashboard-device.colorpicker-control {
+    ///-fx-background-color: #b94272;
+}
+.dashboard .dashboard-tile.dashboard-device.colorpicker-control .control-text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+////// Graphs stuff
+.chart {
+    -fx-background-color: transparent;
+}
+.chart-content {
+    -fx-background-color: transparent;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+.chart-title {
+  -fx-text-fill: -fx-default-dashboard-text-color;
+}
+ 
+.chart-legend {
+   -fx-text-fill: -fx-default-dashboard-text-color;
+   -fx-background-color:  transparent;
+}
+
+.axis-label {
+  -fx-text-fill: -fx-default-dashboard-text-color;
+}
+
+.axis {
+    -fx-tick-label-fill: -fx-default-dashboard-text-color;
+}
+ .chart-horizontal-grid-lines {
+    -fx-stroke-width: 1px;
+    -fx-effect: null;
+    -fx-stroke: #626367; 
+}
+.chart-series-line,
+.chart-series-area-line {    
+    -fx-stroke-width: 2px;
+}
+.chart-series-area-line { 
+    -fx-stroke: #2b7d7d; 
+}
+
+.default-color0.chart-series-line { -fx-stroke: #2b7d7d; }
+.default-color0.chart-line-symbol { -fx-background-color: #2b7d7d; }
+.default-color0.chart-series-symbol { -fx-background-color: transparent }
+
+/******************************************************************
+ * 
+ * Dashboard macro item
+ *
+ *****************************************************************/
+.dashboard .dashboard-tile.dashboard-macro {
+    -fx-background-color: #592e7e;
+}
+.dashboard .dashboard-tile.dashboard-macro.active {
+    -fx-background-color: -fx-default-dashboard-item-highlight;
+}
+.dashboard .dashboard-tile.dashboard-macro .macroname {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+/******************************************************************
+ * 
+ * Dashboard scene item
+ *
+ *****************************************************************/
+.dashboard .dashboard-tile.dashboard-scene {
+    -fx-background-color: -fx-default-dashboard-item-inactive;
+}
+.dashboard .dashboard-tile.dashboard-scene.active {
+    -fx-background-color: -fx-default-dashboard-item-active;
+}
+.dashboard .dashboard-tile.dashboard-scene .scenenamebg {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-opacity: 0.3;
+    -fx-font-size: 70px;
+}
+.dashboard .dashboard-tile.dashboard-scene .scenename {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-effect: -fx-default-dashboard-text-shadow;
+}
+
+.dashboard .dashboard-tile.dashboard-spacer.underlined {
+    -fx-border-insets: 0 0 0.1em 0;
+    -fx-border-width: 0 0 0.1em 0;
+    -fx-border-color: -fx-default-dashboard-text-color;
+}
+
+.dashboard .dashboard-tile.dashboard-spacer .spacer-header-text {
+    -fx-fill: -fx-default-dashboard-text-color;
+    -fx-font-size: 2.4em;
+}
+
+.dashboard .dashboard-tile.dashboard-spacer {
+    -fx-background-color: transparent;
+}

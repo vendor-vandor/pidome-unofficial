@@ -1,0 +1,108 @@
+<div id="pageinfotext" class="popup medium roundedcorners">
+    <h3>Data modifiers/suppliers</h3>
+    <p>Data modifiers are small little plugins which can utilize data coming from devices and modify it or do calculations on and pass them back to your device.</p>
+    <p>Data suppliers are small little plugins which are capable of generating data and pass these to your devices, examples are sending colors based on the time of day, temperature outside
+        or send the position of the sun</p>
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="modifierstable-toolbar" style="align:right;">
+                    <button class="btn btn-info addNewDashboard" id="addNewPlugin">Add new modifier</button> 
+                </div>
+                <table id="modifierstable" class="table table-striped table-hover"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-search="true"
+                       data-toolbar="#modifierstable-toolbar">
+                    <thead>
+                        <tr>
+                            <th data-field="id" data-width="80">ID</th>
+                            <th data-field="name">Name</th>
+                            <th data-field="basename">Modifier/Supplier</th>
+                            <th data-field="direction">Direction</th>
+                            <th data-field="currentvalue">Current value</th>
+                            <th data-field="attached">Connections</th>
+                            <th data-field="active">Running</th>
+                            <th data-formatter="actionFormatter" data-width="150">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_editmodifiersplugins", "Modifier/supplier plugins", "/modifierplugins.html");
+        setPageTitleDescription("Small plugins to supply or modify your device data.");
+        preparePageInfo();
+    });
+    
+    function actionFormatter(value, row, index){
+        var container = "";
+        container += '<button class="btn btn-danger delete-plugin" id="deleteplugin-'+row.id+'-'+index+'" style="float:right;">Delete</button>';
+        container += '<button class="btn btn-info edit-plugin" style="float:right; margin-right: 5px;" id="mutationEditPlugin-'+row.id+'" value="'+row.id+'">Edit</button>';
+        return container;
+    }
+    
+    $.when(
+        $.getScript( "/shared/js/sitelibs/pluginHandler.js" ),
+        $.Deferred(function( deferred ){
+            $( deferred.resolve );
+        })
+    ).done(function(){
+
+        $("#addNewPlugin").off("click").on("click", function(){
+            getHttpJsonRPC('{"jsonrpc": "2.0", "method": "DataModifierService.getInstalledPlugins", "id":"DataModifierService.getInstalledPlugins"}',function(resultData) {
+                addNewPlugin(resultData, "DataModifierService", function(){
+                    $('#modifierstable').bootstrapTable("refresh",{ silent: true });
+                });
+            });
+        });
+        
+    });
+    
+    $('#modifierstable').bootstrapTable({
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DataModifierService.getPlugins", "id":"DataModifierService.getPlugins"}',
+        cache: false,
+        height: 720,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        },
+        onLoadSuccess: function (data) {
+        },
+        onPostBody : function(){
+            setButtonHandlers();
+        }
+    });
+    
+
+    function setButtonHandlers(){
+        $(".delete-plugin").off('click').on("click", function(){
+            var pluginId = $(this).attr('id').split("-")[1];
+            var pluginData = getTableRowData("#modifierstable", $(this).attr('id').split("-")[2]);
+            yesnoConfirmation('Remove plugin', '<p>Are you sure you want to remove the <strong>'+pluginData.name+'</strong> plugin?</p>', 
+                function(){
+                    getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"DataModifierService.deletePlugin\", \"params\": ["+pluginId+"], \"id\": \"DeviceService.deleteDevice\"}",function(data) {
+                        quickMessage("success", '<strong>' + pluginData.name + '</strong> has been deleted');
+                        $('#modifierstable').bootstrapTable("refresh",{ silent: true });
+                    });
+                },
+            "Remove", "Cancel");
+        });
+        $(".edit-plugin").off('click').on('click', function () {
+            var plugin = $(this).attr('id').split("-")[1];
+            getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"DataModifierService.getPlugin\", \"params\": {\"id\":"+plugin+"}, \"id\": \"DeviceService.getDeviceSettings\"}", function(data){
+                editPlugin(data, "DataModifierService");
+            });
+        });
+    }    
+    
+</script>

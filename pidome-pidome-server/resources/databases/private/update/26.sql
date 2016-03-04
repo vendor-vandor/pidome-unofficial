@@ -1,0 +1,15 @@
+UPDATE installed_packages SET `name`='pidome-peripherals', `install_base`='pidome-peripherals.jar' WHERE `name`='PiDome.Peripherals';
+UPDATE installed_packages SET `name`='pidome-drivers', `install_base`='pidome-drivers.jar' WHERE `name`='PiDome.Drivers';
+UPDATE installed_packages SET `name`='pidome-devices', `install_base`='pidome-devices.jar' WHERE `name`='PiDome.Devices';
+UPDATE installed_packages SET `name`='pidome-plugins', `install_base`='pidome-plugins.jar' WHERE `name`='Pidome.Plugins';
+UPDATE installed_packages SET `name`='pidome-mysensors', `install_base`='pidome-mysensors.jar' WHERE `name`='Pidome.MySensors';
+UPDATE installed_packages SET `name`='pidome-philipshue', `install_base`='pidome-philipshue.jar' WHERE `name`='Pidome.PhilipsHue';
+UPDATE installed_packages SET `name`='pidome-kodi', `install_base`='pidome-kodi.jar' WHERE `name`='Pidome.Kodi';
+UPDATE installed_packages SET `name`='pidome-klikaanklikuitarduino', `install_base`='pidome-klikaanklikuitarduino.jar' WHERE `name`='PiDome.KlikAanKlikUitArduino';
+UPDATE installed_packages SET `name`='pidome-i2c', `install_base`='pidome-i2c.jar' WHERE `name`='PiDome.I2C';
+UPDATE installed_packages SET `name`='pidome-mqttbroker', `install_base`='pidome-mqttbroker.jar' WHERE `name`='PiDome.MQTTBroker';
+UPDATE installed_packages SET `name`='pidome-plugwise', `install_base`='pidome-plugwise.jar' WHERE `name`='PiDome.Plugwise';
+UPDATE installed_packages SET `name`='pidome-rfxcom', `install_base`='pidome-rfxcom.jar' WHERE `name`='PiDome.RFXCom';
+UPDATE installed_packages SET `name`='pidome-piremoteish', `install_base`='pidome-piremoteish.jar' WHERE `name`='PiRemoteIsh';
+UPDATE installed_packages SET `name`='pidome-weatherplugins', `install_base`='pidome-weatherplugins.jar' WHERE `name`='PiDome.WeatherPlugins';
+PRAGMA user_version=26;

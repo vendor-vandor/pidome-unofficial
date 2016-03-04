@@ -1,0 +1,406 @@
+<#if !_GET.requesttype?has_content>
+<#include "includes/header.html">
+</#if>
+<div id="pageinfotext">
+    <h4>Access controllers</h4>
+    <p>Access controller are devices used to control entrance. This can be a keypad, NFC reader, combination of both, or other kind of devices.</p>
+    <h4>Access Tokens</h4>
+    <p>An access token is a wide understanding. This can be a pin number, a NFC card, biometrical data or other kind of data to identify an user.</p>
+    <p>On this page you will be able to identify known access controllers, see their capabilities and registered token types per user.</p>
+    <p>When you are using multiple of the same access controllers and they are capable of sharing tokens you will be able to assign a single user token to multiple devices.<br/>
+        This means that when you have two of the exact same devices with share capabilities and one is at the back door and one at the front door, they will work with the same access token.</p>
+    <p><strong>Users can only have one token of the same type and every token can only be registered once!</strong></p>
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-5">
+                        <h2 style="margin-top:0px; margin-bottom: 0px;">Tokens</h2>
+                        <div id="knowntokenstable-toolbar" style="align:right;">
+                            <button class="btn btn-info" id="accesscontrollers-token-add">Add new token</button>
+                        </div>
+                        <table id="knowntokenstable" class="table table-striped table-hover"
+                               data-toggle="table" 
+                               data-show-refresh="true" 
+                               data-search="true"
+                               data-single-select="true"
+                               data-toolbar="#knowntokenstable-toolbar">
+                            <thead>
+                                <tr>
+                                    <th data-field="id" data-visible="false">id</th>
+                                    <th data-formatter="knowntokensDeleteFormatter" data-width="75"></th>
+                                    <th data-field="status" data-formatter="knowntokensStatusFormatter" data-width="75">Status</th>
+                                    <th data-field="personname">User</th>
+                                    <th data-field="type" data-width="100">Token type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-md-7">
+                        <div class="row">
+                            <h2 style="margin-top:0px; margin-bottom: 0px;">Access Controllers</h2>
+                            <div id="accesscontrollerstable-toolbar" style="align:right;">
+                                <button class="btn btn-info" id="accesscontrollers-add">Add new access controller</button>
+                            </div>
+                            <table id="accesscontrollerstable" class="table table-striped table-hover"
+                                   data-toggle="table" 
+                                   data-show-refresh="true" 
+                                   data-search="true"
+                                   data-single-select="true"
+                                   data-toolbar="#accesscontrollerstable-toolbar">
+                                <thead>
+                                    <tr>
+                                        <th data-field="id" data-visible="false">Controller id</th>
+                                        <th data-formatter="controllerDeviceDeleteAction" data-width="85"></th>
+                                        <th data-field="wrappeddeviceid" data-visible="false">Device id</th>
+                                        <th data-field="status" data-formatter="controllerDeviceStatusFormatter" data-width="85">Status</th>
+                                        <th data-field="wrappeddevicename">Name</th>
+                                        <th data-field="wrappeddevicelocation">Location</th>
+                                        <th data-formatter="controllerDeviceDetailsAction" data-width="85"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6" style="padding-left: 0px;">
+                                <h3>Users</h3>
+                                <table id="assignedtokenstable" class="table table-striped table-hover" data-toggle="table">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="id" data-visible="false">id</th>
+                                            <th data-field="assignedaction" data-width="75" data-formatter="assignedtokensDeleteFormatter"></th>
+                                            <th data-field="personname">User</th>
+                                            <th data-field="type">Token type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-md-6" style="padding-left: 0px; padding-right: 0px;">
+                                <h3>Capabilities</h3>
+                                <table id="capabilitiestable" class="table table-striped table-hover" data-toggle="table" style="padding-top: 3px;">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="id" data-visible="false">id</th>
+                                            <th data-field="name">Name</th>
+                                            <th data-field="description">Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    $(document).ready(function () {
+        setPageBreadcrumbs(6, "page_fenceaccesscontrollers", "Access controllers and token management", "/desktop/fencecontrollertokenmanagement.html");
+        setPageTitleDescription("Configure access controllers, assign users to them, and assign users their access tokens.");
+        preparePageInfo();
+    });
+    
+    $('#accesscontrollers-add').off("click").on("click", function(){
+        yesnoConfirmation("Add access controller", 
+            '<div class="form-group">'+
+            '    <label for="accesscontrollers-add-device-id" class="control-label">Select device to add</label>'+
+            '    <select id="accesscontrollers-add-device-id" class="form-control">'+
+            '    </select>'+
+            '</div>'
+        , function(){
+            getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"AccessControllerService.createController\", \"params\":{\"deviceid\":" + $("#accesscontrollers-add-device-id").val() + "},\"id\":\"AccessControllerService.createController\"}", function(){
+                quickMessage("success","Controller has been added", 1000);
+                $('#accesscontrollerstable').bootstrapTable("refresh",{ silent: true });
+                $('#capabilitiestable').bootstrapTable("removeAll");
+                $('#assignedtokenstable').bootstrapTable("removeAll");
+            });
+        }, "Add", "Cancel");
+        $("#accesscontrollers-add-device-id").empty();
+        getHttpJsonRPC('{"jsonrpc": "2.0", "method": "AccessControllerService.getAccessControllerCandidates", "id":"AccessControllerService.getAccessControllerCandidates"}', function (data) {
+            for(var i=0; i < data.length; i++){
+                $("#accesscontrollers-add-device-id").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
+            }
+        });
+    });
+    
+    $('#accesscontrollers-token-add').off("click").on("click", function(){
+        yesnoConfirmation('Add token', 
+            '<div class="form-group">'+
+            '    <label for="accesscontrollers-add-token-controller-id" class="control-label">Select controller to add token to</label>'+
+            '    <select id="accesscontrollers-add-token-controller-id" class="form-control">'+
+            '    </select>'+
+            '</div>' +
+            '<div id="admincapabilities"></div>' + 
+            '<div id="localadminuserlist"></div>', 
+        function(){
+            if($("#accesscontrollers-add-token-user-id").length>0 && $("#accesscontrollers-add-token-controller-id").length>0){
+                getHttpJsonRPC('{"jsonrpc": "2.0", "method": "AccessControllerService.registerUserTokenByController", "params":{"controllerid":' + $("#accesscontrollers-add-token-controller-id").val() + ', "userid":' + $("#accesscontrollers-add-token-user-id").val() + '}, "id":"AccessControllerService.registerUserTokenByController"}', function(){
+                    quickMessage("success","Command send to access controller", 2000);
+                });
+            }
+        }, "Ok", "Cancel");
+        getHttpJsonRPC('{"jsonrpc": "2.0", "method": "AccessControllerService.getAccessControllers", "id":"AccessControllerService.getAccessControllers"}', function (data) {
+            for(var i=0; i < data.length; i++){
+                $("#accesscontrollers-add-token-controller-id").append('<option value="'+data[i].id+'">'+data[i].wrappeddevicename+'</option>');
+            }
+            $("#accesscontrollers-add-token-controller-id").off("change").on("change", function(){
+                if(isWebAdminAdminCapabilitiesDescription(data, parseInt($("#accesscontrollers-add-token-controller-id").val()))){
+                    createUserListForNewToken();
+                } else {
+                    $("#localadminuserlist").html("");
+                }
+            });
+            if(isWebAdminAdminCapabilitiesDescription(data, parseInt($("#accesscontrollers-add-token-controller-id").val()))){
+                createUserListForNewToken();
+            } else {
+                $("#localadminuserlist").html("");
+            }
+        });
+    });
+    
+    function createUserListForNewToken(){
+        $("#localadminuserlist").html(
+            '<div class="form-group">'+
+            '    <label for="accesscontrollers-add-token-user-id" class="control-label">Select user for token</label>'+
+            '    <select id="accesscontrollers-add-token-user-id" class="form-control">'+
+            '    </select>'+
+            '</div>'
+        );
+        getHttpJsonRPC('{"jsonrpc": "2.0", "method": "UserService.getUsers", "id":"UserService.getUsers"}', function (data) {
+            for(var i=0; i < data.length; i++){
+                if(data[i].id!==1){
+                    $("#accesscontrollers-add-token-user-id").append('<option value="'+data[i].id+'">'+data[i].firstname+'</option>');
+                }
+            }
+        });
+    }
+    
+    function isWebAdminAdminCapabilitiesDescription(data, id){
+        var remoteAdmin = false;
+        var nfc = false;
+        var code = false;
+        for(var i=0; i< data.length;i++){
+            if(data[i].id===id){
+                var capabs = data[i].capabilities;
+                for(var j=0;j<capabs.length;j++){
+                    var cap = capabs[j].id;
+                    switch(cap){
+                        case "REMOTE_ADMIN":
+                            remoteAdmin = true;
+                        break;
+                        case "NFC":
+                            nfc = true;
+                        break;
+                        case "CODE":
+                            code = true;
+                        break;
+                    }
+                }
+                break;
+            }
+        }
+        if(remoteAdmin === false){
+            $('#admincapabilities').html("Select the user for who the new token is and ");
+            if(nfc && code){
+                $('#admincapabilities').append("<strong>enter a code or scan a card </strong>");
+            } else if(nfc){
+                $('#admincapabilities').append("<strong>scan a card</strong> ");
+            } else if(code){
+                $('#admincapabilities').append("<strong>enter a code</strong> ");
+            }
+            $('#admincapabilities').append("at the device after pressing \"Ok\" ");
+            return true;
+        } else {
+            $('#admincapabilities').html("This device has remote admin. This means the addition of new tokens happens at the device and not the web interface.");
+            return false;
+        }
+    }
+    
+    function knowntokensStatusFormatter(value, row) {
+        var type = "label-success";
+        var msg  = "Ok";
+        switch(value){
+            case "WARNING":
+                type = "label-warning";
+                msg  = "Disabled";
+            break;
+            case "ERROR":
+                type = "label-danger";
+                msg  = "Unassigned";
+            break;
+        }
+        return '<span class="label '+type+'">'+msg+'</span>';
+    }
+    
+    function controllerDeviceStatusFormatter(value, row) {
+        var type = "label-success";
+        var msg  = "Ok";
+        switch(value){
+            case "WARNING":
+                type = "label-warning";
+                msg  = "Disabled";
+            break;
+            case "ERROR":
+                type = "label-danger";
+                msg  = "Unassigned";
+            break;
+        }
+        return '<span class="label '+type+'">'+msg+'</span>';
+    }
+    
+    function knowntokensDeleteFormatter(value, row, index){
+        return '<button class="btn btn-danger deleteToken" id="deletetoken-'+index+'">Delete</button>';
+    }
+    
+    $('#knowntokenstable').bootstrapTable({
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "AccessControllerService.getAccessTokens", "id":"AccessControllerService.getAccessTokens"}',
+        cache: false,
+        height: 680,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        },
+        onLoadSuccess: function (data) {
+            $(".detailsController").on("click", function (){
+                showAccessDeviceTokensAndCapabilities(getTableRowData('#accesscontrollerstable', $(this).attr('id').split("-")[1]));
+            });
+            $(".deleteToken").off("click").on('click', function () {
+                var data = getTableRowData('#knowntokenstable', $(this).attr('id').split("-")[1]);
+                var token = data.id;
+                var userName = data.personname;
+                var tokenName = data.type;
+                yesnoConfirmation('Delete token', 'Are you sure you want to remove the <strong>' + tokenName + '</strong> token assigned to <strong>' + userName + '</strong>?<br/><br/>If you remove the token from this list it will be removed from ALL devices this token is assigned to. If you want to remove a token only from a single device select device details and remove the token from that users list.', function(){
+                    getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"AccessControllerService.deleteToken\", \"params\":{\"id\":" + token + "},\"id\":\"AccessControllerService.deleteToken\"}", function(){
+                        quickMessage("success","Token has been deleted", 1000);
+                        $('#knowntokenstable').bootstrapTable("refresh",{ silent: true });
+                        $('#assignedtokenstable').bootstrapTable("refresh");
+                    });
+                });
+            });
+        }
+    });
+    
+    $('#accesscontrollerstable').bootstrapTable({
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "AccessControllerService.getAccessControllers", "id":"AccessControllerService.getAccessControllers"}',
+        cache: false,
+        height: 340,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        },
+        onLoadSuccess: function (data) {
+            $(".detailsController").on("click", function (){
+                showAccessDeviceTokensAndCapabilities(getTableRowData('#accesscontrollerstable', $(this).attr('id').split("-")[1]));
+            });
+            $(".deleteController").on('click', function () {
+                var data = getTableRowData('#accesscontrollerstable', $(this).attr('id').split("-")[1]);
+                var controller = data.id;
+                var controllerName = data.wrappeddevicename;
+                var controllerLocation = data.wrappeddevicelocation;
+                yesnoConfirmation('Delete: ' + controllerName, 'Are you sure you want to remove access controller <strong>' + controllerName + '</strong> at <strong>'+controllerLocation+'</strong>?<br/><br/>Be aware that the tokens assigned to this controller are NOT deleted, you have to do this yourself! The reason for this is that if the same token is assigned to multiple controllers they would not work anymore and have to be added again.', function(){
+                    getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"AccessControllerService.deleteController\", \"params\":{\"id\":" + controller + "},\"id\":\"AccessControllerService.deleteController\"}", function(){
+                        quickMessage("success","Controller has been deleted", 1000);
+                        $('#accesscontrollerstable').bootstrapTable("refresh",{ silent: true });
+                        $('#capabilitiestable').bootstrapTable("removeAll");
+                        $('#assignedtokenstable').bootstrapTable("removeAll");
+                    });
+                });
+            });
+        }
+    });
+    
+    function controllerDeviceDeleteAction(value, row, index){
+        return '<button class="btn btn-danger deleteController" id="deletecontroller-'+index+'">Delete</button>';
+    }
+
+    function controllerDeviceDetailsAction(value, row, index){
+        return '<button class="btn btn-info detailsController" id="detailscontroller-'+index+'">Details</button>';
+    }
+    
+    function showAccessDeviceTokensAndCapabilities(accessDevice){
+        $('#capabilitiestable').bootstrapTable('load', accessDevice.capabilities);
+        $('#assignedtokenstable').bootstrapTable('refresh', {
+            silent: true, 
+            url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "params":{"id":'+accessDevice.id+'}, "method": "AccessControllerService.getControllerAccessTokens", "id":"AccessControllerService.getControllerAccessTokens"}'
+        });
+    }
+    
+    $('#capabilitiestable').bootstrapTable({
+        cache: false,
+        height: 280,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        }
+    });
+    
+    $('#assignedtokenstable').bootstrapTable({
+        cache: false,
+        height: 280,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        },
+        onLoadSuccess: function (data) {
+            $(".deleteAssignedToken").off("click").on('click', function () {
+                var data = getTableRowData('#assignedtokenstable', $(this).attr('id').split("-")[1]);
+                var token = data.id;
+                var controller = data.controllerid;
+                var userName = data.personname;
+                var tokenName = data.type;
+                yesnoConfirmation('Delete token', 'Are you sure you want to remove the <strong>' + tokenName + '</strong> token assigned to <strong>' + userName + '</strong>?', function(){
+                    getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"AccessControllerService.deleteTokenFromAccessController\", \"params\":{\"tokenid\":" + token + ", \"controllerid\":"+controller+"},\"id\":\"AccessControllerService.deleteTokenFromAccessController\"}", function(){
+                        quickMessage("success","Token has been deleted", 1000);
+                        $('#knowntokenstable').bootstrapTable("refresh",{ silent: true });
+                        $('#assignedtokenstable').bootstrapTable("refresh");
+                    });
+                });
+            });
+        }
+    });
+    
+    function assignedtokensDeleteFormatter(value, row, index){
+        return '<button class="btn btn-danger deleteAssignedToken" id="deletetoken-'+index+'">Delete</button>';
+    }
+    
+    pidomeRPCSocket.addCallback(function(thingy) {
+        $('#knowntokenstable').bootstrapTable("refresh",{ silent: true });
+        $('#assignedtokenstable').bootstrapTable("refresh",{ silent: true });
+    }, "AccessControllerService.addToken");
+    
+    pidomeRPCSocket.addCallback(function(thingy) {
+        $('#knowntokenstable').bootstrapTable("refresh",{ silent: true });
+        $('#assignedtokenstable').bootstrapTable("refresh",{ silent: true });
+        $('#accesscontrollerstable').bootstrapTable("refresh",{ silent: true });
+    }, "DeviceService.deleteDevice");
+    
+    pidomeRPCSocket.addCallback(function(thingy) {
+        $('#knowntokenstable').bootstrapTable("refresh",{ silent: true });
+        $('#assignedtokenstable').bootstrapTable("refresh",{ silent: true });
+        $('#accesscontrollerstable').bootstrapTable("refresh",{ silent: true });
+    }, "DeviceService.addDevice");
+    
+</script>
+<#if !_GET.requesttype?has_content>
+<#include "includes/footer.html">
+</#if>

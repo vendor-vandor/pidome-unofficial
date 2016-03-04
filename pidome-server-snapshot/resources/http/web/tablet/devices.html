@@ -1,0 +1,343 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<script src="/shared/js/libs/highcharts/highcharts-custom.js"></script>
+<script src="/shared/js/sitelibs/Graphing.js"></script>
+<div role="main" class="ui-content full devices">
+    <div class="pagemainheader">
+        <h2>Devices<span id="globaledevicenameselected"></span></h2>
+    </div>
+    <div class="ui-grid-a">
+        <div class="ui-block-a">
+            <div class="ui-grid-a" id="deviceviewset">
+                <div class="ui-block-a">
+                    <div id="scroll-wrapper-devices-locations">
+                        <ul data-role="listview" class="locationlist">
+                        </ul>
+                    </div>
+                </div>
+                <div class="ui-block-b">
+                    <div class="" id="scroll-wrapper-devices-devices">
+                        <ul data-role="listview" class="deviceslist">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui-block-b">
+            <div class="ui-block-a display-device" id="scroll-wrapper-device">
+                <div id="devicefullcontent">
+                    
+                </div>
+            </div> 
+        </div>
+    </div>
+    <style>
+        /*jqxChart Style*/
+        .jqx-chart-axis-text,
+        .jqx-chart-label-text, 
+        .jqx-chart-tooltip-text, 
+        .jqx-chart-legend-text
+        {
+            fill: #c3c3c3;
+            color: #c3c3c3;
+            font-size: 0.7em;
+        }
+        .jqx-chart-tooltip-text {
+            fill: #333;
+            color: #333;
+        }
+        .jqx-chart-axis-description
+        {
+            fill: #c3c3c3;
+            color: #c3c3c3;
+            font-size: 0.7em;
+        }
+        .jqx-chart-title-text
+        {
+            fill: #c3c3c3;
+            color: #c3c3c3;
+            font-size: 1em;
+            font-weight: bold;
+        }
+        .jqx-chart-title-description
+        {
+            fill: #c3c3c3;
+            color: #c3c3c3;
+            font-size: 0.8em;
+        }
+    </style>
+    <div data-role="popup" id="devicegraphnotification" class="ui-content">
+        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+        <div id="devicegraphgraph"></div>
+        <div style="clear:both"></div>
+    </div>
+</div>
+    <script>
+        $(document).ready(function() {
+            setPage("devices", "Devices");
+            var fullDeviceList;
+            var viewHeight = $(window).height() - ($("#headercontent").height() + $(".pagemainheader").height()) - 3;
+            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getDeclaredDevices","id":"DeviceService.getDeclaredDevices"}').done(function(data) {
+                try {
+                    fullDeviceList = data.result.data;
+                    var currentLocation;
+                    if(data.result.data.length>0){
+                        $(".locationlist").empty();
+                    }
+                    var firstLocation = 0;
+                    for(var i=0;i<fullDeviceList.length;i++){
+                        var device = fullDeviceList[i];
+                        if(currentLocation!==device.locationname){
+                            $(".locationlist").append('<li class="locationitem" data-id="openLocation_'+device.location+'">'+device.locationname+'</li>');
+                            if(firstLocation===0) firstLocation = device.location;
+                            currentLocation = device.locationname;
+                        }
+                    }
+                    $('.locationlist').listview('refresh');
+                    $('.locationlist').trigger('create');
+                    $("#deviceviewset").height(viewHeight);
+                    $("#scroll-wrapper-devices-locations").height(viewHeight);
+                    $("#scroll-wrapper-devices-devices").height(viewHeight);
+                    $("#scroll-wrapper-device").height(viewHeight);
+                    
+                    var locationScroll = new IScroll('#scroll-wrapper-devices-locations', { push:true });
+                    locationScroll.enable();
+                    
+                    var devicesScroll = new IScroll('#scroll-wrapper-devices-devices', { push:true });
+                    devicesScroll.enable();
+                    
+                    //var devicesScroll = new IScroll('#scroll-wrapper-device', { push:true });
+                    //devicesScroll.enable();
+                    
+                    $('#scroll-wrapper-devices-locations').on('click, tap', '.locationitem', function() {
+                        setDeviceListByLocation(parseInt($(this).attr("data-id").split("_")[1]));
+                    });
+                    
+                    setDeviceListByLocation(firstLocation);
+                    
+                    function setDeviceListByLocation(location){
+                        $('#scroll-wrapper-devices-devices').off('click, tap');
+                        $(".deviceslist").empty();
+                        var firstDevice = 0;
+                        for(var i=0;i<fullDeviceList.length;i++){
+                            var device = fullDeviceList[i];
+                            if(fullDeviceList[i].location === location){
+                                $(".deviceslist").append('<li class="fulldevice" data-id="openDevice_'+device.id+'">'+device.name+'</li>');
+                                if(firstDevice===0) { firstDevice = device.id; }
+                            }
+                        }
+                        $(".locationitem").each(function(){
+                            $(this).removeClass("active");
+                        });
+                        $(".locationitem").each(function(){
+                            if($(this).attr("data-id")==='openLocation_'+location && !$(this).hasClass("active")){
+                                $(this).addClass("active");
+                            }
+                        });
+                        $('.deviceslist').listview('refresh');
+                        $('.deviceslist').trigger('create');
+                        $('#scroll-wrapper-devices-devices').on('click, tap', '.fulldevice', function() {
+                            openDevice(parseInt($(this).attr("data-id").split("_")[1]));
+                        });
+                        openDevice(firstDevice);
+                    }
+                    
+                    function openDevice(deviceId){
+                        $("#devicefullcontent").empty();
+                        var device = undefined;
+                        for(var i=0;i<fullDeviceList.length;i++){
+                            if(fullDeviceList[i].id === deviceId){
+                                device = fullDeviceList[i];
+                                break;
+                            }
+                        }
+                        $(".fulldevice").each(function(){
+                            $(this).removeClass("active");
+                        });
+                        $("#globaledevicenameselected").text("");
+                        if(device!==undefined){
+                            $(".fulldevice").each(function(){
+                                if($(this).attr("data-id")==='openDevice_'+deviceId && !$(this).hasClass("active")){
+                                    $(this).addClass("active");
+                                }
+                            });
+                            $("#globaledevicenameselected").text(": " + $(".locationitem.active").text() + ", " + device.name);
+                            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "DeviceService.getDevice","id":"DeviceService.getDevice", "params" : {"id" : '+device.id+'}}').done(function(deviceDataSet) {
+                                try {
+                                    var deviceData = deviceDataSet.result.data;
+                                    for(var i=0;i<deviceData.commandgroups.length;i++){
+                                        var groupData = deviceData.commandgroups[i];
+                                        var htmlSet = '<div class="ui-grid-a fulldevicecontrol">';
+                                        for(var j=0;j<groupData.commands.length;j++){
+                                            var curCommand = groupData.commands[j];
+                                            var groupCommandSet = groupData.id+'-'+curCommand.typedetails.id;
+                                            htmlSet += '<div class="ui-block-a">'+curCommand.typedetails.label+'</div><div class="ui-block-b">';
+                                            switch(curCommand.commandtype){
+                                                case "data":
+                                                    htmlSet += '<div><span>'+curCommand.typedetails.prefix+' <span id="'+deviceData.id+'_deviceLabelFor_'+groupData.id+'-'+curCommand.typedetails.id+'">'+curCommand.currentvalue+'</span> '+curCommand.typedetails.suffix +'</span>'+
+                                                                ((curCommand.typedetails.graph===true)?'<img id="'+groupCommandSet+'_graphData_img" class="devicegraphicon" src="/shared/images/icons/graphicon.png" alt="Open graph" onclick="new Graphing(\'devicegraphgraph\', \'${_SERVER.hostname}:${_SERVER.hostport?c}\', '+deviceData.id+', \''+groupData.id+'\', \''+curCommand.typedetails.id+'\', \''+deviceData.friendlyname + ' - ' + curCommand.typedetails.label+'\', \''+curCommand.typedetails.prefix+' '+curCommand.typedetails.suffix+'\', \'DEVICE\', \''+curCommand.typedetails.graphtype+'\',2).createGraph(640, 300);$(\'#devicegraphnotification\').popup(\'open\');" />':'') +
+                                                                '</div>';
+                                                break;
+                                                case "slider":
+                                                    htmlSet += '<div style="height:1.7em;"><input class="slideractions" data-highlight="true" type="range" name="'+deviceData.id+'_deviceSliderFor_'+groupCommandSet+'" id="'+deviceData.id+'_deviceSliderFor_'+groupCommandSet+'" min="'+curCommand.typedetails.min+'" max="'+curCommand.typedetails.max+'" value="'+curCommand.currentvalue+'" /></div>\n\
+                                                                <script>\n\
+                                                                <\/script>';
+                                                break;
+                                                case "button":
+                                                     htmlSet += '<button data-role="button" data-mini="true" data-inline="true" data-corners="false" class="ui-mini" id="'+deviceData.id+'_deviceAction-'+groupCommandSet+'" name="'+deviceData.id+'_deviceAction-'+groupCommandSet+'">'+curCommand.typedetails.label+'</button>\n\
+                                                        <script>\n\
+                                                            $( "#'+deviceData.id+'_deviceAction-'+groupCommandSet+'" ).off("click");\n\
+                                                            $( "#'+deviceData.id+'_deviceAction-'+groupCommandSet+'" ).on("click",function(){ \n\
+                                                                runDeviceCommand('+deviceData.id+', "'+groupData.id+'", "'+curCommand.typedetails.id+'", "'+curCommand.typedetails.deviceCommandValue+'","", "string");\n\
+                                                            });\n\
+                                                        <\/script>';
+                                                break;
+                                                case 'toggle':
+                                                    htmlSet += '<select data-corners="false" data-mini="true" data-role="flipswitch" data-on-text="'+curCommand.typedetails.commandset.on.label+'" name="flip-checkbox" id="'+deviceData.id+'_deviceToggleFor_'+groupCommandSet+'">\n\
+                                                                <option value="off" '+((curCommand.currentvalue==false)?'selected="selected"':'')+'>'+curCommand.typedetails.commandset.off.label+'</option>\
+                                                                <option value="on" '+((curCommand.currentvalue==true)?'selected="selected"':'')+'>'+curCommand.typedetails.commandset.on.label+'</option>\
+                                                            </select>\n\
+    <script>\n\
+    $("#'+deviceData.id+'_deviceToggleFor_'+groupCommandSet+'").on("change", function () {\n\
+            if ($(this).val() == "on") { \n\
+                runDeviceCommand('+deviceData.id+', "'+groupData.id+'", "'+curCommand.typedetails.id+'", true,"");\n\
+            } else if ($(this).val() == "off") {\n\
+                runDeviceCommand('+deviceData.id+', "'+groupData.id+'", "'+curCommand.typedetails.id+'", false,"");\n\
+            }\n\
+        });\n\
+    <\/script>';
+                                                break;
+                                                case "colorpicker":
+                                                    var colorPickerAdd = 'var localColorGetObject = {h:0,s:0,b:0};\n';
+                                                    colorPickerAdd += 'var localSetColorObject = {h: '+curCommand.typedetails.color.hsb.h*360+', s: '+curCommand.typedetails.color.hsb.s+', v: '+curCommand.typedetails.color.hsb.b+'};\n';
+                                                    colorPickerAdd += 'var localHsl = tinycolor(localSetColorObject).toHsl();\n';
+                                                    switch(curCommand.typedetails.mode){
+                                                        case "rgb":
+                                                           colorPickerAdd += '$("#' + deviceData.id+'_deviceColorPickerFor_'+groupCommandSet+'").ColorPickerSliders({\n\
+                                                                flat: true,\n\
+                                                                customswatches: false,\n\
+                                                                swatches: ["red", "yellow", "lime", "aqua", "blue", "magenta", "white"],\n\
+                                                                previewformat: "rgb",\n\
+                                                                order: {\n\
+                                                                    rgb: 1,\n\
+                                                                    preview: 2\n\
+                                                                },\n\
+                                                                labels: {\n\
+                                                                    rgbred: "Red",\n\
+                                                                    rgbgreen: "Green",\n\
+                                                                    rgbblue: "Blue"\n\
+                                                                },\n\
+                                                                color: localSetColorObject,\n\
+                                                                onchange: function(container, color) {\n\
+                                                                    var newColor = color.tiny.toHsv();\n\
+                                                                    localColorGetObject.h = newColor.h/360;\n\
+                                                                    localColorGetObject.s = newColor.s;\n\
+                                                                    localColorGetObject.b = newColor.v;\n\
+                                                                }\n\
+                                                            });';
+                                                        break;
+                                                        case "cie":
+                                                            colorPickerAdd += '$("#' + deviceData.id+'_deviceColorPickerFor_'+groupCommandSet+'").ColorPickerSliders({\n\
+                                                                flat: true,\n\
+                                                                customswatches: false,\n\
+                                                                swatches: ["red", "yellow", "lime", "aqua", "blue", "magenta", "white"],\n\
+                                                                previewformat: "hsl",\n\
+                                                                order: {\n\
+                                                                    cie: 1,\n\
+                                                                    preview: 2\n\
+                                                                },\n\
+                                                                labels: {\n\
+                                                                    rgbred: "Red",\n\
+                                                                    rgbgreen: "Green",\n\
+                                                                    rgbblue: "Blue"\n\
+                                                                },\n\
+                                                                color: localSetColorObject,\n\
+                                                                onchange: function(container, color) {\n\
+                                                                    var newColor = color.tiny.toHsv();\n\
+                                                                    localColorGetObject.h = newColor.h/360;\n\
+                                                                    localColorGetObject.s = newColor.s;\n\
+                                                                    localColorGetObject.b = newColor.v;\n\
+                                                                }\n\
+                                                            });';
+                                                        break;
+                                                        case "hsb":
+                                                            colorPickerAdd += '$("#' + deviceData.id+'_deviceColorPickerFor_'+groupCommandSet+'").ColorPickerSliders({\n\
+                                                                flat: true,\n\
+                                                                customswatches: false,\n\
+                                                                swatches: ["red", "yellow", "lime", "aqua", "blue", "magenta", "white"],\n\
+                                                                previewformat: "hsl",\n\
+                                                                order: {\n\
+                                                                    hsl: 1,\n\
+                                                                    preview: 2\n\
+                                                                },\n\
+                                                                labels: {\n\
+                                                                    rgbred: "Red",\n\
+                                                                    rgbgreen: "Green",\n\
+                                                                    rgbblue: "Blue"\n\
+                                                                },\n\
+                                                                color: localSetColorObject,\n\
+                                                                onchange: function(container, color) {\n\
+                                                                    var newColor = color.tiny.toHsv();\n\
+                                                                    localColorGetObject.h = newColor.h/360;\n\
+                                                                    localColorGetObject.s = newColor.s;\n\
+                                                                    localColorGetObject.b = newColor.v;\n\
+                                                                }\n\
+                                                            });';
+                                                        break;
+                                                    }
+                                                    var buttonsetlist = "";
+                                                    for(var button = 0; button < curCommand.typedetails.commandset.length;button++){
+                                                        var curButton = curCommand.typedetails.commandset[button];
+                                                        buttonsetlist += '<div style="margin-bottom: 3px;">\n\
+                                                                            <button class="colorActionButton" data-corners="false" data-role="button" id="deviceColorPickerFor_'+deviceData.id+'-'+groupCommandSet+'-'+curButton.value+'" name="deviceColorPickerFor_'+groupCommandSet+'-'+curButton.value+'" value="'+curButton.label+'">'+curButton.label+'</button>\n\
+                                                                          </div>';
+                                                    }
+                                                    colorPickerAdd += '$( ".colorActionButton").off("click");\n$( ".colorActionButton").on("click", function() {\n\
+                                                                            var deviceStruct = $(this).attr("id").split("_")[1].split("-");\n\
+                                                                            runDeviceCommand(parseInt(deviceStruct[0]), deviceStruct[1], deviceStruct[2],JSON.stringify(localColorGetObject),deviceStruct[3]);\n\
+                                                                        });';
+                                                    htmlSet += '<div data-position-to="window" data-role="popup" id="' + deviceData.id+'_opencolorpickerfor_'+groupCommandSet+'">\n\
+                                                                    <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>\n\
+                                                                    <div class="colorpickercontainer" style="padding:1em;">\n\
+                                                                        <div style="float:left; margin-top: 0.5em;" id="' + deviceData.id+'_deviceColorPickerFor_'+groupCommandSet+'"></div>\n\
+                                                                        <div style="float:left; margin-left: 1em;" id="' + deviceData.id+'_colorpickerbuttonsetfor_'+groupCommandSet+'">'+buttonsetlist+'</div>\n\
+                                                                        <div style="clear:both"></div>\n\
+                                                                    </div>\n\
+                                                                </div>\n\
+                                                                <a data-rel="popup" href="#' + deviceData.id+'_opencolorpickerfor_'+groupCommandSet+'" class="ui-btn ui-btn-inline button-control colorpickerbutton" data-corners="false" data-mini="true" class="ui-btn" id="'+deviceData.id+'_colorpickeropener_'+groupCommandSet+'">'+curCommand.typedetails.label+'</a>\n\
+<script>'+colorPickerAdd+'\n\
+$("#' + deviceData.id+'_opencolorpickerfor_'+groupCommandSet+'").enhanceWithin().popup();\n$("#'+deviceData.id+'_colorpickeropener_'+groupCommandSet+'").css("background-color",tinycolor(localSetColorObject).toHexString());<\/script>';
+                                                break;
+                                            }
+                                            htmlSet += '</div>';
+                                        }
+                                        htmlSet += '</div>';
+                                        $("#devicefullcontent").append( '<div class="ui-bar ui-bar-a display-device-header">\
+                                                                            <h3>'+groupData.name+'</h3>\
+                                                                        </div>\n\
+                                                                        <div class="ui-body ui-body-a display-device-body">\n\
+                                                                            '+htmlSet+'\n\
+                                                                        </div>');
+                                    }
+                                } catch (err){
+                                    showPopUp(err);
+                                }
+                                $("#devicefullcontent").enhanceWithin();
+                                $( ".slideractions" ).off("slidestop");
+                                $( ".slideractions" ).on("slidestop", function(event){
+                                    var deviceData = $(this).attr("id").split("_");
+                                    runDeviceCommand(parseInt(deviceData[0]), deviceData[2].split("-")[0], deviceData[2].split("-")[1], $("#" + $(this).attr("id")).val(), "");
+                                });
+                            });
+                        }
+                    }
+                } catch (err){
+                    showPopUp(err);
+                }
+            });
+        });
+    </script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

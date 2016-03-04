@@ -1,0 +1,495 @@
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row" style="min-height: 525px;">
+            <div class="col-md-12">
+                <h2 style="margin-top:10px; margin-bottom: 10px;">User details for <span id="detailsforname">new user</span></h2>
+                <div>
+                    <ul class="nav nav-tabs">
+                        <li role="presentation" class="active"><a href="#person-info" aria-controls="person-info" role="tab" data-toggle="tab">User info</a></li>
+                        <li role="presentation"><a href="#person-restrictions" aria-controls="person-restrictions" role="tab" data-toggle="tab">Restrictions</a></li>
+                        <li role="presentation"><a href="#person-presence-options" aria-controls="person-presence-options" role="tab" data-toggle="tab">Presence options</a></li>
+                        <li role="presentation"><a href="#person-user-tokens" aria-controls="person-user-tokens" role="tab" data-toggle="tab">User (presence) tokens</a></li>
+                        <li role="presentation"><a href="#person-mobile-devices" aria-controls="person-mobile-devices" role="tab" data-toggle="tab">Mobile devices</a></li>
+                        <li role="presentation"><a href="#person-localization" aria-controls="person-localization" role="tab" data-toggle="tab">Mobile Localization</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="person-info">
+                            <div>
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-1 col-sm-2">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input id="user_ifadmin" type="checkbox" value="1" disabled="disabled"/> Admin user
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input id="user_canexternal" type="checkbox" value="1" /> Allow external connections
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="user_firstname" class="col-sm-1 control-label">First name</label>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control" id="user_firstname" placeholder="First name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="user_lastname" class="col-sm-1 control-label">Last name</label>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control" id="user_lastname" placeholder="Last name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="user_login" class="col-sm-1 control-label">Login name</label>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control" id="user_login" placeholder="Login name">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="user_pass" class="col-sm-1 control-label">Password</label>
+                                        <div class="col-sm-4">
+                                            <input type="password" class="form-control" id="user_pass" placeholder="Password">
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input id="user_passchange" type="checkbox" value="1" /> Require change
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="user_passagain" class="col-sm-1 control-label">Retype password</label>
+                                        <div class="col-sm-4">
+                                            <input type="password" class="form-control" id="user_passagain" placeholder="Retype">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="person-restrictions">
+                            <div class="col-md-12">
+                                <p>Create a selection if you want to limit access for this user to (a) specific location(s). This restriction does not apply to administrators. Select none to allow all.</p>
+                                <div id="locationcontainer">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="person-presence-options">
+                            <div class="col-md-6">
+                                <h3>Global presence</h3>
+                                <p>When all users have authorized methods to acknowledge presence (No one uses "Non client" bindings) you have the possibility to have a single user set the global presence state.<br/>
+                                This means when for example this user is the last one to leave the global system can be set to users status away and vice verse when this user
+                                is the first person to enter.</p>
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="col-md-12">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input id="user_setglobalpresence" type="checkbox" value="1" /> This user can set global presence
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-6">
+                                <h3>Non Client binding</h3>
+                                <p>Below enter a client's ip address to let PiDome try to check it's presence. This is for clients that do not log in (or no app exists yet). 
+                                   When presence is found it will mark the user present. This method can be unreliable because of the use of ping and mobile devices do not 
+                                   always respond even when WIFI is enabled. This means a client can be marked away when in fact is not. Also the client's ip address 
+                                   should be fixed. Use an internal network ip.</p>
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <label for="nonclientip" class="col-sm-2 control-label">Ip address</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" id="nonclientip" placeholder="Ip Address">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-5">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input id="nonclientip_markpresent" type="checkbox" value="1" /> Mark present when detected
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-5">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input id="nonclientip_markaway" type="checkbox" value="1" /> Mark away when not detected
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="person-user-tokens">
+                            <div class="col-md-12">
+                                <h3>User tokens</h3>
+                                <p>User tokens are keycards,codes,NFC thumbs and/or other items which can identify an user. These items are used to authorize presences, or access to specific regions</p>
+                                <p>This is an future functionality of the server and currently not implemented. A start has made with "Controller/Token management" and when implemented here the user bounded tokens will be listed</p>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="person-mobile-devices">
+                            <div class="col-md-12">
+                                <p>You can enable GPS localization which will enable you to perform actions on distance in combination with presences (when available). Only one device should be marked to be used.</p>
+                                <p>If you are on a data plan, or want to save battery life when connected to the server, enable throttling. Only important messages will then be pushed when connecting remotely. Throttling is enabled by default and is only activated when an user does not use WIFI to connect.</p>
+                                <div class="well well-sm" id="showdeviceexplain"><p>To show mobile devices connect them to the server and approve the connection by linking them to this user using "Audit/logs -> Connected clients" in the menu. Make sure the user exists.</p></div>
+                                <table id="linkeddevicelist-1" class="table table-striped table-hover"
+                                       data-show-refresh="false" 
+                                       data-search="false">
+                                    <thead>
+                                        <tr>
+                                            <th data-field="presence" width="50">Action</th>
+                                            <th data-field="clientname" width="350">Device</th>
+                                            <th data-field="firstname">Description</th>
+                                            <th data-field="distance" width="50">GPS</th>
+                                            <th data-field="lastlogin" width="50">Throttle</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="linkeddevicelist">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="person-localization">
+                            <div class="col-md-12">
+                                <h4>GPS interaction</h4>
+                                <p>It can be nice to have your environment be prepared for your arrival. Enable the below option and choose a macro to be ran.
+                                This macro will only be ran if everyone is marked away and you are the first one arriving. As everyone can have their personal
+                                preferences you can define a different macro per user. There is no global option yet. The macro only runs if you are marked away 
+                                and have been are further away then the distance set below.<br/>
+                                If everyone is out of their threshold bounds only the first one who is in the "range" will have the macro run.
+                                For this functionality to work you have to make sure that users are marked home/away.</p>
+                                <form class="form-horizontal">
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-6">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input id="gps_prepare" type="checkbox" value="1" /> Use GPS for proximity detection.
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gps_prepare_distance" class="col-sm-2 control-label">Distance</label>
+                                        <div class="col-sm-2">
+                                            <input type="number" class="form-control" id="gps_prepare_distance" placeholder="Kilometer">
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <label class="control-label">Kilometers</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gps_prepare_macro" class="col-sm-2 control-label">Run macro when in range</label>
+                                        <div class="col-sm-4">
+                                            <select class="form-control" id="gps_prepare_macro">
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-6">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input id="gps_prepare_persmessage" type="checkbox" value="1" /> Use a personalized message.
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gps_prepare_persmessage_subject" class="col-sm-2 control-label">Subject</label>
+                                        <div class="col-sm-2">
+                                            <input type="text" class="form-control" id="gps_prepare_persmessage_subject" placeholder="Subject">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="gps_prepare_persmessage_message" class="col-sm-2 control-label">Message</label>
+                                        <div class="col-sm-4">
+                                            <input type="text" class="form-control" id="gps_prepare_persmessage_message" placeholder="Short message">
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <button id="cancelmutationdata" type="button" class="btn btn-danger pull-left">Cancel</button>
+            <button id="savemutationdata" type="button" class="btn btn-success pull-left" style="margin-left:12px;">Add user</button>
+        </div>
+    </div>
+</div>
+<input type="hidden" name="mutationuserid" id="mutationuserid" value="" />
+<div id="innerscrollmargin"></div>
+<script>
+    
+reloadMacros();
+    
+var currentUser = parseInt($.urlParam('user'));
+if(isNaN(currentUser)){
+    currentUser = 0;
+}
+    
+$(document).ready(function() {
+    setPageBreadcrumbs(2, 'page_people', ((currentUser!==0)?'Edit user':'New user'), "/peopleedit.html?user=" + currentUser);
+    setPageTitleDescription("User management");
+    preparePageInfo();
+});
+
+    
+getHttpJsonRPC('{"jsonrpc": "2.0", "method": "LocationService.getLocations", "id":"LocationService.getLocations"}', function(data){
+    try {
+        var lastFloor = 0;
+        for(var i=0; i < data.length; i++){
+            var workData = data[i];
+            var close = false;
+            if(workData.id!==1){
+                var currentFloor = workData.floor;
+                if(lastFloor!==currentFloor){
+                    if(close===true){
+                        $("#locationcontainer").append('</div>');
+                    }
+                    $("#locationcontainer").append('<div class="col-sm-2" id="restrictfloor_'+currentFloor+'"><h4 style="margin-bottom:0px;">'+workData.floorname+'</h4>');
+                }
+                close = true;
+                $('#restrictfloor_'+currentFloor).append('<div class="checkbox">'+
+                                            '<label>'+
+                                                '<input class="locationchecked" id="locationselected_'+workData.id+'" type="checkbox" value="1" /> '+workData.name+
+                                            '</label>'+
+                                        '</div>');
+
+                lastFloor = currentFloor;
+            }
+        }
+        $("#locationcontainer").append('<div style="clear:both;"></div>');
+    } catch(err){
+        showErrorMessage("Locations error", "Could not retreive locations, restrictions not possible, defaults to all locations");
+    }
+});
+
+function clearAllUserDataFields(){
+    currentUser = 0;
+    $("#detailsforname").html("new user");
+    $("#mutationuserid").val("");
+    $("#user_ifadmin").prop("checked","");
+    $("#user_passchange").prop("checked","");
+    $("#user_login").prop("disabled","");
+    $("#user_canexternal").prop("checked","");
+    $("#nonclientip_markpresent").prop("checked","");
+    $("#nonclientip_markaway").prop("checked","");
+    $("#user_login").val("");
+    $("#user_pass").val("");
+    $("#user_passagain").val("");
+    $("#user_firstname").val("");
+    $("#user_lastname").val("");
+    $("#nonclientip").val("");
+    $("#linkeddevicelist").empty();
+    $("#showdeviceexplain").show();
+    $("#user_setglobalpresence").prop("checked","");
+    $("#gps_prepare").prop('checked','');
+    $("#gps_prepare_distance").val('');
+    try {
+        $("#gps_prepare_macro").val(0);
+    } catch (error){  }
+    $("#gps_prepare_persmessage").prop("checked","");
+    $("#gps_prepare_persmessage_subject").val("");
+    $("#gps_prepare_persmessage_message").val("");
+    $('#savemutationdata').text('Add user');
+    $('.locationchecked').each(function(){
+        $(this).prop("checked", "");
+    });
+}
+
+
+function loadDevicesForUser(id){
+    $("#linkeddevicelist").empty();
+    getHttpJsonRPC('{"jsonrpc": "2.0", "method": "UserService.getUserBoundDevices", "params": {"userid":'+id+'}, "id":"UserService.getUserBoundDevices"}', function(deviceData){
+        var deviceWorkData = deviceData;
+        if(deviceWorkData.length>0){
+            $("#showdeviceexplain").hide();
+            for(var i=0; i<deviceWorkData.length; i++){
+                $("#linkeddevicelist").append('<tr>\n\
+<td style="width:50px; overflow:hidden;"><img src="/shared/images/icons/circle-x-2x.png" alt="delete" style="cursor:pointer;" class="removedeviceclient" id="removedeviceclient_'+deviceWorkData[i].id+'"/></td>\n\
+<td style="width:350px; overflow:hidden;">'+deviceWorkData[i].devicelogin+'</td>\n\
+<td style="overflow:hidden;">'+deviceWorkData[i].deviceinfo+'</td>\n\
+<td><input type="checkbox" class="enablegpsselector" id="enabledevicegps_'+deviceWorkData[i].id+'" '+((deviceWorkData[i].gpsenabled===true)?'checked':'')+'/></td>\n\
+<td><input type="checkbox" class="enablethrottleselector" id="enabledevicethrottle_'+deviceWorkData[i].id+'" '+((deviceWorkData[i].throttled===true)?'checked':'')+'/></td>\n\
+</tr>');
+                $("#removedeviceclient_"+deviceWorkData[i].id).on("click", function(){
+                    var removeId = $(this).attr("id").split("_")[1];
+                    $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "UserService.removeUserBoundDevice", "params": {"id":'+removeId+'}, "id":"UserService.removeUserBoundDevice"}', function(removeData){
+                        loadDevicesForUser(id);
+                    });
+                });
+            }
+        } else {
+            $("#showdeviceexplain").show();
+        }
+    });
+}
+
+    
+function reloadMacros(){
+    $("#gps_prepare_macro").empty();
+    getHttpJsonRPC('{"jsonrpc": "2.0", "method": "MacroService.getMacros","id":"MacroService.getMacros"}', function(data){
+        for(var i = 0; i < data.length; i++){
+            $("#gps_prepare_macro").append('<option value="'+data[i].id+'">'+data[i].name+'</option>');
+        }
+    });
+}
+
+if(currentUser !== 0){
+    $("#mutationuserid").val(currentUser);
+    getHttpJsonRPC('{"jsonrpc": "2.0", "method": "UserService.getUser", "params": {"id":'+currentUser+'}, "id":"UserService.getUser"}', function(data){
+        try {
+            clearAllUserDataFields();
+            var workData = data;
+            $("#mutationuserid").val(workData.id);
+            if(workData.roleset.role!==undefined && workData.roleset.role==="admin"){
+                $("#user_ifadmin").prop("checked","checked");
+            } else {
+                $("#user_ifadmin").prop("checked","");
+            }
+            if(workData.cpwd!==undefined && workData.cpwd===true){
+                $("#user_passchange").prop("checked","checked");
+            } else {
+                $("#user_passchange").prop("checked","");
+            }
+            if(workData.ext!==undefined && workData.ext===true){
+                $("#user_canexternal").prop("checked","checked");
+            } else {
+                $("#user_canexternal").prop("checked","");
+            }
+
+            $("#user_login").prop("disabled","disabled");
+            $("#user_login").val(workData.clientname);
+            $("#user_pass").val("");
+            $("#user_passagain").val("");
+            $("#user_firstname").val(workData.firstname);
+            $("#user_lastname").val(workData.lastname);
+            $("#detailsforname").html(workData.firstname + " " + workData.lastname);
+
+            try {
+                $("#user_setglobalpresence").prop("checked",((workData.roleset.setglobalpresence===true)?"checked":""));
+                $("#nonclientip").val(workData.roleset.nonclientpresence);
+                $("#nonclientip_markpresent").prop("checked",((workData.roleset.nonclientpresent===true)?"checked":""));
+                $("#nonclientip_markaway").prop("checked",((workData.roleset.nonclientaway===true)?"checked":""));
+
+                $("#gps_prepare").prop('checked',((workData.roleset.gpsoptions.gpsprepare===true)?"checked":""));
+                $("#gps_prepare_distance").val(workData.roleset.gpsoptions.gpspreparedistance);
+                $("#gps_prepare_macro").val(workData.roleset.gpsoptions.gpspreparemacro);
+
+                $("#gps_prepare_persmessage").prop('checked',((workData.roleset.gpsoptions.gpspreparepersmessage===true)?"checked":""));
+                $("#gps_prepare_persmessage_subject").val(workData.roleset.gpsoptions.gpspreparepersmessagesubject);
+                $("#gps_prepare_persmessage_message").val(workData.roleset.gpsoptions.gpspreparepersmessagemessage);
+
+            } catch (err){}
+
+            if(workData.roleset.locations!==undefined){
+                for(var i=0; i<workData.roleset.locations.length;i++){
+                    $("#locationselected_"+workData.roleset.locations[i]).prop("checked", "checked");
+                }
+            }
+
+            loadDevicesForUser(workData.id);
+
+            $('#savemutationdata').text('Update user');
+        } catch(err){
+            console.log(err.message);
+            console.log(err.lineNumber);
+            showErrorMessage("User error", "Could not retreive/parse user info, file a bug report.");
+        }
+    });
+}
+    
+$("#cancelmutationdata").off('click').on('click', function () {
+    clearAllUserDataFields();
+    refreshPageContent('/people.html');
+    quickMessage("error", "User add/edit canceled");
+});
+
+$("#savemutationdata").off('click').on('click', function () {
+    var userid    = $("#mutationuserid").val();
+    var pass      = $("#user_pass").val();
+    var passagain = $("#user_passagain").val();
+    var username  = $("#user_login").val();
+    if(username.length<6 && userid===""){
+        showErrorMessage("Username error", "Username should be at least 6 characters");
+    } else if(pass.length<8 && userid===""){
+        showErrorMessage("Password error", "Password should be at least 8 characters");
+    } else if (pass !== passagain){
+        showErrorMessage("Password error", "Passwords are not the same");
+    } else {
+        var firstname = $("#user_firstname").val();
+        if(firstname===""){
+            showErrorMessage("Name error", "Fill in at least the first name");
+        } else {
+            var lastname = $("#user_lastname").val();
+            var ifadmin = $("#user_ifadmin").is(':checked');
+            var cpwd = $("#user_passchange").is(':checked');
+            var ext = $("#user_canexternal").is(':checked');
+            var data = {};
+            var locations = [];
+            $(".locationchecked").each(function(){
+                if($(this).is(':checked')){
+                    locations.push(parseInt($(this).attr("id").split("_")[1]));
+                }
+            });
+            var deviceGPSData  = [];
+            $(".enablegpsselector").each(function(){
+                var item = {};
+                item['device'] = parseInt($(this).attr("id").split("_")[1]);
+                item['gpsenabled'] = $(this).prop("checked");
+                item['throttled']  = $("#enabledevicethrottle_" + item['device']).prop("checked");
+                deviceGPSData.push(item);
+            });
+            var gpsoptions     = {'gpsprepare':$("#gps_prepare").is(':checked'), 
+                                  'gpspreparedistance':parseFloat($("#gps_prepare_distance").val()), 
+                                  'gpspreparemacro':parseInt($("#gps_prepare_macro").val()), 
+                                  'gpspreparepersmessage':$("#gps_prepare_persmessage").is(':checked'), 
+                                  'gpspreparepersmessagesubject':$("#gps_prepare_persmessage_subject").val(), 
+                                  'gpspreparepersmessagemessage':$("#gps_prepare_persmessage_message").val()};
+            var roleset        = {'role':(ifadmin===true)?'admin':'user', 
+                                  'locations':locations, 
+                                  'nonclientpresence':$("#nonclientip").val(), 
+                                  'nonclientpresent':$("#nonclientip_markpresent").is(':checked'), 
+                                  'nonclientaway':$("#nonclientip_markaway").is(':checked'),
+                                  'setglobalpresence':$("#user_setglobalpresence").is(':checked'),
+                                  'gpsoptions':gpsoptions};
+            data['password']   = pass;
+            data['firstname']  = firstname;
+            data['lastname']   = lastname;
+            data['changepass'] = cpwd;
+            data['extconnect'] = ext;
+            data['roleset']    = roleset;
+            if(userid!==""){
+                data['gpsdevices']  = deviceGPSData;
+            }
+            var rpc;
+            if(userid===""){
+                data['username'] = username;
+                rpc = '{"jsonrpc": "2.0", "method": "UserService.addUser", "params": '+JSON.stringify(data)+', "id":"UserService.addUser"}';
+            } else {
+                data['id']         = parseInt(userid);
+                rpc = '{"jsonrpc": "2.0", "method": "UserService.updateUser", "params": '+JSON.stringify(data)+', "id":"UserService.updateUser"}';
+            }
+            getHttpJsonRPC(rpc, function(data){
+               clearAllUserDataFields();
+               refreshPageContent('/people.html');
+               quickMessage("success", "User added/edited");
+            });
+        }
+    }
+});
+</script>

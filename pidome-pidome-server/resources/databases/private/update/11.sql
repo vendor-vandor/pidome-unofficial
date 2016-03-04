@@ -1,0 +1,3 @@
+INSERT INTO installed_packages ('packageid','name','version','active', 'install_base','package_type','author', 'email','website') VALUES ('PIDOME-NATIVE-RFXCOM-SUPPORT', 'PiDome.RFXCom', '0.0.1', 1, 'PiDome.RFXCom.jar','driver', 'PiDome','support@pidome.org', 'http://pidome.org');
+INSERT INTO installed_drivers ('driverid','name','friendlyname','driver','version','peripheral_driver','package') VALUES ('NATIVE_RFXCOMSUPPORT_DRIVER','PiDome@RFXCom','PiDome RFXCom driver','org.pidome.driver.driver.nativeRFXComDriver','0.0.1',7,(SELECT id FROM installed_packages WHERE packageid='PIDOME-NATIVE-RFXCOM-SUPPORT' LIMIT 1));
+PRAGMA user_version=11;

@@ -1,0 +1,322 @@
+<#if !_GET.requesttype?has_content>
+    <#include "includes/header.html">
+</#if>
+<div role="main" class="ui-content full media">
+    <div class="pagemainheader">
+        <h2>Media<span id="globalemedianameselected"></span></h2>
+    </div>
+    <div class="ui-grid-a">
+        <div class="ui-block-a">
+            <div class="ui-grid-a" id="mediaviewset">
+                <div class="ui-block-a">
+                    <div id="scroll-wrapper-media-locations">
+                        <ul data-role="listview" class="locationlist">
+                        </ul>
+                    </div>
+                </div>
+                <div class="ui-block-b">
+                    <div class="" id="scroll-wrapper-media-media">
+                        <ul data-role="listview" class="medialist">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui-block-b">
+            <div class="ui-block-a display-media" id="scroll-wrapper-media">
+                <div id="mediafullcontent">
+                    
+                    <div class="ui-bar ui-bar-a mediaheader">
+                        <h3 id="medianame">No media item present</h3>
+                    </div>
+                    <div class="ui-body ui-body-a" id="media-body">
+                        <div id="media-case-coverimage" class="">
+                            <div id="media-case-type" class=""></div>
+                        </div>
+                        <div id="media-player">
+                            <div id="media-playing-artist">&nbsp;</div>
+                            <div id="media-playing-album">&nbsp;</div>
+                            <div id="media-playing-duration">&nbsp;</div>
+                            <div id="media-controlscontainer">
+                                <div id="media-prev"></div>
+                                <div id="media-stop"></div>
+                                <div id="media-pause"></div>
+                                <div id="media-play"></div>
+                                <div id="media-next"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        setPage("media", "Media");
+        var fullMediaList;
+        var globalMediaId;
+        var viewHeight = $(window).height() - ($("#headercontent").height() + $(".pagemainheader").height()) - 3;
+        
+        $("#mediaviewset").height(viewHeight);
+        $("#scroll-wrapper-media-locations").height(viewHeight);
+        $("#scroll-wrapper-media-media").height(viewHeight);
+        $("#scroll-wrapper-media").height(viewHeight);
+        
+        $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MediaService.getPlugins","id":"MediaService.getPlugins"}').done(function(data) {
+            try {
+                fullMediaList = data.result.data;
+                
+                var currentLocation;
+                if(data.result.data.length>0){
+                    $(".locationlist").empty();
+                }
+                var firstLocation = 0;
+                for(var i=0;i<fullMediaList.length;i++){
+                    var media = fullMediaList[i];
+                    if(currentLocation!==media.locationname){
+                        $(".locationlist").append('<li class="locationitem" data-id="openLocation_'+media.locationid+'">'+media.locationname+'</li>');
+                        if(firstLocation===0) firstLocation = media.locationid;
+                        currentLocation = media.locationname;
+                    }
+                }
+                
+                $('.locationlist').listview('refresh');
+                $('.locationlist').trigger('create');
+                
+                //var locationScroll = new IScroll('#scroll-wrapper-media-locations', { push:true });
+                //locationScroll.enable();
+
+                //var mediasScroll = new IScroll('#scroll-wrapper-media-media', { push:true });
+                //mediasScroll.enable();
+                
+                $('#scroll-wrapper-media-locations').on('click, tap', '.locationitem', function() {
+                    setMediaListByLocation(parseInt($(this).attr("data-id").split("_")[1]));
+                });
+
+                setMediaListByLocation(firstLocation);
+                
+                function setMediaListByLocation(location){
+                    //$('#scroll-wrapper-media-media').off('click, tap');
+                    $(".medialist").empty();
+
+                    var firstMedia = 0;
+                    for(var i=0;i<fullMediaList.length;i++){
+                        var media = fullMediaList[i];
+                        if(media.locationid === location){
+                            $(".medialist").append('<li class="fullmedia" data-id="openMedia_'+media.id+'">'+media.name+'</li>');
+                            if(firstMedia===0) { firstMedia = media.id; }
+                        }
+                    }
+                    $(".locationitem").each(function(){
+                        $(this).removeClass("active");
+                    });
+                    $(".locationitem").each(function(){
+                        if($(this).attr("data-id")==='openLocation_'+location && !$(this).hasClass("active")){
+                            $(this).addClass("active");
+                        }
+                    });
+                    $('.medialist').listview('refresh');
+                    $('.medialist').trigger('create');
+                    $('#scroll-wrapper-media-media').on('click, tap', '.fullmedia', function() {
+                        openMedia(parseInt($(this).attr("data-id").split("_")[1]));
+                    });
+                    
+                    openMedia(firstMedia);
+                    
+                    function openMedia(mediaId){
+                        var media = undefined;
+                        for(var i=0;i<fullMediaList.length;i++){
+                            if(fullMediaList[i].id === mediaId){
+                                media = fullMediaList[i];
+                                break;
+                            }
+                        }
+                        $(".fullmedia").each(function(){
+                            $(this).removeClass("active");
+                        });
+                        $("#globalemedianameselected").text("");
+                        if(media!==undefined){
+                            globalMediaId = mediaId;
+                            $(".fullmedia").each(function(){
+                                if($(this).attr("data-id")==='openMedia_'+mediaId && !$(this).hasClass("active")){
+                                    $(this).addClass("active");
+                                }
+                            });
+                            $("#medianame").text(media.name);
+                            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MediaService.getCurrentMedia","id":"MediaService.getCurrentMedia", "params" : {"id" : '+mediaId+'}}').done(function(mediaData) {
+                                try {
+                                    var mediaDetails = mediaData.result.data;
+                                    setMediaDetails(mediaId,mediaDetails);
+                                    $("#media-controlscontainer>div").off("click");
+                                    $("#media-controlscontainer>div").on("click", function(){
+                                        var command = "";
+                                        switch($(this).attr("id")){
+                                            case "media-prev":
+                                                command = "PREV";
+                                            break;
+                                            case "media-stop":
+                                                command = "STOP";
+                                            break;
+                                            case "media-pause":
+                                                command = "PAUSE";
+                                            break;
+                                            case "media-play":
+                                                command = "PLAY";
+                                            break;
+                                            case "media-next":
+                                                command = "NEXT";
+                                            break;
+                                        }
+                                        if(command!==""){
+                                            $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MediaService.playerCommand","id":"MediaService.playerCommand", "params" : {"id" : '+mediaId+', "command": "'+command+'"}}').done(function(mediaData) {
+                                                switch(command){
+                                                    case "STOP":
+                                                        clearMedia();
+                                                    break;
+                                                }
+                                            });
+                                        }
+                                    });
+                                } catch (err){
+                                    showPopUp("Could not load media: " + err);
+                                }
+                            });
+                        }
+                    }
+                }
+            } catch (err){
+                showPopUp(err);
+            }
+            function clearMedia(){
+                $("#medianame").text("Nothing playing or unknown");
+                $("#media-case-coverimage").css("background-image", "");
+                $("#media-playing-album").html("&nbsp;");
+                $("#media-playing-artist").html("&nbsp;");
+                $("#media-playing-duration").html("&nbsp;");
+            }
+            function setMediaDetails(mediaId, mediaDetails){
+                if(mediaId===globalMediaId){
+                    try {
+                        $("#media-playing-album").html("&nbsp;");
+                        $("#media-playing-artist").html("&nbsp;");
+                        $("#media-playing-duration").html("&nbsp;");
+                        switch(mediaDetails.itemtype){
+                            case "VIDEO":
+                                $("#media-case-type").removeClass("cd").addClass("dvd");
+                                $("#media-case-coverimage").removeClass("cd").addClass("dvd");
+                                $("#media-playing-duration").text("Duration: " + toHHMMSS(mediaDetails.duration));
+                            break;
+                            case "AUDIO":
+                                $("#media-case-type").removeClass("dvd").addClass("cd");
+                                $("#media-case-coverimage").removeClass("dvd").addClass("cd");
+                                $("#media-playing-album").text("Artist: " + mediaDetails.title_artist);
+                                $("#media-playing-artist").text("Album: " + mediaDetails.album + " - " + mediaDetails.album_artist);
+                                $("#media-playing-duration").text("Duration: " + toHHMMSS(mediaDetails.duration));
+                            break;
+                            default:
+                                $("#media-case-type").removeClass("dvd").removeClass("cd");
+                                $("#media-case-coverimage").removeClass("dvd").removeClass("cd");
+                            break;
+                        }
+                        if(mediaDetails.thumbnail!==undefined){
+                            $("#media-case-coverimage").css("background-image", "url("+mediaDetails.thumbnail+")");
+                        }
+                        if(mediaDetails.title===undefined || mediaDetails.title===""){
+                            $("#medianame").text("Nothing playing or unknown");
+                        } else {
+                            $("#medianame").text(mediaDetails.title);
+                        }
+                    } catch(err){
+                        showPopUp("Could not update media: " + err);
+                    }
+                }
+            }
+            pidomeRPCSocket.addCallback(function(thingy) {
+                setMediaDetails(thingy.params.id,thingy.params);
+            }, "MediaService.getCurrentMedia");
+        });
+                /*
+                var mediaItem = data.result.data[0];
+                $("#widget-medianame").text(mediaItem.name);
+                $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MediaService.getCurrentMedia","id":"MediaService.getCurrentMedia", "params" : {"id" : '+mediaItem.id+'}}').done(function(mediaData) {
+                    try {
+                        var mediaDetails = mediaData.result.data;
+                        setMediaDetails(mediaDetails);
+                        $("#media-widget-controlscontainer>div").on("click", function(){
+                            var command = "";
+                            switch($(this).attr("id")){
+                                case "media-widget-prev":
+                                    command = "PREV";
+                                break;
+                                case "media-widget-stop":
+                                    command = "STOP";
+                                break;
+                                case "media-widget-pause":
+                                    command = "PAUSE";
+                                break;
+                                case "media-widget-play":
+                                    command = "PLAY";
+                                break;
+                                case "media-widget-next":
+                                    command = "NEXT";
+                                break;
+                            }
+                            if(command!==""){
+                                $.get('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "MediaService.playerCommand","id":"MediaService.playerCommand", "params" : {"id" : '+mediaItem.id+', "command": "'+command+'"}}').done(function(mediaData) {
+                                    switch(command){
+                                        case "STOP":
+                                            clearMedia();
+                                        break;
+                                    }
+                                });
+                            }
+                        });
+                    } catch (err){
+                        showPopUp("Could not load media: " + err);
+                    }
+                });
+            } catch (err) {
+                
+            }
+        });
+        function clearMedia(){
+            $("#media-widget-playing-title").text("Nothing playing or unknown");
+            $("#media-widget-case-coverimage").css("background-image", "");
+        }
+        function setMediaDetails(mediaDetails){
+            try {
+                switch(mediaDetails.itemtype){
+                    case "VIDEO":
+                        $("#media-widget-case-type").removeClass("cd").addClass("dvd");
+                        $("#media-widget-case-coverimage").removeClass("cd").addClass("dvd");
+                    break;
+                    case "AUDIO":
+                        $("#media-widget-case-type").removeClass("dvd").addClass("cd");
+                        $("#media-widget-case-coverimage").removeClass("dvd").addClass("cd");
+                    break;
+                    default:
+                        $("#media-widget-case-type").removeClass("dvd").removeClass("cd");
+                        $("#media-widget-case-coverimage").removeClass("dvd").removeClass("cd");
+                    break;
+                }
+                if(mediaDetails.thumbnail!==undefined){
+                    $("#media-widget-case-coverimage").css("background-image", "url("+mediaDetails.thumbnail+")");
+                }
+                if(mediaDetails.title===undefined || mediaDetails.title===""){
+                    $("#media-widget-playing-title").text("Nothing playing or unknown");
+                } else {
+                    $("#media-widget-playing-title").text(mediaDetails.title);
+                }
+            } catch(err){
+
+            }
+        }
+        */
+
+    });
+</script>
+<#if !_GET.requesttype?has_content>
+    <#include "includes/footer.html">
+</#if>

@@ -1,0 +1,234 @@
+<div id="pageinfotext"><p>On this page you will find all connected hardware and the drivers running for this hardware. This are devices connected to usb ports, i2c, but also plugins which need hardware emulation (for example network based devices) or bindings (like the MQTT plugin).<br/><br/>
+When you attach any peripheral this page will update and show you the connected device, the name and what kind of device it is. Be aware that it is possible that counterfeit or cheap usb serial adapters devices can not be detected correctly which result in missing device names/detection.<br/><br/>
+If a device is not recognized automatically, for example with an emulatedserial port, click the "Add manually" button and set the appropiate settings</p>
+<h5>The hardware attached can be in different states:</h5>
+<p>
+<span class="label label-success">Running</span> All is fine. If you want to disconnect, please click the driver and press disconnect.<br/>
+<br/>
+<span class="label label-warning">Attention/Settings</span> This is a fresh connected device which needs some settings before it can be interacted with, or there is some attention needed. Click the device to see what is the case.<br/>
+<br/>
+<span class="label label-danger">Error/Problem</span> There is an issue with the hardware or the server is incompatible with the hardware or vice verse. Click the device to see what is the case<br/>
+<br/>
+All though the server supports hot plugging and tries it's best to nicely close any hardware connections when you unplug a device, it is advisable you first nicely close it in the web interface. So before you unplug a device, please click a device and press disconnect.
+</p>
+</div>
+<div class="contentfield roundedcorners">
+    <div class="container" style="width:100%;">
+        <div class="row">
+            <div class="col-md-12">
+                <div id="peripheralstable-toolbar" style="align:right;">
+                    <h3>Attached peripherals</h3>
+                    <div class="clearfix">
+                        <button class="btn btn-info btn-fill pull-left" id="peripheral-manually">Add custom port</button>
+                        <p class="pull-right">&nbsp; If a port is not automatically recognized you can add one using the "Add custom port" button. Currently only /dev/tty* (as serial) ports are supported.</p>
+                    </div>
+                </div>
+                <table id="peripheralstable" class="table table-striped table-hover"
+                       data-toggle="table" 
+                       data-show-refresh="true" 
+                       data-search="true"
+                       data-toolbar="#peripheralstable-toolbar">
+                    <thead>
+                        <tr>
+                            <th data-field="key" data-visible="false"></th>
+                            <th data-field="status" data-width="100" data-formatter="statusFormatter">Status</th>
+                            <th data-field="vid" data-width="75">VID</th>
+                            <th data-field="pid" data-width="75">PID</th>
+                            <th data-field="type" data-width="80">Type</th>
+                            <th data-field="subtypetext" data-width="80">Interface</th>
+                            <th data-field="friendlyname">Name</th>
+                            <th data-field="hardwaredriver">Hardware driver</th>
+                            <th data-field="softwaredriver">Software driver</th>
+                            <th data-field="port">Port</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="innerscrollmargin"></div>
+<script>
+    
+    function refreshData(time){
+        setTimeout(
+          function() {
+            $('#peripheralstable').bootstrapTable("refresh",{ silent: true });
+        }, time);
+    }
+    
+    function statusFormatter(value,row,index){
+        var type;
+        var string;
+        switch(value.toLowerCase()){
+            case 'success':
+                type = "label-success";
+                string = "Running"
+            break;
+            case 'warning':
+                type = "label-warning";
+                string = "Attention/Settings"
+            break;
+            default:
+                type = "label-danger";
+                string = "Error/Problem"
+            break;
+        }
+        return '<span class="label '+type+'">'+string+'</span>';
+    }
+    
+    $("#peripheral-manually").off("click").on("click", function(){
+        
+        getHttpJsonRPC('{"jsonrpc": "2.0", "method": "HardwareService.getLocalDeviceEntries","id":"HardwareService.getLocalDeviceEntries"}', function(peripheralData){
+            var selectList = '';
+            for(var i=0; i<peripheralData.length;i++){
+                selectList += '<option value="'+peripheralData[i]+'">'+peripheralData[i]+'</option>';
+            }
+            var disabled = '';
+            var noDevices = '';
+            if(selectList === ''){
+                disabled = ' disabled="disabled"';
+                noDevices = '<p class="alert alert-warning">No custom ports found</p>';
+            }
+            yesnoConfirmation('Add peripheral manually',
+                              '<p>Make sure the device you want to add is working before you add it.</p>'+ noDevices + 
+                              '<div class="form-group">\n\
+                      <label for="custom-driver-select" class="control-label">Select port to use:</label>\n\
+<select class="form-control" id="custom-driver-select"'+disabled+'>'+selectList+'</select></div>\n\
+<div class="form-group"><label for="custom-driver-select-name">Name</label><input type="text" id="custom-driver-select-name" class="form-control" '+disabled+' /></div></form>', 
+                function(){
+                    getHttpJsonRPC('{"jsonrpc": "2.0", "method": "HardwareService.createCustomSerialDevice","id":"HardwareService.createCustomSerialDevice","params":{"port":"'+$("#custom-driver-select").val()+'","friendlyname":"'+$("#custom-driver-select-name").val()+'"}}', function(data){
+                        quickMessage("success", 'Created port <strong>'+$("#custom-driver-select").val()+'</strong> and is available for use.');
+                        refreshData(2000);
+                    });
+                },
+                "Create hardware",
+                "Cancel"
+            );
+        });
+    });
+    
+    $('#peripheralstable').bootstrapTable({
+        url: '/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "HardwareService.getConnectedHardware", "id":"HardwareService.getConnectedHardware"}',
+        cache: false,
+        height: 720,
+        toolbarAlign: 'left',
+        responseHandler: function(data){
+            var workData = returnResultData(data);
+            return workData;
+        },
+        onLoadSuccess: function (data) {
+
+        }
+    }).on('click-row.bs.table', function (e, row, $element) {
+        if(row.status==="error"){
+            quickMessage("error", row.lastknownerror, 4000);
+        } else if(row.status==="warning"){
+            getHttpJsonRPC('{"jsonrpc": "2.0", "method": "HardwareService.getWaitingPeripheralConnectSettings","id":"HardwareService.getWaitingPeripheralConnectSettings","params":{"port":"'+row.key+'"}}', function(peripheralData){
+                yesnoConfirmation('Connect settings', 
+                                  'Please set the connection settings for <span id="device-settings-content-devicename" style="font-weight:bold;"></span>'+
+                                  '<form class="form" id="device-settings-content" style="margin-top: 10px;"></form>', 
+                    function(){
+                        var postFields = {};
+                        $("#device-settings-content select").each(function() {
+                            postFields[$(this).attr("id")] = $(this).val();
+                        });
+                        $("#peripheral_driver").each(function() {
+                            postFields[$(this).attr("id")] = $(this).val();
+                        });
+                        var params = { "port"       : row.key, 
+                                       "parameters" : postFields,
+                        };
+                        var rpcCommand = { "jsonrpc"     : "2.0",
+                                           "method"      : "HardwareService.setPeripheralConnectSettings",
+                                           "params"      : params,
+                                           "id"          : "HardwareService.setPeripheralConnectSettings"};
+                        quickMessage("info", "Please wait for " + row.friendlyname);
+                        postHttpJsonRPC(JSON.stringify(rpcCommand),function(){
+                            quickMessage("success", "Settings saved and starting " + row.friendlyname);
+                            refreshData(2000);
+                        });
+                    },
+                    "Set and start",
+                    "Cancel"
+                );
+                $("#device-settings-content-devicename").text(row.friendlyname + ' at ' + row.port);
+                var settingHtml = '';
+                for (var i = 0; i < peripheralData.settings.length;i++) {
+                    var setting = peripheralData.settings[i];
+                    settingHtml += '<div style="margin-bottom: 5px;"><div class="form-group">'+
+                                                '<div class="col-xs-4" style="padding-top:9px;"><label for="'+setting.id+'" class="control-label">'+setting.label+'</label></div>'+
+                                                '<div class="col-xs-8"><select class="form-control" id="'+setting.id+'">';
+                    for (var j=0;j<setting.items.length;j++){
+                        settingHtml += '<option value="'+setting.items[j].id+'">'+setting.items[j].label+'</option>';
+                    }
+                    settingHtml += '</select></div></div><div class="clearfix"></div></div>';
+                }
+                settingHtml += '<div class="form-group"><label for="peripheral_driver" class="control-label">Choose peripheral driver:</label><select class="form-control" id="peripheral_driver">';
+                for (var i = 0; i < peripheralData.drivers.length;i++) {
+                    var driver = peripheralData.drivers[i];
+                    settingHtml += '<option value="'+driver.id+'_'+driver.version+'">'+driver.name+' Version: '+driver.version + (driver.prefered==="true"?' (Pref)':'')+'</option>';
+                }
+                settingHtml += '</select></div>';
+                $("#device-settings-content").html(settingHtml);
+            });
+        } else {
+            if(row.type==="TYPE_USB" || row.type==="TYPE_SERIAL"){
+                $("#currentperipheralsettingslist").html("");
+                getHttpJsonRPC("{\"jsonrpc\": \"2.0\", \"method\": \"HardwareService.getConnectedPeripheralInfo\", \"params\":{\"port\":\""+row.port+"\"},\"id\":\"HardwareService.getConnectedPeripheralInfo\"}", function(data) {
+                    yesnoConfirmation(row.friendlyname + " on " + row.port, 
+                                      '<h5>Connect settings</h5><div id="currentperipheralsettingslist" style="margin-top: 10px;"></div>' +
+                                      '<h5>Device info</h5><div id="currentperipheraldeviceinfolist" style="margin-top: 10px;"></div>' +
+                                      '<div>If you want to disconnect the device, press Disconnect, otherwise Close</div>', 
+                        function(){
+                            $.getJSON('/jsonrpc.json?rpc={"jsonrpc": "2.0", "method": "HardwareService.disconnectPeripheral", "params": {"port": "'+row.port+'"}, "id":"HardwareService.disconnectPeripheral"}', function(data){
+                                quickMessage("info","Peripheral is being disconnected");       
+                                refreshData(2000);
+                            });
+                        },
+                        "Disconnect",
+                        "Close"
+                    );
+                    var setConnecthtml = '<dl class="dl-horizontal">'
+                    for(var key in data.connection) {
+                        var value = data.connection[key];
+                        setConnecthtml += '<dt>'+key+'</dt><dd>: '+value+'</dd>';
+                    }
+                    setConnecthtml += '<dt>Driver</dt><dd>: '+row.softwaredriver+'</dd>';
+                    $("#currentperipheralsettingslist").html(setConnecthtml + "</dl>");
+                    var setDevicehtml = '<dl class="dl-horizontal">'
+                    for(var key in data.device) {
+                        var value = data.device[key];
+                        setDevicehtml += '<dt>'+key+'</dt><dd>: '+value+'</dd>';
+                    }
+                    $("#currentperipheraldeviceinfolist").html(setDevicehtml + "</dl>");
+                });
+            } else {
+                if(row.type==="TYPE_PLUGIN"){
+                    quickMessage("info", "To remove <b>" + row.friendlyname + "</b> remove/disable the plugin");
+                } else {
+                    quickMessage("info", "<b>" + row.friendlyname + "</b> can not be disconnected, integral part.");
+                }
+            }
+        }
+    });
+    
+    
+    $(document).ready(function() {
+        setPageBreadcrumbs(2, "page_attachedperipherals", "Peripherals", "/peripherals.html");
+        setPageTitleDescription("Connect/Disconnect/Add peripherals and running hardware on the server.");
+        preparePageInfo();
+        
+        pidomeRPCSocket.addCallback(function(thingy) {
+            refreshData(1000);
+        }, "SystemService.hardwareAdded");
+        
+        pidomeRPCSocket.addCallback(function(thingy) {
+            refreshData(2000);
+        }, "SystemService.hardwareRemoved");
+        
+    });
+
+</script>

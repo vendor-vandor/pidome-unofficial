@@ -1,0 +1,449 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Jul 20, 2015, 11:03:28 AM
+    Author     : John
+*/
+.root {
+    /*default font */
+    -fx-font-size: 15.0px;
+    -fx-disabled-opacity: 0.6; 
+    
+    -font-header-size: 1.8em;
+    -font-header-weight: 600;
+    
+}
+/* .text { -fx-font-smoothing-type: gray; } */
+
+/*******************************************************************************
+ *                                                                             *
+ * Button & ToggleButton                                                       *
+ *                                                                             *
+ ******************************************************************************/
+ 
+.toggle-button, .button{
+    -fx-background-insets:  0.0;
+    -fx-background-radius: 2.0;
+    -fx-border-width: 0.0;
+    -fx-padding: 0.7em;
+    -fx-alignment: CENTER;
+    -fx-content-display: LEFT;
+}
+.toggle-button:focused:selected {
+    -fx-background-insets: 0.0, 0.2em;
+}
+
+/*******************************************************************************
+ *                                                                             *
+ * TextField & TextArea                                                        *
+ *                                                                             *
+ ******************************************************************************/
+
+.text-area , .text-field {
+    -fx-background-insets:  0.0;
+    -fx-background-radius: 2.0;
+    -fx-padding: 0.7em;
+    -fx-border-width: 0.0;
+}
+
+.text-area {
+    -fx-padding: 0.15em;
+}
+
+.text-area .content {
+    -fx-padding: 0.7em;
+    -fx-border-width: 0.0;
+}
+
+.text-area:focused, .text-field:focused {
+    -fx-background-insets: 0.0, 0.2em;
+    -fx-background-radius: 2.0;
+}
+
+.scroll-bar:vertical > .track-background,
+.scroll-bar:horizontal > .track-background{
+    -fx-background-insets: 0.0;
+}
+
+.scroll-bar:vertical > .thumb,
+.scroll-bar:horizontal > .thumb {
+    -fx-background-insets: 0.0;
+    -fx-background-radius: 0.0;
+}
+
+
+/*******************************************************************************
+ *                                                                             *
+ * Planes                                                                      *
+ *                                                                             *
+ ******************************************************************************/
+
+.main-menu .menu-block .menu-block-icon {
+    -fx-font-size: 1.2em;
+}
+
+.main-menu .menu-block .menu-block-title {
+    -fx-font-size: 1.2em;
+}
+
+.who-am-i .my-name {
+    -fx-font-size: 1.8em;
+}
+
+.who-am-i .my-presence {
+    -fx-font-size: .9em;
+}
+
+/**
+ ** Popup
+ **/
+.popup-base {
+    -fx-border-size: 2px;
+}
+.popup-base .header {
+    -fx-border-size: 0px 0px 1px 0px;
+}
+
+.popup-base .header .text,
+.popup-base .header .glyph-icon {
+    -fx-font-size: 1.8em;
+    -fx-font-weight: 600;
+    -glyph-size: 1.8em;
+}
+
+/**
+ ** Color picker
+ **/
+
+.device-control-colorpicker {
+    -fx-padding: 3 2em 2 2em;
+    -fx-background-radius: 5;
+}
+
+.my-custom-color {
+    //-fx-min-width: 15em;
+    //-fx-pref-width: 15em;
+    -fx-padding: .3em 0em 0em 0em;
+}
+
+.my-custom-color > .color-rect-pane {
+    -fx-spacing: 1em;
+    -fx-pref-height: 16.666667em;
+    -fx-alignment: top-left;
+    -fx-fill-height: true;
+}
+
+.my-custom-color .color-rect-pane .color-rect {
+    -fx-min-width: 15em;
+    -fx-min-height: 12em;
+}
+
+.my-custom-color > .color-rect-pane #color-rect-indicator {
+    -fx-border-radius: 0.4166667em;
+    -fx-translate-x: -0.4166667em;
+    -fx-translate-y: -0.4166667em;
+    -fx-pref-width: 0.833333em;
+    -fx-pref-height: 0.833333em;
+}
+
+.my-custom-color > .color-rect-pane > .color-bar {
+    -fx-min-height: 1.666667em;
+    -fx-min-width: 16em;
+    -fx-max-height: 1.666667em;
+}
+
+.my-custom-color > .color-rect-pane > .color-bar > #color-bar-indicator {
+    ////-fx-border-radius: 0.333333em;
+    -fx-pref-height: 2em;
+    -fx-pref-width: 0.933333em;
+    -fx-translate-y: -0.1666667em;
+    -fx-translate-x: -0.4166667em;
+}
+
+.my-custom-color .color-new-rect {
+    -fx-min-width: 10.666667em;
+    -fx-min-height: 2em;
+    -fx-pref-width: 10.666667em;
+    -fx-pref-height: 2em;
+    -fx-padding: 0.1em;
+}
+
+.my-custom-color:focused,
+.my-custom-color:selected {
+    -fx-background-color: transparent;
+}
+
+.my-custom-color .color-rect-pane .color-rect-border {
+    -fx-border-color: derive(#ececec, -20%);
+}
+
+.my-custom-color > .color-rect-pane #color-rect-indicator {
+    -fx-background-color: null;
+    -fx-border-color: white;
+    -fx-effect: dropshadow(three-pass-box, black, 2, 0.0, 0, 1);
+}
+
+.my-custom-color > .color-rect-pane > .color-bar {
+    -fx-border-color: derive(#ececec, -20%);
+}
+
+.my-custom-color > .color-rect-pane > .color-bar > #color-bar-indicator {
+    -fx-border-color: white;
+    -fx-effect: dropshadow(three-pass-box, black, 2, 0.0, 0, 1);
+}
+
+/*
+ * Browsable listings
+ */
+.custom-list-view {
+} 
+
+.custom-list-view .list-item {
+    -fx-padding: .3em;
+} 
+
+.custom-list-view .undecorated-list-item {
+    -fx-font-size: 1.1em;
+}
+
+.custom-list-view .list-item-button {
+    -fx-padding: 0em 1em 0em .7em;
+}
+
+.custom-list-view .sub-title {
+    -fx-font-size: .85em;
+}
+//// large list
+.custom-list-view.large .list-item {
+    -fx-padding: .3em .5em .3em .5em;
+} 
+
+.custom-list-view.large .undecorated-list-item {
+}
+
+.custom-list-view.large .list-item-button {
+}
+
+.custom-list-view.large .sub-title {
+}
+
+.custom-list-view.nohbar .scroll-bar:horizontal .track,
+.custom-list-view.nohbar .scroll-bar:horizontal .thumb,
+.custom-list-view.nohbar .scroll-bar:horizontal .increment-arrow,
+.custom-list-view.nohbar .scroll-bar:horizontal .decrement-arrow,
+.custom-list-view.nohbar .scroll-bar:horizontal .increment-button,
+.custom-list-view.nohbar .scroll-bar:horizontal .decrement-button {
+    -fx-background-color:transparent;
+    -fx-border-color:transparent;
+    -fx-background-radius: 0.0;
+    -fx-background-insets: 0.0;
+    -fx-border-radius:0.0;
+    -fx-padding:0.0;
+    -fx-shape: null;
+    -fx-visibility: collapse;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+.scroll-pane:focused {
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .corner {
+    -fx-background-insets: 0;
+}
+
+.scroll-pane .scroll-bar:horizontal {
+    -fx-background-color:transparent;
+}
+.scroll-pane .scroll-bar:horizontal .increment-button, .scroll-pane .scroll-bar:horizontal .decrement-button {
+    -fx-background-color:transparent;
+    -fx-border-color: transparent;
+}
+.scroll-pane .scroll-bar:horizontal .track {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-radius: 0em;
+}
+.scroll-pane .scroll-bar:horizontal .thumb {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0, 0, 0;
+    -fx-background-radius: 0em;
+
+}
+
+.full-device .controls-group-name {
+    -fx-padding: .5em;
+    -fx-font-size: 1.1em;
+}
+.full-device {
+    -fx-padding: 0em .5em 0em .5em;
+}
+
+.device-control {
+    -fx-padding: .5em;
+    -fx-alignment:center-left;
+}
+
+.device-control .glyph-icon {
+    -fx-text-origin: top;
+    -fx-font-size: 1.5em;
+}
+
+.device-control .control-name {
+    -fx-font-size: 1.1em;
+}
+
+.device-control .device-control-data {
+    -fx-alignment:top-right;
+}
+.device-control .device-control-data .control-data {
+    -fx-font-size: 1.2em;
+}
+.device-control .device-control-data .control-prefix {}
+.device-control .device-control-data .control-suffix {
+    -fx-font-size: 1em;
+}
+
+.device-control .device-control-toggle,
+.device-control .button {
+    -fx-padding: 3 10 2 10;
+    -fx-background-insets: 0;
+    -fx-vpos: CENTER;
+    -fx-graphic-vpos: CENTER;
+    -fx-min-width: 4em;
+    -fx-border-width: 1px;
+}
+
+.device-control-colorpicker {
+    -fx-padding: 3 2em 2 2em;
+    -fx-background-radius: 5;
+}
+
+
+//// Media
+.media-interface-pane {
+    -fx-font-size: 0.9em;
+}
+
+.media-navigation-pane {
+    -fx-hgap: 1em;
+    -fx-vgap: 1em;
+    -fx-padding: 1.5em 0px 1.5em 0px;
+}
+
+.media-volume-pane {
+    -fx-spacing: 1em;
+    -fx-padding: 1.5em .5em 1.5em 0px;
+}
+
+.media-extras-pane {
+    -fx-spacing: 1em;
+    -fx-padding: 1.5em 0px 1.5em .5em;
+}
+
+.media-player-pane {
+    -fx-padding: 1.5em .5em 2em .5em;
+    -fx-spacing: 1em;
+}
+
+.media-navigation-pane .media-nav-button,
+.media-volume-pane .media-nav-button,
+.media-extras-pane .media-nav-button,
+.media-player-pane .media-nav-button {
+    -fx-font-size: 1em;
+}
+
+.media-interface-pane .media-item-visualizer {
+    -fx-padding: .5em .5em 1.5em .5em;
+    -fx-pref-height: 5em;
+}
+
+.media-interface-pane.large .media-item-visualizer {
+    -fx-padding: 0em;
+    -fx-pref-height: auto;
+}
+
+.media-interface-pane .media-item-visualizer .media-item-title {
+    -fx-font-size: 1.6em;
+}
+
+.media-item-visualizer.large .media-info-container {
+    -fx-padding: 0em 0em .5em 1em;
+}
+
+.media-item-visualizer.large .media-item-title {
+    -fx-font-size: 3em;
+}
+
+.media-item-visualizer.large .media-item-title-artist {
+    -fx-font-size: 2em;
+}
+
+.media-item-visualizer.large .media-item-album {
+    -fx-font-size: 2em;
+}
+
+.media-item-visualizer.large .media-item-duration {
+    -fx-font-size: 2em;
+}
+
+.scene-item {
+    -fx-font-size: 1.2em;
+}
+
+#pidomeremote {
+  -fx-border-radius: 2em 2em 2em 2em;
+  -fx-background-radius: 2em 2em 2em 2em;
+  -fx-background-color: #202021;
+  -fx-border-color: #3e3e42;
+}
+
+#pidomeremote .remotetoptitle {
+    -fx-border-color: transparent transparent #d46809 transparent;
+}
+
+#pidomeremote .remotesection {
+    -fx-border-color: #ff0000;
+}
+
+#pidomeremote .remotebutton {
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fff;
+}
+
+///// Discovery
+.discovered-device .title,
+.discovered-device-popup-add .title{
+    -fx-font-size: 1.3em;
+}
+.discovered-device-popup-add .name {
+    -fx-font-weight: bold;
+}
+
+.weather-large-screen .section-title {
+    -fx-font-size: 2em;
+    -fx-border-width: 3px;
+}
+
+.weather-large-screen .weather-current .temp-title {
+    -fx-font-size: 2em;
+    -fx-font-weight: bold;
+}
+.weather-large-screen .weather-current .city-title,
+.weather-large-screen .weather-current .description-title {
+    -fx-font-size: 1.3em;
+}
+.weather-large-screen .weather-current .provider-title {
+    visibility: visible;
+    -fx-opacity: 1.0;
+}

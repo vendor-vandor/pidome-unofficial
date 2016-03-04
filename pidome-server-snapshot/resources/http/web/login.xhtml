@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>PiDome - Login</title>
+    <style>
+        body {
+            background-color: #e6e7ec;
+            color: #FFFFFF;
+            margin: 0; 
+            padding: 0;
+            font-size: 12px;
+            line-height: 22px;
+            font-family: 'segoe ui', arial, sans-serif;
+        }
+        #loginHeader{ background-color: #3e3e42;padding-left: 3px; line-height: 25px; }
+        #loginBody {
+            padding:3px 3px 3px 3px;
+        }
+        /* Name - Value pairs */
+        .nvp { width: 100%; line-height: 25px;}
+        .nvp .n { width: 14%; float:left; clear:left; }
+        .nvp .v { width: 86%; float:left; }
+        #buttons { padding: 3px 0px 3px 0px; margin-top: 5px; width: 100%; float:left; }
+        #login,#cancel { width: 144px; 
+                         height: 25px; 
+                         margin-right:15px; 
+                         float:right; 
+                         background-color: #3e3e42; 
+                         border: 1px solid #35353a; 
+                         color: #fff; 
+                        -webkit-transition: ease-in-out 0.2s; /* For Safari 3.1 to 6.0 */
+                        transition: ease-in-out 0.2s;
+                       }
+        #login:hover,#cancel:hover { background-color: #007acc; border-color: #007acc; }
+        .colon { float:left; }
+        .inputdiv { margin-left: 20px; float:left; margin-top: 5px;}
+        input { background: #252526; border: 1px solid #35353a; color: #fff; -webkit-transition: ease-in-out 0.2s; transition: ease-in-out 0.2s; line-height: 20px;}
+        input:hover { border-color: #d56909; }
+        input:focus { border-color: #007acc; }
+        #messageHolder { height: 45px; float:left; width:100%; -webkit-transition: ease-in-out 0.2s; transition: ease-in-out 0.2s; display: table; }
+        #loginmessage { padding: 0px 3px 0px 3px; line-height: 12px; vertical-align: middle; display: table-cell; width: 394px; }
+        #loginWindow {
+            box-shadow: 0px 0px 10px #111111;
+            background-color: #252526;
+            position: absolute;
+            margin-top: 100px;
+            left: 50%;
+            margin-left: -200px;
+            width: 400px;
+            height: 170px;
+        }​
+    </style>
+    <script>
+        
+        var override = "";
+        
+        function createOkNoOkDiv(stat){
+            var obj= document.getElementById('messageHolder');
+            switch(stat){
+                case "ok":
+                    obj.style.background = "#468847";
+                break;
+                case "nok":
+                    obj.style.background = "#B94A48";                    
+                break;
+                default:
+                    obj.style.background = "#3A87AD";                    
+                break;
+            }
+        }
+        
+        function setLoginCookie(key){
+            document.cookie = "key=; path=/ ;expires=Thu, 01 Jan 1970 00:00:00 UTC";
+            var d = new Date();
+            d.setTime(d.getTime() + (365*24*60*60*1000)); /// one year
+            var expires = "expires="+d.toUTCString();
+            document.cookie = "key=" + key + "; path=/ ;" + expires;
+        }
+        
+        function sendLoginData(){
+            var xmlhttp;
+            xmlhttp=new XMLHttpRequest();
+            xmlhttp.onreadystatechange=function(){
+                if (xmlhttp.readyState===4 && xmlhttp.status===200){
+                    var response = xmlhttp.responseText;
+                    try {
+                        var message;
+                        if(response.split(":")[0]==="success"){
+                            message = response.replace("success:","");
+                            document.getElementById("loginmessage").innerHTML="Logged in, one moment";
+                            createOkNoOkDiv("ok");
+                            setLoginCookie(message);
+                            window.location.reload();
+                        } else {
+                            if(response.split(":")[0]==="alreadyloggedin"){ 
+                                override = "&override=true";
+                            }
+                            message = response.replace("error:","").replace("alreadyloggedin:","");
+                            document.getElementById("loginmessage").innerHTML=message;
+                            createOkNoOkDiv("nok");
+                        }
+                    } catch (err){
+                        createOkNoOkDiv("nok");
+                        document.getElementById("loginmessage").innerHTML="Could not interpret server";
+                    }
+                } else if (xmlhttp.readyState===4 && !xmlhttp.status===200){
+                    document.getElementById("loginmessage").innerHTML="Problem logging in, check server log";
+                    createOkNoOkDiv("nok");
+                }
+            }
+            xmlhttp.open("POST","/login.xhtml",true);
+            xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+            xmlhttp.send("username="+document.getElementById('input_usr').value+"&password="+document.getElementById('input_pswd').value+override);
+            return false;
+        }
+        
+        function clearStuff(){
+            document.getElementById('input_usr').value = "";
+            document.getElementById('input_pswd').value = "";
+            document.getElementById("loginmessage").innerHTML="Please login to continue";
+            createOkNoOkDiv("cancel");
+            return false;
+        }
+        
+        function checkEnterUserName(e) {
+           var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+           if(key === 13){
+               document.getElementById("input_pswd").focus();
+           }
+        }
+        
+        function checkEnterPassword(e) {
+           var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+           if(key === 13){
+               document.getElementById("login").focus();
+               sendLoginData();
+           }
+        }
+    </script>
+    </head>
+    <body onload="document.getElementById('input_usr').focus();">
+        <div id="loginWindow">
+            <div id="loginHeader">
+                Login <span style="float:right; margin-right:5px;">(<span id="platformtype"></span>)</span>
+            </div>
+            <div id="messageHolder">
+                <p id="loginmessage">Please login to continue.</p>
+            </div>
+            <div id="loginBody">
+                <div class="nvp">
+                    <div class="n" style="padding-top:4px;">Username</div><div class="v"><div class="colon" style="padding-top:4px;">:</div> <div class="inputdiv"><input type="text" id="input_usr" onkeyup="checkEnterUserName(event);" tabindex="1"/></div></div>
+                    <div class="n" style="padding-top:4px;">Password</div><div class="v"><div class="colon" style="padding-top:4px;">:</div> <div class="inputdiv"><input type="password" id="input_pswd"  onkeyup="checkEnterPassword(event);" tabindex="2"/></div></div>
+                </div>
+            </div>
+            <div id="buttons">
+                <button id="cancel" onclick="javascript:clearStuff();" tabindex="4">Cancel</button>
+                <button id="login" onclick="javascript:sendLoginData();" tabindex="3">Login</button>
+            </div>
+            <div style="clear:both"></div>
+            <div id="tabletremark" style="margin-top:20px; text-align:center;color:#000;">
+                <a href="/tablet/index.html">Try the tablet version.</a><br/>
+                P.S. It is a heavy work in progress!
+            </div>
+            <div id="desktopremark" style="margin-top:20px; text-align:center;color:#000;">
+                <a href="/desktop/index.html">Go to desktop version</a><br/>
+            </div>
+        </div>
+        <script>
+            createOkNoOkDiv("blab");
+            if(window.location.href.indexOf("\/tablet\/")!==-1){
+                document.getElementById("tabletremark").style.display = "none";
+                document.getElementById("platformtype").innerHTML = "Tablet version";
+            } else {
+                document.getElementById("desktopremark").style.display = "none";
+                document.getElementById("platformtype").innerHTML = "Desktop version";
+            }
+        </script>
+    </body>
+</html>

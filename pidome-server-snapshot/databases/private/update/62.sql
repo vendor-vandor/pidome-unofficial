@@ -1,0 +1,3 @@
+INSERT INTO installed_packages ('packageid','name','version','active', 'install_base','package_type','author', 'email','website') VALUES ('PIDOME-NATIVE-ZWAVE', 'pidome-zwave', '0.0.1', 1, 'pidome-zwave.jar','mix', 'PiDome','support@pidome.org', 'http://pidome.org');
+INSERT INTO installed_drivers ('driverid','name','friendlyname','driver','version','peripheral_driver','package') VALUES ('NATIVE-PIDOMEZWAVEDRIVER','PiDome@ZWave','PiDome Z-Wave driver','org.pidome.driver.nativeZWaveDriver','0.0.1',(SELECT p.id FROM installed_peripherals p WHERE p.name='FTDIFT232RL' LIMIT 1),(SELECT id FROM installed_packages WHERE packageid='PIDOME-NATIVE-ZWAVE' LIMIT 1));
+PRAGMA user_version=62;

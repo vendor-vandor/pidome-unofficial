@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]>    <html class="no-js iem7"> <![endif]-->
+<!--[if (gt IEMobile 7)|!(IEMobile)]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <title>PiDome Mobile</title>
+        <meta name="description" content="">
+        <meta name="HandheldFriendly" content="true">
+        <meta name="MobileOptimized" content="1280">
+        <meta name="viewport" content="width=1280, initial-scale=1">
+        <meta name="mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="/manifest.json">
+        <meta http-equiv="cleartype" content="on">
+
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/touch/apple-touch-icon-144x144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/touch/apple-touch-icon-114x114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/touch/apple-touch-icon-72x72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="img/touch/apple-touch-icon-57x57-precomposed.png">
+        <link rel="shortcut icon" href="img/touch/apple-touch-icon.png">
+
+        <!-- Tile icon for Win8 (144x144 + tile color) -->
+        <meta name="msapplication-TileImage" content="img/touch/apple-touch-icon-144x144-precomposed.png">
+        <meta name="msapplication-TileColor" content="#222222">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <meta name="apple-mobile-web-app-title" content="PiDome Mobile">
+
+
+        <!-- This script prevents links from opening in Mobile Safari. https://gist.github.com/1042026 -->
+        <!--
+        <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script>
+        -->
+        <link rel="stylesheet" href="/shared/css/mobile/normalize.css">
+        <link rel="stylesheet" href="/shared/css/mobile/main.css">
+        <link rel="stylesheet" href="/shared/js/libs/mobile/jquery-mobile/jquery.mobile-1.4.5.css" />
+        <link rel="stylesheet" href="/shared/js/jq/styles/jqx.base.css" />
+        <link rel="stylesheet" href="/shared/js/jq/styles/jqx.metrodark.css" />
+        <link rel="stylesheet" href="/shared/css/mobile/themes/pidome.min.css" />
+        <link rel="stylesheet" href="/shared/css/mobile/themes/jquery.mobile.icons.min.css" />
+        <link  rel="stylesheet" href="/shared/js/libs/jquery.colorpickersliders/jquery.colorpickersliders.css" />
+        <script src="/shared/js/libs/mobile/vendor/modernizr-2.6.2.min.js"></script>
+        <script src="/shared/js/libs/mobile/jquery/jquery.min.js"></script> 
+        <script src="/shared/js/libs/mobile/jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+        <script src="/shared/js/jq/jqx-all.js"></script>
+        <script src="/shared/js/libs/mobile/iscroll/iscroll.js"></script>
+        <script src="/shared/js/libs/tinycolor/tinycolor.js"></script>
+        <script src="/shared/js/libs/jquery.colorpickersliders/jquery.colorpickersliders.js"></script>
+        <script src="/shared/js/libs/bootstrap/js/bootstrap.min.js"></script>
+        <script src="/shared/js/libs/extension-tools.js"></script>
+        <script src="/shared/js/sitelibs/utils.js"></script>
+        <script src="/shared/js/sitelibs/mobile/utils.js"></script>
+        <script src="/shared/js/sitelibs/executors.js"></script>
+        <script src="/shared/js/sitelibs/RPCSocketHandler.js"></script>
+        <script src="/shared/js/libs/highcharts/highcharts-custom.js"></script>
+        <script src="/shared/js/sitelibs/Graphing.js"></script>
+        <link rel="stylesheet" href="/shared/js/libs/bootstrap/css/bootstrap.css" />
+        <link rel="stylesheet" href="/shared/css/mobile/themes/pidome-override.css" />
+        <link rel="stylesheet" href="/shared/css/dashboard.css" />
+	<script>
+            function SiteSettings(){
+                var deviceType = window.location.pathname.split("/")[1];
+                if (deviceType === "tablet") {
+                    this.theme = "metrodark";
+                } else if (deviceType === "phone") {
+                    this.theme = "metrodark";
+                } else {
+                    this.theme = "metrodark";
+                }
+            }
+            SiteSettings.prototype.getTheme = function(){
+                return this.theme;
+            };
+            var siteSettings = new SiteSettings();
+            var pidomeRPCSocket;
+            //if (window.location.protocol !== 'https:') {
+                pidomeRPCSocket = new RPCSocket("ws:/${_SERVER.hostname}:8088");
+            //} else {
+                //pidomeRPCSocket = new RPCSocket("wss:/${_SERVER.hostname}:8089");
+            //}
+            pidomeRPCSocket.Init();
+            $(function() {
+                    $( "body>[data-role='panel']" ).panel();
+            });
+	</script>
+    </head>
+    <body>
+        <div class="pagecontent">
+            <div data-role="header" id="headercontent" data-position="fixed">
+                <a href="#mainmenupanel" class="external-button" data-icon="bars" data-role="button" data-inline="true" id="menuopener" data-shadow="false">Menu</a>
+                <h1>PiDome<span id="pagetitle"></span></h1>
+                <a href="#presencemenupanel" class="external-button left" data-icon="gear" data-iconpos="right" data-role="button" data-inline="true" id="presenceopener" data-shadow="false">
+                    <span id="currentstatenotif">${presence}</span> - <span id="servertime">${time}</span>
+                </a>
+            </div>
+            <div data-role="page" id="main-content-body">

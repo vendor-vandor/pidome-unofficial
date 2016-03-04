@@ -1,0 +1,44 @@
+2014-10-02 10:18:49,462 [JavaFX Application Thread] WARN  org.comtel.javafx.control.KeyBoard - use default embedded layouts path: /xml/pidome
+2014-10-02 10:18:51,255 [BRDCST:RECEIVER] INFO  org.pidome.client.system.network.Networking - Broadcast has been unsuccesful
+2014-10-02 10:18:51,256 [BRDCST:RECEIVER] INFO  org.pidome.client.PidomeClient - Got network event: BROADCASTDISABLED
+2014-10-02 10:18:51,256 [BRDCST:RECEIVER] INFO  org.pidome.client.PidomeClient - Autoconnect with: 192.168.1.6, 11000, false
+2014-10-02 10:18:51,256 [BRDCST:RECEIVER] INFO  org.pidome.client.services.server.ServerStream - Initializing connection to server
+2014-10-02 10:18:51,563 [BRDCST:RECEIVER] INFO  org.pidome.client.PidomeClient - Got connection event: CONNECTED
+2014-10-02 10:18:51,651 [Thread-14] INFO  org.pidome.client.PidomeClient - Got connection event: LOGGEDIN
+2014-10-02 10:18:51,671 [Thread-15] INFO  org.pidome.client.PidomeClient - Got connection event: INITRECEIVED
+2014-10-02 10:20:27,025 [Thread-34] ERROR org.pidome.client.system.client.data.ClientData - Error in handling request: null
+java.lang.NullPointerException
+	at org.pidome.client.system.rpc.PidomeJSONRPCUtils.jsonParamsToObjectHashMap(PidomeJSONRPCUtils.java:85) ~[PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.system.rpc.PidomeJSONRPC.getParameters(PidomeJSONRPC.java:90) ~[PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.system.parsers.ServerProtocolParser.getParameters(ServerProtocolParser.java:77) ~[PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.system.client.data.ClientData.handleStreamEvent(ClientData.java:122) [PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.services.server.ServerStream._fireServiceEvent(ServerStream.java:133) [PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.services.server.ServerStream.access$000(ServerStream.java:28) [PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.services.server.ServerStream$2.call(ServerStream.java:101) [PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.services.server.ServerStream$2.call(ServerStream.java:98) [PiDome_JavaFX_Client.jar:0.1a]
+	at javafx.concurrent.Task$TaskCallable.call(Task.java:1426) [jfxrt.jar:?]
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266) [?:1.8.0_05]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_05]
+2014-10-02 10:20:48,032 [Thread-36] ERROR org.pidome.client.system.client.data.ClientData - Error in handling request: null
+java.lang.NullPointerException
+	at org.pidome.client.system.rpc.PidomeJSONRPCUtils.jsonParamsToObjectHashMap(PidomeJSONRPCUtils.java:85) ~[PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.system.rpc.PidomeJSONRPC.getParameters(PidomeJSONRPC.java:90) ~[PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.system.parsers.ServerProtocolParser.getParameters(ServerProtocolParser.java:77) ~[PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.system.client.data.ClientData.handleStreamEvent(ClientData.java:122) [PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.services.server.ServerStream._fireServiceEvent(ServerStream.java:133) [PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.services.server.ServerStream.access$000(ServerStream.java:28) [PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.services.server.ServerStream$2.call(ServerStream.java:101) [PiDome_JavaFX_Client.jar:0.1a]
+	at org.pidome.client.services.server.ServerStream$2.call(ServerStream.java:98) [PiDome_JavaFX_Client.jar:0.1a]
+	at javafx.concurrent.Task$TaskCallable.call(Task.java:1426) [jfxrt.jar:?]
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266) [?:1.8.0_05]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_05]
+2014-10-02 10:21:13,340 [SERVERSTREAM:READER] ERROR org.pidome.client.system.network.streams.Telnet - Reading error: Socket closed
+2014-10-02 10:22:39,714 [JavaFX Application Thread] WARN  org.comtel.javafx.control.KeyBoard - use default embedded layouts path: /xml/pidome
+2014-10-02 10:22:40,234 [BRDCST:RECEIVER] INFO  org.pidome.client.system.network.Networking - Broadcast has been unsuccesful
+2014-10-02 10:22:40,234 [BRDCST:RECEIVER] INFO  org.pidome.client.PidomeClient - Got network event: BROADCASTDISABLED
+2014-10-02 10:22:40,234 [BRDCST:RECEIVER] INFO  org.pidome.client.PidomeClient - Autoconnect with: 192.168.1.6, 11000, false
+2014-10-02 10:22:40,235 [BRDCST:RECEIVER] INFO  org.pidome.client.services.server.ServerStream - Initializing connection to server
+2014-10-02 10:22:40,246 [BRDCST:RECEIVER] INFO  org.pidome.client.PidomeClient - Got connection event: CONNECTED
+2014-10-02 10:22:40,387 [Thread-13] INFO  org.pidome.client.PidomeClient - Got connection event: LOGGEDIN
+2014-10-02 10:22:40,410 [Thread-14] INFO  org.pidome.client.PidomeClient - Got connection event: INITRECEIVED
+2014-10-02 10:23:12,112 [SERVERSTREAM:READER] ERROR org.pidome.client.system.network.streams.Telnet - Reading error: Socket closed
